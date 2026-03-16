@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Shop {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        ShopUser[]
+  services     Service[]
+  availability Availability[]
+  bookings     Booking[]
+  blockedSlots BlockedSlot[]
+  config       ShopConfig?
+}
+
+model ShopConfig {
+  id           String  @id @default(cuid())
+  shopId       String  @unique
+  primaryColor String  @default("#1a1a1a")
+  coverImage   String?
+  logo         String?
+  tagline      String?
+  showPrices   Boolean @default(true)
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  createdAt DateTime @default(now())
+
+  shops ShopUser[]
+}
+
+model ShopUser {
+  id     String   @id @default(cuid())
+  role   ShopRole @default(COLLABORATOR)
+  userId String
+  shopId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, shopId])
+}
+
+enum ShopRole {
+  OWNER
+  COLLABORATOR
+}
+
+model Service {
+  id       String  @id @default(cuid())
+  shopId   String
+  name     String
+  duration Int
+  price    Float?
+  isActive Boolean @default(true)
+
+  shop     Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+}
+
+model Availability {
+  id        String  @id @default(cuid())
+  shopId    String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  isActive  Boolean @default(true)
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model BlockedSlot {
+  id      String   @id @default(cuid())
+  shopId  String
+  startAt DateTime
+  endAt   DateTime
+  reason  String?
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model Customer {
+  id        String  @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  noShows   Int     @default(0)
+
+  bookings Booking[]
+}
+
+model RecurrenceGroup {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  bookings Booking[]
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  shopId     String
+  customerId String
+  serviceId  String
+  startAt    DateTime
+  endAt      DateTime
+  status     BookingStatus @default(PENDING)
+
+  otpCode      String?
+  otpExpiresAt DateTime?
+  lockedAt     DateTime?
+  lockedUntil  DateTime?
+
+  recurrenceGroupId String?
+
+  shop            Shop             @relation(fields: [shopId], references: [id])
+  customer        Customer         @relation(fields: [customerId], references: [id])
+  service         Service          @relation(fields: [serviceId], references: [id])
+  recurrenceGroup RecurrenceGroup? @relation(fields: [recurrenceGroupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  EXPIRED
+}
