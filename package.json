@@ -1,0 +1,10 @@
+{
+  "name": "scissorflow",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter @scissorflow/web dev",
+    "dev:api": "pnpm --filter @scissorflow/api dev",
+    "dev": "pnpm run dev:web & pnpm run dev:api"
+  }
+}
