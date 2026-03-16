@@ -6,5 +6,11 @@
     "dev:web": "pnpm --filter @scissorflow/web dev",
     "dev:api": "pnpm --filter @scissorflow/api dev",
     "dev": "pnpm run dev:web & pnpm run dev:api"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "prisma"
+    ]
   }
 }
