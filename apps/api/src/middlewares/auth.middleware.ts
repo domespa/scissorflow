@@ -2,17 +2,6 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "@/config/env";
 
-// AGGIUNGIAMO IL CAMPO USER CHE NON ESISTE SU REQUEST DI EXPRESS
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        userId: string;
-      };
-    }
-  }
-}
-
 export const authMiddleware = (
   req: Request,
   res: Response,
