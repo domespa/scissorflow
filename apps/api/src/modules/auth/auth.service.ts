@@ -142,5 +142,4 @@ export const authService = {
     });
     return shop;
   },
-  // =========================================
 };

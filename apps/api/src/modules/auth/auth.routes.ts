@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authController } from "./auth.controller";
+import { authMiddleware } from "@/middlewares/auth.middleware";
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 
 // POST /api/auth/onboarding
-router.post("/onboarding", authController.onboarding);
+router.post("/onboarding", authMiddleware, authController.onboarding);
 // =========================================
 
 export default router;

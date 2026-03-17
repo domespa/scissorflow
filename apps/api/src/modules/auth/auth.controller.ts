@@ -80,6 +80,7 @@ export const authController = {
       const data = await authService.onboarding(userId, result.data);
       res.status(201).json(data);
     } catch (error) {
+      console.log(error);
       if (error instanceof Error) {
         if (error.message === "SLUG_ALREADY_EXISTS") {
           res.status(409).json({
