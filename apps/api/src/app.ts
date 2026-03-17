@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
 import { env } from "./config/env";
+import authRouter from "./modules/auth/auth.routes";
 
 // INIZIALIZIAMO L'APP
 const app = express();
 
-// ====================
-//      MIDDLEWARE
-// ====================
+// ========================================
+//               MIDDLEWARE
+//========================================
 // CORS
 app.use(
   cors({
@@ -23,9 +24,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // ========================================
 
-// ====================
-//      ROTTE
-// ====================
+// ========================================
+//                 ROTTE
+// ========================================
+// AUTH
+app.use("/api/auth", authRouter);
+
 // HEALTH CHECK
 app.get("/health", (req, res) => {
   res.json({
