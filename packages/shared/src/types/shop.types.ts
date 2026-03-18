@@ -4,6 +4,20 @@ export enum ShopRole {
   COLLABORATOR = "COLLABORATOR",
 }
 
+// PIANI ABBONAMENTO
+export enum ShopPlan {
+  FREE = "FREE",
+  PRO = "PRO",
+  BUSINESS = "BUSINESS",
+  ENTERPRISE = "ENTERPRISE",
+}
+
+// MODALITÀ SLOT
+export enum SlotMode {
+  FIXED = "FIXED",
+  DYNAMIC = "DYNAMIC",
+}
+
 // I DTO TRA FE E BE
 export interface ShopDTO {
   id: string;

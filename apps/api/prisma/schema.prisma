@@ -7,10 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
+// =========================================
+//                SHOP
+// =========================================
 model Shop {
   id        String   @id @default(cuid())
   name      String
   slug      String   @unique
+  plan      ShopPlan @default(FREE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -22,18 +26,38 @@ model Shop {
   config       ShopConfig?
 }
 
+enum ShopPlan {
+  FREE
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
+// =========================================
+//              SHOP CONFIG
+// =========================================
 model ShopConfig {
-  id           String  @id @default(cuid())
-  shopId       String  @unique
-  primaryColor String  @default("#1a1a1a")
+  id           String   @id @default(cuid())
+  shopId       String   @unique
+  primaryColor String   @default("#1a1a1a")
   coverImage   String?
   logo         String?
   tagline      String?
-  showPrices   Boolean @default(true)
+  showPrices   Boolean  @default(true)
+  slotMode     SlotMode @default(FIXED)
+  slotInterval Int      @default(30)
 
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 }
 
+enum SlotMode {
+  FIXED
+  DYNAMIC
+}
+
+// =========================================
+//                USER
+// =========================================
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -45,6 +69,9 @@ model User {
   shops ShopUser[]
 }
 
+// =========================================
+//              SHOP USER
+// =========================================
 model ShopUser {
   id     String   @id @default(cuid())
   role   ShopRole @default(COLLABORATOR)
@@ -62,6 +89,9 @@ enum ShopRole {
   COLLABORATOR
 }
 
+// =========================================
+//              SERVICE
+// =========================================
 model Service {
   id       String  @id @default(cuid())
   shopId   String
@@ -74,6 +104,9 @@ model Service {
   bookings Booking[]
 }
 
+// =========================================
+//            AVAILABILITY
+// =========================================
 model Availability {
   id        String  @id @default(cuid())
   shopId    String
@@ -85,6 +118,9 @@ model Availability {
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 }
 
+// =========================================
+//            BLOCKED SLOT
+// =========================================
 model BlockedSlot {
   id      String   @id @default(cuid())
   shopId  String
@@ -95,6 +131,9 @@ model BlockedSlot {
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 }
 
+// =========================================
+//              CUSTOMER
+// =========================================
 model Customer {
   id        String  @id @default(cuid())
   firstName String
@@ -106,6 +145,9 @@ model Customer {
   bookings Booking[]
 }
 
+// =========================================
+//          RECURRENCE GROUP
+// =========================================
 model RecurrenceGroup {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -113,6 +155,9 @@ model RecurrenceGroup {
   bookings Booking[]
 }
 
+// =========================================
+//              BOOKING
+// =========================================
 model Booking {
   id         String        @id @default(cuid())
   shopId     String

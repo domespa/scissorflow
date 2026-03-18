@@ -68,7 +68,25 @@ export type Booking = $Result.DefaultSelection<Prisma.$BookingPayload>
  * Enums
  */
 export namespace $Enums {
-  export const ShopRole: {
+  export const ShopPlan: {
+  FREE: 'FREE',
+  PRO: 'PRO',
+  BUSINESS: 'BUSINESS',
+  ENTERPRISE: 'ENTERPRISE'
+};
+
+export type ShopPlan = (typeof ShopPlan)[keyof typeof ShopPlan]
+
+
+export const SlotMode: {
+  FIXED: 'FIXED',
+  DYNAMIC: 'DYNAMIC'
+};
+
+export type SlotMode = (typeof SlotMode)[keyof typeof SlotMode]
+
+
+export const ShopRole: {
   OWNER: 'OWNER',
   COLLABORATOR: 'COLLABORATOR'
 };
@@ -88,6 +106,14 @@ export const BookingStatus: {
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
 
 }
+
+export type ShopPlan = $Enums.ShopPlan
+
+export const ShopPlan: typeof $Enums.ShopPlan
+
+export type SlotMode = $Enums.SlotMode
+
+export const SlotMode: typeof $Enums.SlotMode
 
 export type ShopRole = $Enums.ShopRole
 
@@ -1922,6 +1948,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     slug: string | null
+    plan: $Enums.ShopPlan | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1930,6 +1957,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     slug: string | null
+    plan: $Enums.ShopPlan | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1938,6 +1966,7 @@ export namespace Prisma {
     id: number
     name: number
     slug: number
+    plan: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1948,6 +1977,7 @@ export namespace Prisma {
     id?: true
     name?: true
     slug?: true
+    plan?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1956,6 +1986,7 @@ export namespace Prisma {
     id?: true
     name?: true
     slug?: true
+    plan?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1964,6 +1995,7 @@ export namespace Prisma {
     id?: true
     name?: true
     slug?: true
+    plan?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2045,6 +2077,7 @@ export namespace Prisma {
     id: string
     name: string
     slug: string
+    plan: $Enums.ShopPlan
     createdAt: Date
     updatedAt: Date
     _count: ShopCountAggregateOutputType | null
@@ -2070,6 +2103,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    plan?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     users?: boolean | Shop$usersArgs<ExtArgs>
@@ -2085,6 +2119,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    plan?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["shop"]>
@@ -2093,6 +2128,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    plan?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["shop"]>
@@ -2101,11 +2137,12 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    plan?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ShopOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "createdAt" | "updatedAt", ExtArgs["result"]["shop"]>
+  export type ShopOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "plan" | "createdAt" | "updatedAt", ExtArgs["result"]["shop"]>
   export type ShopInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Shop$usersArgs<ExtArgs>
     services?: boolean | Shop$servicesArgs<ExtArgs>
@@ -2132,6 +2169,7 @@ export namespace Prisma {
       id: string
       name: string
       slug: string
+      plan: $Enums.ShopPlan
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["shop"]>
@@ -2566,6 +2604,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Shop", 'String'>
     readonly name: FieldRef<"Shop", 'String'>
     readonly slug: FieldRef<"Shop", 'String'>
+    readonly plan: FieldRef<"Shop", 'ShopPlan'>
     readonly createdAt: FieldRef<"Shop", 'DateTime'>
     readonly updatedAt: FieldRef<"Shop", 'DateTime'>
   }
@@ -3124,8 +3163,18 @@ export namespace Prisma {
 
   export type AggregateShopConfig = {
     _count: ShopConfigCountAggregateOutputType | null
+    _avg: ShopConfigAvgAggregateOutputType | null
+    _sum: ShopConfigSumAggregateOutputType | null
     _min: ShopConfigMinAggregateOutputType | null
     _max: ShopConfigMaxAggregateOutputType | null
+  }
+
+  export type ShopConfigAvgAggregateOutputType = {
+    slotInterval: number | null
+  }
+
+  export type ShopConfigSumAggregateOutputType = {
+    slotInterval: number | null
   }
 
   export type ShopConfigMinAggregateOutputType = {
@@ -3136,6 +3185,8 @@ export namespace Prisma {
     logo: string | null
     tagline: string | null
     showPrices: boolean | null
+    slotMode: $Enums.SlotMode | null
+    slotInterval: number | null
   }
 
   export type ShopConfigMaxAggregateOutputType = {
@@ -3146,6 +3197,8 @@ export namespace Prisma {
     logo: string | null
     tagline: string | null
     showPrices: boolean | null
+    slotMode: $Enums.SlotMode | null
+    slotInterval: number | null
   }
 
   export type ShopConfigCountAggregateOutputType = {
@@ -3156,9 +3209,19 @@ export namespace Prisma {
     logo: number
     tagline: number
     showPrices: number
+    slotMode: number
+    slotInterval: number
     _all: number
   }
 
+
+  export type ShopConfigAvgAggregateInputType = {
+    slotInterval?: true
+  }
+
+  export type ShopConfigSumAggregateInputType = {
+    slotInterval?: true
+  }
 
   export type ShopConfigMinAggregateInputType = {
     id?: true
@@ -3168,6 +3231,8 @@ export namespace Prisma {
     logo?: true
     tagline?: true
     showPrices?: true
+    slotMode?: true
+    slotInterval?: true
   }
 
   export type ShopConfigMaxAggregateInputType = {
@@ -3178,6 +3243,8 @@ export namespace Prisma {
     logo?: true
     tagline?: true
     showPrices?: true
+    slotMode?: true
+    slotInterval?: true
   }
 
   export type ShopConfigCountAggregateInputType = {
@@ -3188,6 +3255,8 @@ export namespace Prisma {
     logo?: true
     tagline?: true
     showPrices?: true
+    slotMode?: true
+    slotInterval?: true
     _all?: true
   }
 
@@ -3229,6 +3298,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ShopConfigAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ShopConfigSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShopConfigMinAggregateInputType
@@ -3259,6 +3340,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ShopConfigCountAggregateInputType | true
+    _avg?: ShopConfigAvgAggregateInputType
+    _sum?: ShopConfigSumAggregateInputType
     _min?: ShopConfigMinAggregateInputType
     _max?: ShopConfigMaxAggregateInputType
   }
@@ -3271,7 +3354,11 @@ export namespace Prisma {
     logo: string | null
     tagline: string | null
     showPrices: boolean
+    slotMode: $Enums.SlotMode
+    slotInterval: number
     _count: ShopConfigCountAggregateOutputType | null
+    _avg: ShopConfigAvgAggregateOutputType | null
+    _sum: ShopConfigSumAggregateOutputType | null
     _min: ShopConfigMinAggregateOutputType | null
     _max: ShopConfigMaxAggregateOutputType | null
   }
@@ -3298,6 +3385,8 @@ export namespace Prisma {
     logo?: boolean
     tagline?: boolean
     showPrices?: boolean
+    slotMode?: boolean
+    slotInterval?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopConfig"]>
 
@@ -3309,6 +3398,8 @@ export namespace Prisma {
     logo?: boolean
     tagline?: boolean
     showPrices?: boolean
+    slotMode?: boolean
+    slotInterval?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopConfig"]>
 
@@ -3320,6 +3411,8 @@ export namespace Prisma {
     logo?: boolean
     tagline?: boolean
     showPrices?: boolean
+    slotMode?: boolean
+    slotInterval?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopConfig"]>
 
@@ -3331,9 +3424,11 @@ export namespace Prisma {
     logo?: boolean
     tagline?: boolean
     showPrices?: boolean
+    slotMode?: boolean
+    slotInterval?: boolean
   }
 
-  export type ShopConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "primaryColor" | "coverImage" | "logo" | "tagline" | "showPrices", ExtArgs["result"]["shopConfig"]>
+  export type ShopConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "primaryColor" | "coverImage" | "logo" | "tagline" | "showPrices" | "slotMode" | "slotInterval", ExtArgs["result"]["shopConfig"]>
   export type ShopConfigInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }
@@ -3357,6 +3452,8 @@ export namespace Prisma {
       logo: string | null
       tagline: string | null
       showPrices: boolean
+      slotMode: $Enums.SlotMode
+      slotInterval: number
     }, ExtArgs["result"]["shopConfig"]>
     composites: {}
   }
@@ -3788,6 +3885,8 @@ export namespace Prisma {
     readonly logo: FieldRef<"ShopConfig", 'String'>
     readonly tagline: FieldRef<"ShopConfig", 'String'>
     readonly showPrices: FieldRef<"ShopConfig", 'Boolean'>
+    readonly slotMode: FieldRef<"ShopConfig", 'SlotMode'>
+    readonly slotInterval: FieldRef<"ShopConfig", 'Int'>
   }
     
 
@@ -13069,6 +13168,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     slug: 'slug',
+    plan: 'plan',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -13083,7 +13183,9 @@ export namespace Prisma {
     coverImage: 'coverImage',
     logo: 'logo',
     tagline: 'tagline',
-    showPrices: 'showPrices'
+    showPrices: 'showPrices',
+    slotMode: 'slotMode',
+    slotInterval: 'slotInterval'
   };
 
   export type ShopConfigScalarFieldEnum = (typeof ShopConfigScalarFieldEnum)[keyof typeof ShopConfigScalarFieldEnum]
@@ -13230,6 +13332,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ShopPlan'
+   */
+  export type EnumShopPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShopPlan'>
+    
+
+
+  /**
+   * Reference to a field of type 'ShopPlan[]'
+   */
+  export type ListEnumShopPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShopPlan[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -13251,16 +13367,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'ShopRole'
+   * Reference to a field of type 'SlotMode'
    */
-  export type EnumShopRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShopRole'>
+  export type EnumSlotModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SlotMode'>
     
 
 
   /**
-   * Reference to a field of type 'ShopRole[]'
+   * Reference to a field of type 'SlotMode[]'
    */
-  export type ListEnumShopRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShopRole[]'>
+  export type ListEnumSlotModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SlotMode[]'>
     
 
 
@@ -13275,6 +13391,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ShopRole'
+   */
+  export type EnumShopRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShopRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'ShopRole[]'
+   */
+  export type ListEnumShopRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShopRole[]'>
     
 
 
@@ -13316,6 +13446,7 @@ export namespace Prisma {
     id?: StringFilter<"Shop"> | string
     name?: StringFilter<"Shop"> | string
     slug?: StringFilter<"Shop"> | string
+    plan?: EnumShopPlanFilter<"Shop"> | $Enums.ShopPlan
     createdAt?: DateTimeFilter<"Shop"> | Date | string
     updatedAt?: DateTimeFilter<"Shop"> | Date | string
     users?: ShopUserListRelationFilter
@@ -13330,6 +13461,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    plan?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     users?: ShopUserOrderByRelationAggregateInput
@@ -13347,6 +13479,7 @@ export namespace Prisma {
     OR?: ShopWhereInput[]
     NOT?: ShopWhereInput | ShopWhereInput[]
     name?: StringFilter<"Shop"> | string
+    plan?: EnumShopPlanFilter<"Shop"> | $Enums.ShopPlan
     createdAt?: DateTimeFilter<"Shop"> | Date | string
     updatedAt?: DateTimeFilter<"Shop"> | Date | string
     users?: ShopUserListRelationFilter
@@ -13361,6 +13494,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    plan?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ShopCountOrderByAggregateInput
@@ -13375,6 +13509,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Shop"> | string
     name?: StringWithAggregatesFilter<"Shop"> | string
     slug?: StringWithAggregatesFilter<"Shop"> | string
+    plan?: EnumShopPlanWithAggregatesFilter<"Shop"> | $Enums.ShopPlan
     createdAt?: DateTimeWithAggregatesFilter<"Shop"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Shop"> | Date | string
   }
@@ -13390,6 +13525,8 @@ export namespace Prisma {
     logo?: StringNullableFilter<"ShopConfig"> | string | null
     tagline?: StringNullableFilter<"ShopConfig"> | string | null
     showPrices?: BoolFilter<"ShopConfig"> | boolean
+    slotMode?: EnumSlotModeFilter<"ShopConfig"> | $Enums.SlotMode
+    slotInterval?: IntFilter<"ShopConfig"> | number
     shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
   }
 
@@ -13401,6 +13538,8 @@ export namespace Prisma {
     logo?: SortOrderInput | SortOrder
     tagline?: SortOrderInput | SortOrder
     showPrices?: SortOrder
+    slotMode?: SortOrder
+    slotInterval?: SortOrder
     shop?: ShopOrderByWithRelationInput
   }
 
@@ -13415,6 +13554,8 @@ export namespace Prisma {
     logo?: StringNullableFilter<"ShopConfig"> | string | null
     tagline?: StringNullableFilter<"ShopConfig"> | string | null
     showPrices?: BoolFilter<"ShopConfig"> | boolean
+    slotMode?: EnumSlotModeFilter<"ShopConfig"> | $Enums.SlotMode
+    slotInterval?: IntFilter<"ShopConfig"> | number
     shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
   }, "id" | "shopId">
 
@@ -13426,9 +13567,13 @@ export namespace Prisma {
     logo?: SortOrderInput | SortOrder
     tagline?: SortOrderInput | SortOrder
     showPrices?: SortOrder
+    slotMode?: SortOrder
+    slotInterval?: SortOrder
     _count?: ShopConfigCountOrderByAggregateInput
+    _avg?: ShopConfigAvgOrderByAggregateInput
     _max?: ShopConfigMaxOrderByAggregateInput
     _min?: ShopConfigMinOrderByAggregateInput
+    _sum?: ShopConfigSumOrderByAggregateInput
   }
 
   export type ShopConfigScalarWhereWithAggregatesInput = {
@@ -13442,6 +13587,8 @@ export namespace Prisma {
     logo?: StringNullableWithAggregatesFilter<"ShopConfig"> | string | null
     tagline?: StringNullableWithAggregatesFilter<"ShopConfig"> | string | null
     showPrices?: BoolWithAggregatesFilter<"ShopConfig"> | boolean
+    slotMode?: EnumSlotModeWithAggregatesFilter<"ShopConfig"> | $Enums.SlotMode
+    slotInterval?: IntWithAggregatesFilter<"ShopConfig"> | number
   }
 
   export type UserWhereInput = {
@@ -13955,6 +14102,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserCreateNestedManyWithoutShopInput
@@ -13969,6 +14117,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
@@ -13983,6 +14132,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUpdateManyWithoutShopNestedInput
@@ -13997,6 +14147,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput
@@ -14011,6 +14162,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14019,6 +14171,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14027,6 +14180,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14038,6 +14192,8 @@ export namespace Prisma {
     logo?: string | null
     tagline?: string | null
     showPrices?: boolean
+    slotMode?: $Enums.SlotMode
+    slotInterval?: number
     shop: ShopCreateNestedOneWithoutConfigInput
   }
 
@@ -14049,6 +14205,8 @@ export namespace Prisma {
     logo?: string | null
     tagline?: string | null
     showPrices?: boolean
+    slotMode?: $Enums.SlotMode
+    slotInterval?: number
   }
 
   export type ShopConfigUpdateInput = {
@@ -14058,6 +14216,8 @@ export namespace Prisma {
     logo?: NullableStringFieldUpdateOperationsInput | string | null
     tagline?: NullableStringFieldUpdateOperationsInput | string | null
     showPrices?: BoolFieldUpdateOperationsInput | boolean
+    slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
+    slotInterval?: IntFieldUpdateOperationsInput | number
     shop?: ShopUpdateOneRequiredWithoutConfigNestedInput
   }
 
@@ -14069,6 +14229,8 @@ export namespace Prisma {
     logo?: NullableStringFieldUpdateOperationsInput | string | null
     tagline?: NullableStringFieldUpdateOperationsInput | string | null
     showPrices?: BoolFieldUpdateOperationsInput | boolean
+    slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
+    slotInterval?: IntFieldUpdateOperationsInput | number
   }
 
   export type ShopConfigCreateManyInput = {
@@ -14079,6 +14241,8 @@ export namespace Prisma {
     logo?: string | null
     tagline?: string | null
     showPrices?: boolean
+    slotMode?: $Enums.SlotMode
+    slotInterval?: number
   }
 
   export type ShopConfigUpdateManyMutationInput = {
@@ -14088,6 +14252,8 @@ export namespace Prisma {
     logo?: NullableStringFieldUpdateOperationsInput | string | null
     tagline?: NullableStringFieldUpdateOperationsInput | string | null
     showPrices?: BoolFieldUpdateOperationsInput | boolean
+    slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
+    slotInterval?: IntFieldUpdateOperationsInput | number
   }
 
   export type ShopConfigUncheckedUpdateManyInput = {
@@ -14098,6 +14264,8 @@ export namespace Prisma {
     logo?: NullableStringFieldUpdateOperationsInput | string | null
     tagline?: NullableStringFieldUpdateOperationsInput | string | null
     showPrices?: BoolFieldUpdateOperationsInput | boolean
+    slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
+    slotInterval?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserCreateInput = {
@@ -14633,6 +14801,13 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type EnumShopPlanFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShopPlan | EnumShopPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumShopPlanFilter<$PrismaModel> | $Enums.ShopPlan
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -14703,6 +14878,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    plan?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14711,6 +14887,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    plan?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14719,6 +14896,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    plan?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14739,6 +14917,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type EnumShopPlanWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShopPlan | EnumShopPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumShopPlanWithAggregatesFilter<$PrismaModel> | $Enums.ShopPlan
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumShopPlanFilter<$PrismaModel>
+    _max?: NestedEnumShopPlanFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -14775,6 +14963,24 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type EnumSlotModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SlotMode | EnumSlotModeFieldRefInput<$PrismaModel>
+    in?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSlotModeFilter<$PrismaModel> | $Enums.SlotMode
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type ShopScalarRelationFilter = {
     is?: ShopWhereInput
     isNot?: ShopWhereInput
@@ -14793,6 +14999,12 @@ export namespace Prisma {
     logo?: SortOrder
     tagline?: SortOrder
     showPrices?: SortOrder
+    slotMode?: SortOrder
+    slotInterval?: SortOrder
+  }
+
+  export type ShopConfigAvgOrderByAggregateInput = {
+    slotInterval?: SortOrder
   }
 
   export type ShopConfigMaxOrderByAggregateInput = {
@@ -14803,6 +15015,8 @@ export namespace Prisma {
     logo?: SortOrder
     tagline?: SortOrder
     showPrices?: SortOrder
+    slotMode?: SortOrder
+    slotInterval?: SortOrder
   }
 
   export type ShopConfigMinOrderByAggregateInput = {
@@ -14813,6 +15027,12 @@ export namespace Prisma {
     logo?: SortOrder
     tagline?: SortOrder
     showPrices?: SortOrder
+    slotMode?: SortOrder
+    slotInterval?: SortOrder
+  }
+
+  export type ShopConfigSumOrderByAggregateInput = {
+    slotInterval?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -14839,6 +15059,32 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type EnumSlotModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SlotMode | EnumSlotModeFieldRefInput<$PrismaModel>
+    in?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSlotModeWithAggregatesFilter<$PrismaModel> | $Enums.SlotMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSlotModeFilter<$PrismaModel>
+    _max?: NestedEnumSlotModeFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -14916,17 +15162,6 @@ export namespace Prisma {
     _max?: NestedEnumShopRoleFilter<$PrismaModel>
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -14973,22 +15208,6 @@ export namespace Prisma {
   export type ServiceSumOrderByAggregateInput = {
     duration?: SortOrder
     price?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -15310,6 +15529,10 @@ export namespace Prisma {
     set?: string
   }
 
+  export type EnumShopPlanFieldUpdateOperationsInput = {
+    set?: $Enums.ShopPlan
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -15488,6 +15711,18 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type EnumSlotModeFieldUpdateOperationsInput = {
+    set?: $Enums.SlotMode
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type ShopUpdateOneRequiredWithoutConfigNestedInput = {
     create?: XOR<ShopCreateWithoutConfigInput, ShopUncheckedCreateWithoutConfigInput>
     connectOrCreate?: ShopCreateOrConnectWithoutConfigInput
@@ -15588,14 +15823,6 @@ export namespace Prisma {
     connectOrCreate?: BookingCreateOrConnectWithoutServiceInput | BookingCreateOrConnectWithoutServiceInput[]
     createMany?: BookingCreateManyServiceInputEnvelope
     connect?: BookingWhereUniqueInput | BookingWhereUniqueInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -15834,6 +16061,13 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedEnumShopPlanFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShopPlan | EnumShopPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumShopPlanFilter<$PrismaModel> | $Enums.ShopPlan
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15873,6 +16107,16 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type NestedEnumShopPlanWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShopPlan | EnumShopPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShopPlan[] | ListEnumShopPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumShopPlanWithAggregatesFilter<$PrismaModel> | $Enums.ShopPlan
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumShopPlanFilter<$PrismaModel>
+    _max?: NestedEnumShopPlanFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15904,6 +16148,13 @@ export namespace Prisma {
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedEnumSlotModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SlotMode | EnumSlotModeFieldRefInput<$PrismaModel>
+    in?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSlotModeFilter<$PrismaModel> | $Enums.SlotMode
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -15942,32 +16193,14 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type NestedEnumShopRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.ShopRole | EnumShopRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumShopRoleFilter<$PrismaModel> | $Enums.ShopRole
-  }
-
-  export type NestedEnumShopRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ShopRole | EnumShopRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumShopRoleWithAggregatesFilter<$PrismaModel> | $Enums.ShopRole
+  export type NestedEnumSlotModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SlotMode | EnumSlotModeFieldRefInput<$PrismaModel>
+    in?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SlotMode[] | ListEnumSlotModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSlotModeWithAggregatesFilter<$PrismaModel> | $Enums.SlotMode
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumShopRoleFilter<$PrismaModel>
-    _max?: NestedEnumShopRoleFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+    _min?: NestedEnumSlotModeFilter<$PrismaModel>
+    _max?: NestedEnumSlotModeFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -15995,6 +16228,34 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedEnumShopRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShopRole | EnumShopRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumShopRoleFilter<$PrismaModel> | $Enums.ShopRole
+  }
+
+  export type NestedEnumShopRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ShopRole | EnumShopRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ShopRole[] | ListEnumShopRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumShopRoleWithAggregatesFilter<$PrismaModel> | $Enums.ShopRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumShopRoleFilter<$PrismaModel>
+    _max?: NestedEnumShopRoleFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -16204,6 +16465,8 @@ export namespace Prisma {
     logo?: string | null
     tagline?: string | null
     showPrices?: boolean
+    slotMode?: $Enums.SlotMode
+    slotInterval?: number
   }
 
   export type ShopConfigUncheckedCreateWithoutShopInput = {
@@ -16213,6 +16476,8 @@ export namespace Prisma {
     logo?: string | null
     tagline?: string | null
     showPrices?: boolean
+    slotMode?: $Enums.SlotMode
+    slotInterval?: number
   }
 
   export type ShopConfigCreateOrConnectWithoutShopInput = {
@@ -16383,6 +16648,8 @@ export namespace Prisma {
     logo?: NullableStringFieldUpdateOperationsInput | string | null
     tagline?: NullableStringFieldUpdateOperationsInput | string | null
     showPrices?: BoolFieldUpdateOperationsInput | boolean
+    slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
+    slotInterval?: IntFieldUpdateOperationsInput | number
   }
 
   export type ShopConfigUncheckedUpdateWithoutShopInput = {
@@ -16392,12 +16659,15 @@ export namespace Prisma {
     logo?: NullableStringFieldUpdateOperationsInput | string | null
     tagline?: NullableStringFieldUpdateOperationsInput | string | null
     showPrices?: BoolFieldUpdateOperationsInput | boolean
+    slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
+    slotInterval?: IntFieldUpdateOperationsInput | number
   }
 
   export type ShopCreateWithoutConfigInput = {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserCreateNestedManyWithoutShopInput
@@ -16411,6 +16681,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
@@ -16440,6 +16711,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUpdateManyWithoutShopNestedInput
@@ -16453,6 +16725,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput
@@ -16527,6 +16800,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     services?: ServiceCreateNestedManyWithoutShopInput
@@ -16540,6 +16814,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     services?: ServiceUncheckedCreateNestedManyWithoutShopInput
@@ -16598,6 +16873,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     services?: ServiceUpdateManyWithoutShopNestedInput
@@ -16611,6 +16887,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     services?: ServiceUncheckedUpdateManyWithoutShopNestedInput
@@ -16624,6 +16901,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserCreateNestedManyWithoutShopInput
@@ -16637,6 +16915,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
@@ -16708,6 +16987,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUpdateManyWithoutShopNestedInput
@@ -16721,6 +17001,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput
@@ -16750,6 +17031,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserCreateNestedManyWithoutShopInput
@@ -16763,6 +17045,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
@@ -16792,6 +17075,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUpdateManyWithoutShopNestedInput
@@ -16805,6 +17089,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput
@@ -16818,6 +17103,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserCreateNestedManyWithoutShopInput
@@ -16831,6 +17117,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
@@ -16860,6 +17147,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUpdateManyWithoutShopNestedInput
@@ -16873,6 +17161,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput
@@ -17002,6 +17291,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserCreateNestedManyWithoutShopInput
@@ -17015,6 +17305,7 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    plan?: $Enums.ShopPlan
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
@@ -17105,6 +17396,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUpdateManyWithoutShopNestedInput
@@ -17118,6 +17410,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput

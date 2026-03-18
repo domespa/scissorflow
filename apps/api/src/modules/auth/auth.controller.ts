@@ -76,7 +76,7 @@ export const authController = {
     }
 
     try {
-      const userId = req.body.userId;
+      const userId = req.user!.userId;
       const data = await authService.onboarding(userId, result.data);
       res.status(201).json(data);
     } catch (error) {

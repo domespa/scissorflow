@@ -124,6 +124,7 @@ exports.Prisma.ShopScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
+  plan: 'plan',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -135,7 +136,9 @@ exports.Prisma.ShopConfigScalarFieldEnum = {
   coverImage: 'coverImage',
   logo: 'logo',
   tagline: 'tagline',
-  showPrices: 'showPrices'
+  showPrices: 'showPrices',
+  slotMode: 'slotMode',
+  slotInterval: 'slotInterval'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -225,6 +228,18 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.ShopPlan = exports.$Enums.ShopPlan = {
+  FREE: 'FREE',
+  PRO: 'PRO',
+  BUSINESS: 'BUSINESS',
+  ENTERPRISE: 'ENTERPRISE'
+};
+
+exports.SlotMode = exports.$Enums.SlotMode = {
+  FIXED: 'FIXED',
+  DYNAMIC: 'DYNAMIC'
+};
+
 exports.ShopRole = exports.$Enums.ShopRole = {
   OWNER: 'OWNER',
   COLLABORATOR: 'COLLABORATOR'
