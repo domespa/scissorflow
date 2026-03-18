@@ -1,12 +1,14 @@
 import express from "express";
 import cors from "cors";
 import { env } from "./config/env";
+// ROTTE
 import authRouter from "./modules/auth/auth.routes";
+import shopRouter from "./modules/shop/shop.routes";
 
 // INIZIALIZIAMO L'APP
 const app = express();
 
-// ========================================
+// =======================================
 //               MIDDLEWARE
 //========================================
 // CORS
@@ -29,6 +31,9 @@ app.use(express.urlencoded({ extended: true }));
 // ========================================
 // AUTH
 app.use("/api/auth", authRouter);
+
+// SHOP
+app.use("/api/shops", shopRouter);
 
 // HEALTH CHECK
 app.get("/health", (req, res) => {
