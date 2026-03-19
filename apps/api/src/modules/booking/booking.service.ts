@@ -167,7 +167,9 @@ export const bookingService = {
       // RM SLOT OCCUPATI
       allSlots = allSlots.filter((slot) => {
         const [slotHour, slotMin] = slot.split(":").map(Number);
-        const slotStart = new Date(year, month - 1, day, slotHour, slotMin);
+        const slotStart = new Date(
+          Date.UTC(year, month - 1, day, slotHour, slotMin),
+        );
         const slotEnd = new Date(
           slotStart.getTime() + service.duration * 60000,
         );
@@ -176,6 +178,7 @@ export const bookingService = {
         const isBooked = dayBookings.some((b) => {
           const bStart = new Date(b.startAt);
           const bEnd = new Date(b.endAt);
+
           return slotStart < bEnd && slotEnd > bStart;
         });
 
@@ -210,12 +213,9 @@ export const bookingService = {
             // VERIFICA CHE CI SIA SPAZIO PER IL SERVIZIO
             const [endSlotHour, endSlotMin] = endSlot.split(":").map(Number);
             const slotStart = new Date(
-              year,
-              month - 1,
-              day,
-              endSlotHour,
-              endSlotMin,
+              Date.UTC(year, month - 1, day, endSlotHour, endSlotMin),
             );
+
             const slotEnd = new Date(
               slotStart.getTime() + service.duration * 60000,
             );
@@ -225,12 +225,9 @@ export const bookingService = {
                 .split(":")
                 .map(Number);
               const availEnd = new Date(
-                year,
-                month - 1,
-                day,
-                availEndHour,
-                availEndMin,
+                Date.UTC(year, month - 1, day, availEndHour, availEndMin),
               );
+
               return slotEnd <= availEnd;
             });
 
