@@ -30,7 +30,13 @@ export const shopRepository = {
   async findById(shopId: string) {
     return prisma.shop.findUnique({
       where: { id: shopId },
-      include: { config: true },
+      include: {
+        config: true,
+        availability: {
+          where: { isActive: true },
+          orderBy: { dayOfWeek: "asc" },
+        },
+      },
     });
   },
   // =========================================
