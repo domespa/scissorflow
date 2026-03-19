@@ -4,6 +4,7 @@ import { env } from "./config/env";
 // ROTTE
 import authRouter from "./modules/auth/auth.routes";
 import shopRouter from "./modules/shop/shop.routes";
+import bookingRouter from "./modules/booking/booking.routes";
 
 // INIZIALIZIAMO L'APP
 const app = express();
@@ -34,6 +35,9 @@ app.use("/api/auth", authRouter);
 
 // SHOP
 app.use("/api/shops", shopRouter);
+
+// BOOKING
+app.use("/api/bookings", bookingRouter);
 
 // HEALTH CHECK
 app.get("/health", (req, res) => {

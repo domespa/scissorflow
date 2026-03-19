@@ -383,4 +383,29 @@ export const bookingService = {
     return confirmed;
   },
   // =========================================
+
+  // =========================================
+  //           CANCELLA PRENOTAZIONE
+  // =========================================
+  async cancelBooking(bookingId: string) {
+    const booking = await bookingRepository.findById(bookingId);
+
+    if (!booking) throw new Error("BOOKING_NOT_FOUND");
+
+    // CONTROLLA SE LA CANCELLAZIONE È CONSENTITA  2 ORE PRIMA
+    const twoHoursFromNow = new Date(Date.now() + 2 * 60 * 60 * 1000);
+    if (booking.startAt < twoHoursFromNow) {
+      throw new Error("CANCELLATION_NOT_ALLOWED");
+    }
+
+    await bookingRepository.updateStatus(bookingId, "CANCELLED");
+
+    // EMETTE EVENTO WEBSOCKET
+    io.to(booking.shopId).emit("slot:cancelled", {
+      shopId: booking.shopId,
+      startAt: booking.startAt.toISOString(),
+      endAt: booking.endAt.toISOString(),
+    });
+  },
+  // =========================================
 };

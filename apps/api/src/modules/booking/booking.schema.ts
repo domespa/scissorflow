@@ -42,7 +42,7 @@ export const getMonthSlotsSchema = z.object({
     .string()
     .regex(
       /^\d{4}-\d{2}$/,
-      "Formato mese non valido — usa YYYY-MM es. 2026-03",
+      "Formato mese non valido - usa YYYY-MM es. 2026-03",
     ),
 });
 
