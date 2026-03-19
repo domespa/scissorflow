@@ -48,12 +48,14 @@ export const notificationService = {
     cancelUrl: string;
   }) {
     const date = data.startAt.toLocaleDateString("it-IT", {
+      timeZone: "Europe/Rome",
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     });
     const time = data.startAt.toLocaleTimeString("it-IT", {
+      timeZone: "Europe/Rome",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -95,12 +97,14 @@ export const notificationService = {
     startAt: Date;
   }) {
     const date = data.startAt.toLocaleDateString("it-IT", {
+      timeZone: "Europe/Rome",
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     });
     const time = data.startAt.toLocaleTimeString("it-IT", {
+      timeZone: "Europe/Rome",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -138,6 +142,7 @@ export const notificationService = {
     hoursUntil: number;
   }) {
     const time = data.startAt.toLocaleTimeString("it-IT", {
+      timeZone: "Europe/Rome",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -190,6 +195,7 @@ export const notificationService = {
     }>;
   }) {
     const dateStr = data.date.toLocaleDateString("it-IT", {
+      timeZone: "Europe/Rome",
       weekday: "long",
       year: "numeric",
       month: "long",

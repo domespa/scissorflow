@@ -409,7 +409,9 @@ export const bookingService = {
     console.log("📧 Nuova prenotazione confermata:", {
       customer: `${booking.customer.firstName} ${booking.customer.lastName}`,
       service: booking.service.name,
-      startAt: booking.startAt,
+      startAt: booking.startAt.toLocaleString("it-IT", {
+        timeZone: "Europe/Rome",
+      }),
     });
 
     // EMETTE EVENTO WEBSOCKET

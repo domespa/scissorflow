@@ -2,6 +2,10 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import app from "./app";
 import { env } from "./config/env";
+import { expireBookingsJob } from "./jobs/expireBookings.job";
+import { completeBookingsJob } from "./jobs/completeBookings.job";
+import { sendRemindersJob } from "./jobs/sendReminders.job";
+import { dailySummaryJob } from "./jobs/dailySummary.job";
 
 // CREAZIONE SERVER
 const httpServer = createServer(app);
@@ -23,6 +27,12 @@ io.on("connection", (socket) => {
     console.log(`🔴 Client disconnesso: ${socket.id}`);
   });
 });
+
+// AVVIO SCHELUDE
+expireBookingsJob.start();
+completeBookingsJob.start();
+sendRemindersJob.start();
+dailySummaryJob.start();
 
 // AVVIO SERVER
 httpServer.listen(env.PORT, () => {
