@@ -22,6 +22,12 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
   console.log(`🌍 Client connesso: ${socket.id}`);
 
+  // CLIENTE ENTRA NELLA STANZA
+  socket.on("join:shop", (shopId: string) => {
+    socket.join(shopId);
+    console.log(`👤 Cliente ${socket.id} entrato in shop: ${shopId}`);
+  });
+
   // QUANDO SI DISCONNETTE
   socket.on("diconnect", () => {
     console.log(`🔴 Client disconnesso: ${socket.id}`);
