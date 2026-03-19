@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
 // PAGINE PUBBLICHE
 import { ShopPage } from "@/pages/public/ShopPage/ShopPage";
@@ -30,28 +31,15 @@ export const router = createBrowserRouter([
   //           ROTTE DASHBOARD
   // =========================================
   {
-    path: "/dashboard",
-    element: <CalendarPage />,
-  },
-  {
-    path: "/dashboard/bookings",
-    element: <BookingsPage />,
-  },
-  {
-    path: "/dashboard/services",
-    element: <ServicesPage />,
-  },
-  {
-    path: "/dashboard/customers",
-    element: <CustomersPage />,
-  },
-  {
-    path: "/dashboard/analytics",
-    element: <AnalyticsPage />,
-  },
-  {
-    path: "/dashboard/settings",
-    element: <SettingsPage />,
+    element: <DashboardLayout />,
+    children: [
+      { path: "/dashboard", element: <CalendarPage /> },
+      { path: "/dashboard/bookings", element: <BookingsPage /> },
+      { path: "/dashboard/services", element: <ServicesPage /> },
+      { path: "/dashboard/customers", element: <CustomersPage /> },
+      { path: "/dashboard/analytics", element: <AnalyticsPage /> },
+      { path: "/dashboard/settings", element: <SettingsPage /> },
+    ],
   },
   // =========================================
 ]);
