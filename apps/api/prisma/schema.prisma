@@ -171,6 +171,7 @@ model Booking {
   otpExpiresAt DateTime?
   lockedAt     DateTime?
   lockedUntil  DateTime?
+  reminderSentAt DateTime? 
 
   recurrenceGroupId String?
 

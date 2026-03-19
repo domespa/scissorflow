@@ -209,6 +209,7 @@ exports.Prisma.BookingScalarFieldEnum = {
   otpExpiresAt: 'otpExpiresAt',
   lockedAt: 'lockedAt',
   lockedUntil: 'lockedUntil',
+  reminderSentAt: 'reminderSentAt',
   recurrenceGroupId: 'recurrenceGroupId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

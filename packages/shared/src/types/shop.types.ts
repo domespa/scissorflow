@@ -23,6 +23,7 @@ export interface ShopDTO {
   id: string;
   name: string;
   slug: string; // CI SERVE PER PERSONALIZZARE L'URL PER LA SAAS
+  plan: ShopPlan;
   createdAt: string;
 }
 
@@ -35,6 +36,8 @@ export interface ShopConfigDTO {
   logo?: string;
   tagline?: string;
   showPrices: boolean;
+  slotMode: SlotMode;
+  slotInterval: number;
 }
 
 // DATI REGISTRAZIONE NUOVO SHOP

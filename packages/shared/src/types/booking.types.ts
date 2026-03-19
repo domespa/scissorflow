@@ -8,6 +8,9 @@ export enum BookingStatus {
   EXPIRED = "EXPIRED", // OTP SCADUTO, SLOTO TORNATO LIBERO
 }
 
+// TIPO RICORRENZA
+export type RecurrenceType = "WEEKLY" | "MONTHLY";
+
 // DATI DELLA PRENOTAZIONE CHE COMUNICANO FE E BE
 export interface BookingDTO {
   id: string;
@@ -32,15 +35,14 @@ export interface LockSlotDTO {
     email?: string;
     phone?: string;
   };
+  recurrence?: {
+    type: RecurrenceType;
+    repeat: number;
+  };
 }
 
 // CONFERMA OTP
 export interface ConfirmBookingOTP {
   bookingId: string;
   otpCode: string;
-}
-
-// CREAZIONE PRENOTAZIONE RICORRENTE
-export interface RecurringBookingDTO extends LockSlotDTO {
-  weeks: number;
 }
