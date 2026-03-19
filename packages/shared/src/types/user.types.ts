@@ -7,6 +7,7 @@ export interface UserDTO {
   firstName: string;
   lastName: string;
   createdAt: string;
+  shopId: string | null;
 }
 
 // DATI LOGIN

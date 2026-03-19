@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "concurrently \"pnpm --filter @scissorflow/api dev\" \"pnpm --filter @scissorflow/web dev\"",
     "dev:web": "pnpm --filter @scissorflow/web dev",
-    "dev:api": "pnpm --filter @scissorflow/api dev",
-    "dev": "pnpm run dev:web & pnpm run dev:api"
+    "dev:api": "pnpm --filter @scissorflow/api dev"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

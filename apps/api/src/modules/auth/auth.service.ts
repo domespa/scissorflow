@@ -55,6 +55,7 @@ export const authService = {
         firstName: user.firstName,
         lastName: user.lastName,
         createdAt: user.createdAt.toISOString(),
+        shopId: null,
       },
       token,
     };
@@ -68,6 +69,13 @@ export const authService = {
     // CERCA UTENTE PER EMAIL
     const user = await prisma.user.findUnique({
       where: { email: input.email },
+      include: {
+        shops: {
+          where: { role: "OWNER" },
+          select: { shopId: true },
+          take: 1,
+        },
+      },
     });
     if (!user) {
       throw new Error("INVALID_CREDENTIALS");
@@ -89,6 +97,7 @@ export const authService = {
         firstName: user.firstName,
         lastName: user.lastName,
         createdAt: user.createdAt.toISOString(),
+        shopId: user.shops[0]?.shopId ?? null,
       },
       token,
     };
