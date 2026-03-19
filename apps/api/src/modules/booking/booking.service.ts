@@ -125,23 +125,28 @@ export const bookingService = {
 
       // CHECK SE IL BARBIERE LAVORA QUEL GIORNO - CHIUISURA FERIE MALATTIA
       const dayOfWeek = date.getDay();
-      const availability = shop.availability.find(
+      const availabilities = shop.availability.filter(
         (a) => a.dayOfWeek === dayOfWeek && a.isActive,
       );
 
-      if (!availability) continue;
+      if (availabilities.length === 0) continue;
 
       // OTTIENI CONFIG SLOT
       const slotInterval = shop.config?.slotInterval ?? 30;
       const slotMode = shop.config?.slotMode ?? "FIXED";
 
       // GENERALI
-      let allSlots = generateTimeSlots(
-        availability.startTime,
-        availability.endTime,
-        slotInterval,
-        service.duration,
+      let allSlots = availabilities.flatMap((availability) =>
+        generateTimeSlots(
+          availability.startTime,
+          availability.endTime,
+          slotInterval,
+          service.duration,
+        ),
       );
+
+      // RIMUOVI DUPLICATI E ORDINA
+      allSlots = [...new Set(allSlots)].sort();
 
       // FLITRA SLOT OCCUPATI
       const dayBookings = bookings.filter((b) => {
@@ -214,18 +219,22 @@ export const bookingService = {
             const slotEnd = new Date(
               slotStart.getTime() + service.duration * 60000,
             );
-            const [availEndHour, availEndMin] = availability.endTime
-              .split(":")
-              .map(Number);
-            const availEnd = new Date(
-              year,
-              month - 1,
-              day,
-              availEndHour,
-              availEndMin,
-            );
+            // CONTROLLA SE LO SLOT DINAMICO RIENTRA IN ALMENO UNA FASCIA ORARIA
+            const fitsInAvailability = availabilities.some((av) => {
+              const [availEndHour, availEndMin] = av.endTime
+                .split(":")
+                .map(Number);
+              const availEnd = new Date(
+                year,
+                month - 1,
+                day,
+                availEndHour,
+                availEndMin,
+              );
+              return slotEnd <= availEnd;
+            });
 
-            if (slotEnd <= availEnd) {
+            if (fitsInAvailability) {
               dynamicSlots.push(endSlot);
             }
           }
