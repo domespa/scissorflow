@@ -23,11 +23,8 @@ const envSchema = z.object({
     .min(32, "JWT_SECRET deve essere lunga almeno 32 caratteri"),
 
   // EMAIL
-  SMTP_HOST: z.string({ error: "SMTP_HOST è obbligatoria" }),
-  SMTP_PORT: z.string().default("587"),
-  SMTP_USER: z.string({ error: "SMTP_USER è obbligatoria" }),
-  SMTP_PASS: z.string({ error: "SMTP_PASS è obbligatoria" }),
-  EMAIL_FROM: z.string({ error: "EMAIL_FROM è obbligatoria" }),
+  RESEND_API_KEY: z.string({ error: "RESEND_API_KEY è obbligatoria" }),
+  EMAIL_FROM: z.string().default("onboarding@resend.dev"),
 
   // FRONTEND
   CLIENT_URL: z.string().default("http://localhost:5173"),

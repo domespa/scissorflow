@@ -7,6 +7,8 @@ import type {
   GetMonthSlotsInput,
 } from "./booking.schema";
 import { io } from "@/server";
+import { notificationService } from "../notification/notification.service";
+import { env } from "@/config/env";
 
 // =========================================
 //              GENERAZIONE OTP
@@ -257,7 +259,7 @@ export const bookingService = {
   async lockSlot(input: LockSlotInput) {
     const startAt = new Date(input.startAt);
 
-    // CONTROLLA SE EMAIL O TELEFONO HANNO GIA' PRENOTAZIONE ATTIVA
+    // CONTROLLA SE EMAIL HA GIA' PRENOTAZIONE ATTIVA
     if (input.customer.email) {
       const existing = await bookingRepository.findActiveBookingByEmail(
         input.customer.email,
@@ -266,6 +268,7 @@ export const bookingService = {
       if (existing) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
     }
 
+    // CONTROLLA SE TELEFONO HA GIA' PRENOTAZIONE ATTIVA
     if (input.customer.phone) {
       const existing = await bookingRepository.findActiveBookingByPhone(
         input.customer.phone,
@@ -274,7 +277,7 @@ export const bookingService = {
       if (existing) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
     }
 
-    // CARICA SERVIZIO PER CALCOLARE endAt
+    // CARICA SERVIZIO
     const service = await shopRepository.findServicesById(input.serviceId);
     if (!service) throw new Error("SERVICE_NOT_FOUND");
 
@@ -299,7 +302,6 @@ export const bookingService = {
       const group = await bookingRepository.createRecurrenceGroup();
       recurrenceGroupId = group.id;
 
-      // CREA TUTTE LE PRENOTAZIONI RICORRENTI
       for (let i = 0; i < input.recurrence.repeat; i++) {
         const recurrentStartAt =
           i === 0
@@ -324,7 +326,6 @@ export const bookingService = {
         });
       }
     } else {
-      // PRENOTAZIONE SINGOLA
       await bookingRepository.createBooking({
         shopId: input.shopId,
         customerId: customer.id,
@@ -338,7 +339,17 @@ export const bookingService = {
       });
     }
 
-    // EMETTE EVENTO WEBSOCKET  CON AGGIORNAMENTO CALENDARIO IN REALTIME
+    // MANDA OTP VIA EMAIL
+    if (input.customer.email) {
+      await notificationService.sendOtp({
+        to: input.customer.email,
+        firstName: input.customer.firstName,
+        otpCode,
+        expiresInMinutes: 5,
+      });
+    }
+
+    // WEBSOCKET
     io.to(input.shopId).emit("slot:locked", {
       shopId: input.shopId,
       startAt: startAt.toISOString(),
@@ -378,6 +389,28 @@ export const bookingService = {
 
     // CONFERMA PRENOTAZIONE
     const confirmed = await bookingRepository.confirmBooking(input.bookingId);
+
+    // GENERA CANCEL URL
+    const cancelUrl = `${env.CLIENT_URL}/cancel/${booking.id}`;
+
+    // NOTIFICA CLIENTE SE HA EMAIL
+    if (booking.customer.email) {
+      await notificationService.sendBookingConfirmedToCustomer({
+        to: booking.customer.email,
+        firstName: booking.customer.firstName,
+        shopName: booking.shop.name,
+        serviceName: booking.service.name,
+        startAt: booking.startAt,
+        cancelUrl,
+      });
+    }
+
+    // NOTIFICA BARBIERE
+    console.log("📧 Nuova prenotazione confermata:", {
+      customer: `${booking.customer.firstName} ${booking.customer.lastName}`,
+      service: booking.service.name,
+      startAt: booking.startAt,
+    });
 
     // EMETTE EVENTO WEBSOCKET
     io.to(booking.shopId).emit("slot:confirmed", {
