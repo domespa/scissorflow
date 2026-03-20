@@ -29,6 +29,10 @@ export const shopService = {
     }
     return shopRepository.updateConfig(shopId, input);
   },
+
+  async getConfig(shopId: string) {
+    return shopRepository.findConfig(shopId);
+  },
   // =========================================
 
   // =========================================

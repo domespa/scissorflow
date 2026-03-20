@@ -60,6 +60,11 @@ export const shopService = {
     return response.data;
   },
 
+  async getConfig(shopId: string): Promise<ShopConfigDTO> {
+    const response = await api.get(`/shops/${shopId}/config`);
+    return response.data;
+  },
+
   // DISPONIBILITÀ
   async getAvailability(shopId: string): Promise<AvailabilityDTO[]> {
     const response = await api.get(`/shops/${shopId}/availability`);

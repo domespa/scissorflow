@@ -19,6 +19,13 @@ router.get("/:slug", shopController.getPublicShop);
 // =========================================
 
 // CONFIG
+router.get(
+  "/:shopId/config",
+  authMiddleware,
+  requireRole("COLLABORATOR"),
+  shopController.getConfig,
+);
+
 router.put(
   "/:shopId/config",
   authMiddleware,

@@ -2,14 +2,16 @@ import { z } from "zod";
 
 // SCHEMA PER AGGIORNARE LO SHOP
 export const updateConfigSchema = z.object({
-  primaryColora: z
+  primaryColor: z
     .string()
     .regex(/^#[0-9A-Fa-f]{6}$/, "Il colore deve essere un hex valido")
     .optional(),
-  coverImage: z.url().optional(),
-  logo: z.url().optional(),
-  tagline: z.string().max(100).optional(),
+  coverImage: z.url().optional().nullable(),
+  logo: z.url().optional().nullable(),
+  tagline: z.string().max(100).optional().nullable(),
   showPrices: z.boolean().optional(),
+  slotMode: z.enum(["FIXED", "DYNAMIC"]).optional(),
+  slotInterval: z.number().min(5).max(120).optional(),
 });
 
 // SCHEMA CREAZIONE/MODIFICA SERVIZIO

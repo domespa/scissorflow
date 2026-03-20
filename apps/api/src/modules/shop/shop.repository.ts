@@ -50,6 +50,12 @@ export const shopRepository = {
       data: input,
     });
   },
+
+  async findConfig(shopId: string) {
+    return prisma.shopConfig.findUnique({
+      where: { shopId },
+    });
+  },
   // =========================================
 
   // =========================================

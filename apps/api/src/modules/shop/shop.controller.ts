@@ -59,6 +59,16 @@ export const shopController = {
       res.status(500).json({ message: "Errore interno" });
     }
   },
+
+  async getConfig(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const data = await shopService.getConfig(shopId);
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
   // =========================================
 
   // =========================================
