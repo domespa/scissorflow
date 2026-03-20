@@ -30,16 +30,20 @@ export const availabilitySchema = z.object({
   dayOfWeek: z.number().min(0).max(6),
   startTime: z
     .string()
-    .regex(
-      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-      "Formato orario non valido es. 09:00",
-    ),
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato orario non valido"),
   endTime: z
     .string()
-    .regex(
-      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-      "Formato orario non valido es. 18:00",
-    ),
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato orario non valido"),
+  breakStart: z
+    .string()
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
+    .optional()
+    .nullable(),
+  breakEnd: z
+    .string()
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
+    .optional()
+    .nullable(),
   isActive: z.boolean().default(true),
 });
 

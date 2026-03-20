@@ -104,4 +104,43 @@ export const shopService = {
     return shopRepository.deleteBlockedSlot(slotId);
   },
   // =========================================
+
+  // =========================================
+  //              DATE
+  // =========================================
+  async getDateExceptions(shopId: string) {
+    return shopRepository.findDateExceptions(shopId);
+  },
+
+  async upsertDateException(
+    shopId: string,
+    input: {
+      date: string;
+      isOpen: boolean;
+      startTime?: string;
+      endTime?: string;
+      breakStart?: string;
+      breakEnd?: string;
+      reason?: string;
+    },
+  ) {
+    const date = new Date(input.date);
+    date.setUTCHours(0, 0, 0, 0);
+    return shopRepository.upsertDateException(shopId, {
+      date,
+      isOpen: input.isOpen,
+      startTime: input.startTime,
+      endTime: input.endTime,
+      breakStart: input.breakStart,
+      breakEnd: input.breakEnd,
+      reason: input.reason,
+    });
+  },
+
+  async deleteDateException(shopId: string, date: string) {
+    const d = new Date(date);
+    d.setUTCHours(0, 0, 0, 0);
+    return shopRepository.deleteDateException(shopId, d);
+  },
+  // =========================================
 };

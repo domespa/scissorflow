@@ -73,8 +73,15 @@ export const shopService = {
 
   async setAvailability(
     shopId: string,
-    data: Omit<AvailabilityDTO, "id" | "shopId">,
-  ): Promise<AvailabilityDTO> {
+    data: {
+      dayOfWeek: number;
+      startTime: string;
+      endTime: string;
+      breakStart?: string | null;
+      breakEnd?: string | null;
+      isActive: boolean;
+    },
+  ) {
     const response = await api.post(`/shops/${shopId}/availability`, data);
     return response.data;
   },
@@ -95,5 +102,31 @@ export const shopService = {
 
   async deleteBlockedSlot(shopId: string, slotId: string): Promise<void> {
     await api.delete(`/shops/${shopId}/blocked-slots/${slotId}`);
+  },
+
+  // DATE ECCEZIONI
+  async getDateExceptions(shopId: string) {
+    const response = await api.get(`/shops/${shopId}/date-exceptions`);
+    return response.data;
+  },
+
+  async upsertDateException(
+    shopId: string,
+    data: {
+      date: string;
+      isOpen: boolean;
+      startTime?: string;
+      endTime?: string;
+      breakStart?: string | null;
+      breakEnd?: string | null;
+      reason?: string;
+    },
+  ) {
+    const response = await api.post(`/shops/${shopId}/date-exceptions`, data);
+    return response.data;
+  },
+
+  async deleteDateException(shopId: string, date: string) {
+    await api.delete(`/shops/${shopId}/date-exceptions/${date}`);
   },
 };

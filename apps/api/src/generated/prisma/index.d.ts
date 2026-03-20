@@ -63,6 +63,11 @@ export type RecurrenceGroup = $Result.DefaultSelection<Prisma.$RecurrenceGroupPa
  * 
  */
 export type Booking = $Result.DefaultSelection<Prisma.$BookingPayload>
+/**
+ * Model DateException
+ * 
+ */
+export type DateException = $Result.DefaultSelection<Prisma.$DateExceptionPayload>
 
 /**
  * Enums
@@ -343,6 +348,16 @@ export class PrismaClient<
     * ```
     */
   get booking(): Prisma.BookingDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.dateException`: Exposes CRUD operations for the **DateException** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DateExceptions
+    * const dateExceptions = await prisma.dateException.findMany()
+    * ```
+    */
+  get dateException(): Prisma.DateExceptionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -786,7 +801,8 @@ export namespace Prisma {
     BlockedSlot: 'BlockedSlot',
     Customer: 'Customer',
     RecurrenceGroup: 'RecurrenceGroup',
-    Booking: 'Booking'
+    Booking: 'Booking',
+    DateException: 'DateException'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -802,7 +818,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "shop" | "shopConfig" | "user" | "shopUser" | "service" | "availability" | "blockedSlot" | "customer" | "recurrenceGroup" | "booking"
+      modelProps: "shop" | "shopConfig" | "user" | "shopUser" | "service" | "availability" | "blockedSlot" | "customer" | "recurrenceGroup" | "booking" | "dateException"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1546,6 +1562,80 @@ export namespace Prisma {
           }
         }
       }
+      DateException: {
+        payload: Prisma.$DateExceptionPayload<ExtArgs>
+        fields: Prisma.DateExceptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DateExceptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DateExceptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>
+          }
+          findFirst: {
+            args: Prisma.DateExceptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DateExceptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>
+          }
+          findMany: {
+            args: Prisma.DateExceptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>[]
+          }
+          create: {
+            args: Prisma.DateExceptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>
+          }
+          createMany: {
+            args: Prisma.DateExceptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DateExceptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>[]
+          }
+          delete: {
+            args: Prisma.DateExceptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>
+          }
+          update: {
+            args: Prisma.DateExceptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DateExceptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DateExceptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DateExceptionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>[]
+          }
+          upsert: {
+            args: Prisma.DateExceptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DateExceptionPayload>
+          }
+          aggregate: {
+            args: Prisma.DateExceptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDateException>
+          }
+          groupBy: {
+            args: Prisma.DateExceptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DateExceptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DateExceptionCountArgs<ExtArgs>
+            result: $Utils.Optional<DateExceptionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1664,6 +1754,7 @@ export namespace Prisma {
     customer?: CustomerOmit
     recurrenceGroup?: RecurrenceGroupOmit
     booking?: BookingOmit
+    dateException?: DateExceptionOmit
   }
 
   /* Types for Logging */
@@ -1749,6 +1840,7 @@ export namespace Prisma {
     availability: number
     bookings: number
     blockedSlots: number
+    dateExceptions: number
   }
 
   export type ShopCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1757,6 +1849,7 @@ export namespace Prisma {
     availability?: boolean | ShopCountOutputTypeCountAvailabilityArgs
     bookings?: boolean | ShopCountOutputTypeCountBookingsArgs
     blockedSlots?: boolean | ShopCountOutputTypeCountBlockedSlotsArgs
+    dateExceptions?: boolean | ShopCountOutputTypeCountDateExceptionsArgs
   }
 
   // Custom InputTypes
@@ -1803,6 +1896,13 @@ export namespace Prisma {
    */
   export type ShopCountOutputTypeCountBlockedSlotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BlockedSlotWhereInput
+  }
+
+  /**
+   * ShopCountOutputType without action
+   */
+  export type ShopCountOutputTypeCountDateExceptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DateExceptionWhereInput
   }
 
 
@@ -2112,6 +2212,7 @@ export namespace Prisma {
     bookings?: boolean | Shop$bookingsArgs<ExtArgs>
     blockedSlots?: boolean | Shop$blockedSlotsArgs<ExtArgs>
     config?: boolean | Shop$configArgs<ExtArgs>
+    dateExceptions?: boolean | Shop$dateExceptionsArgs<ExtArgs>
     _count?: boolean | ShopCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shop"]>
 
@@ -2150,6 +2251,7 @@ export namespace Prisma {
     bookings?: boolean | Shop$bookingsArgs<ExtArgs>
     blockedSlots?: boolean | Shop$blockedSlotsArgs<ExtArgs>
     config?: boolean | Shop$configArgs<ExtArgs>
+    dateExceptions?: boolean | Shop$dateExceptionsArgs<ExtArgs>
     _count?: boolean | ShopCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ShopIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2164,6 +2266,7 @@ export namespace Prisma {
       bookings: Prisma.$BookingPayload<ExtArgs>[]
       blockedSlots: Prisma.$BlockedSlotPayload<ExtArgs>[]
       config: Prisma.$ShopConfigPayload<ExtArgs> | null
+      dateExceptions: Prisma.$DateExceptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2572,6 +2675,7 @@ export namespace Prisma {
     bookings<T extends Shop$bookingsArgs<ExtArgs> = {}>(args?: Subset<T, Shop$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     blockedSlots<T extends Shop$blockedSlotsArgs<ExtArgs> = {}>(args?: Subset<T, Shop$blockedSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockedSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     config<T extends Shop$configArgs<ExtArgs> = {}>(args?: Subset<T, Shop$configArgs<ExtArgs>>): Prisma__ShopConfigClient<$Result.GetResult<Prisma.$ShopConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    dateExceptions<T extends Shop$dateExceptionsArgs<ExtArgs> = {}>(args?: Subset<T, Shop$dateExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3136,6 +3240,30 @@ export namespace Prisma {
      */
     include?: ShopConfigInclude<ExtArgs> | null
     where?: ShopConfigWhereInput
+  }
+
+  /**
+   * Shop.dateExceptions
+   */
+  export type Shop$dateExceptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    where?: DateExceptionWhereInput
+    orderBy?: DateExceptionOrderByWithRelationInput | DateExceptionOrderByWithRelationInput[]
+    cursor?: DateExceptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DateExceptionScalarFieldEnum | DateExceptionScalarFieldEnum[]
   }
 
   /**
@@ -7622,6 +7750,8 @@ export namespace Prisma {
     dayOfWeek: number | null
     startTime: string | null
     endTime: string | null
+    breakStart: string | null
+    breakEnd: string | null
     isActive: boolean | null
   }
 
@@ -7631,6 +7761,8 @@ export namespace Prisma {
     dayOfWeek: number | null
     startTime: string | null
     endTime: string | null
+    breakStart: string | null
+    breakEnd: string | null
     isActive: boolean | null
   }
 
@@ -7640,6 +7772,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: number
     endTime: number
+    breakStart: number
+    breakEnd: number
     isActive: number
     _all: number
   }
@@ -7659,6 +7793,8 @@ export namespace Prisma {
     dayOfWeek?: true
     startTime?: true
     endTime?: true
+    breakStart?: true
+    breakEnd?: true
     isActive?: true
   }
 
@@ -7668,6 +7804,8 @@ export namespace Prisma {
     dayOfWeek?: true
     startTime?: true
     endTime?: true
+    breakStart?: true
+    breakEnd?: true
     isActive?: true
   }
 
@@ -7677,6 +7815,8 @@ export namespace Prisma {
     dayOfWeek?: true
     startTime?: true
     endTime?: true
+    breakStart?: true
+    breakEnd?: true
     isActive?: true
     _all?: true
   }
@@ -7773,6 +7913,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: string
     endTime: string
+    breakStart: string | null
+    breakEnd: string | null
     isActive: boolean
     _count: AvailabilityCountAggregateOutputType | null
     _avg: AvailabilityAvgAggregateOutputType | null
@@ -7801,6 +7943,8 @@ export namespace Prisma {
     dayOfWeek?: boolean
     startTime?: boolean
     endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
     isActive?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["availability"]>
@@ -7811,6 +7955,8 @@ export namespace Prisma {
     dayOfWeek?: boolean
     startTime?: boolean
     endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
     isActive?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["availability"]>
@@ -7821,6 +7967,8 @@ export namespace Prisma {
     dayOfWeek?: boolean
     startTime?: boolean
     endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
     isActive?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["availability"]>
@@ -7831,10 +7979,12 @@ export namespace Prisma {
     dayOfWeek?: boolean
     startTime?: boolean
     endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
     isActive?: boolean
   }
 
-  export type AvailabilityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "dayOfWeek" | "startTime" | "endTime" | "isActive", ExtArgs["result"]["availability"]>
+  export type AvailabilityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "dayOfWeek" | "startTime" | "endTime" | "breakStart" | "breakEnd" | "isActive", ExtArgs["result"]["availability"]>
   export type AvailabilityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }
@@ -7856,6 +8006,8 @@ export namespace Prisma {
       dayOfWeek: number
       startTime: string
       endTime: string
+      breakStart: string | null
+      breakEnd: string | null
       isActive: boolean
     }, ExtArgs["result"]["availability"]>
     composites: {}
@@ -8286,6 +8438,8 @@ export namespace Prisma {
     readonly dayOfWeek: FieldRef<"Availability", 'Int'>
     readonly startTime: FieldRef<"Availability", 'String'>
     readonly endTime: FieldRef<"Availability", 'String'>
+    readonly breakStart: FieldRef<"Availability", 'String'>
+    readonly breakEnd: FieldRef<"Availability", 'String'>
     readonly isActive: FieldRef<"Availability", 'Boolean'>
   }
     
@@ -13164,6 +13318,1121 @@ export namespace Prisma {
 
 
   /**
+   * Model DateException
+   */
+
+  export type AggregateDateException = {
+    _count: DateExceptionCountAggregateOutputType | null
+    _min: DateExceptionMinAggregateOutputType | null
+    _max: DateExceptionMaxAggregateOutputType | null
+  }
+
+  export type DateExceptionMinAggregateOutputType = {
+    id: string | null
+    shopId: string | null
+    date: Date | null
+    isOpen: boolean | null
+    startTime: string | null
+    endTime: string | null
+    breakStart: string | null
+    breakEnd: string | null
+    reason: string | null
+  }
+
+  export type DateExceptionMaxAggregateOutputType = {
+    id: string | null
+    shopId: string | null
+    date: Date | null
+    isOpen: boolean | null
+    startTime: string | null
+    endTime: string | null
+    breakStart: string | null
+    breakEnd: string | null
+    reason: string | null
+  }
+
+  export type DateExceptionCountAggregateOutputType = {
+    id: number
+    shopId: number
+    date: number
+    isOpen: number
+    startTime: number
+    endTime: number
+    breakStart: number
+    breakEnd: number
+    reason: number
+    _all: number
+  }
+
+
+  export type DateExceptionMinAggregateInputType = {
+    id?: true
+    shopId?: true
+    date?: true
+    isOpen?: true
+    startTime?: true
+    endTime?: true
+    breakStart?: true
+    breakEnd?: true
+    reason?: true
+  }
+
+  export type DateExceptionMaxAggregateInputType = {
+    id?: true
+    shopId?: true
+    date?: true
+    isOpen?: true
+    startTime?: true
+    endTime?: true
+    breakStart?: true
+    breakEnd?: true
+    reason?: true
+  }
+
+  export type DateExceptionCountAggregateInputType = {
+    id?: true
+    shopId?: true
+    date?: true
+    isOpen?: true
+    startTime?: true
+    endTime?: true
+    breakStart?: true
+    breakEnd?: true
+    reason?: true
+    _all?: true
+  }
+
+  export type DateExceptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DateException to aggregate.
+     */
+    where?: DateExceptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DateExceptions to fetch.
+     */
+    orderBy?: DateExceptionOrderByWithRelationInput | DateExceptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DateExceptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DateExceptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DateExceptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DateExceptions
+    **/
+    _count?: true | DateExceptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DateExceptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DateExceptionMaxAggregateInputType
+  }
+
+  export type GetDateExceptionAggregateType<T extends DateExceptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDateException]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDateException[P]>
+      : GetScalarType<T[P], AggregateDateException[P]>
+  }
+
+
+
+
+  export type DateExceptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DateExceptionWhereInput
+    orderBy?: DateExceptionOrderByWithAggregationInput | DateExceptionOrderByWithAggregationInput[]
+    by: DateExceptionScalarFieldEnum[] | DateExceptionScalarFieldEnum
+    having?: DateExceptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DateExceptionCountAggregateInputType | true
+    _min?: DateExceptionMinAggregateInputType
+    _max?: DateExceptionMaxAggregateInputType
+  }
+
+  export type DateExceptionGroupByOutputType = {
+    id: string
+    shopId: string
+    date: Date
+    isOpen: boolean
+    startTime: string | null
+    endTime: string | null
+    breakStart: string | null
+    breakEnd: string | null
+    reason: string | null
+    _count: DateExceptionCountAggregateOutputType | null
+    _min: DateExceptionMinAggregateOutputType | null
+    _max: DateExceptionMaxAggregateOutputType | null
+  }
+
+  type GetDateExceptionGroupByPayload<T extends DateExceptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DateExceptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DateExceptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DateExceptionGroupByOutputType[P]>
+            : GetScalarType<T[P], DateExceptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DateExceptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    shopId?: boolean
+    date?: boolean
+    isOpen?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
+    reason?: boolean
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dateException"]>
+
+  export type DateExceptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    shopId?: boolean
+    date?: boolean
+    isOpen?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
+    reason?: boolean
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dateException"]>
+
+  export type DateExceptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    shopId?: boolean
+    date?: boolean
+    isOpen?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
+    reason?: boolean
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dateException"]>
+
+  export type DateExceptionSelectScalar = {
+    id?: boolean
+    shopId?: boolean
+    date?: boolean
+    isOpen?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    breakStart?: boolean
+    breakEnd?: boolean
+    reason?: boolean
+  }
+
+  export type DateExceptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "date" | "isOpen" | "startTime" | "endTime" | "breakStart" | "breakEnd" | "reason", ExtArgs["result"]["dateException"]>
+  export type DateExceptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }
+  export type DateExceptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }
+  export type DateExceptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }
+
+  export type $DateExceptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DateException"
+    objects: {
+      shop: Prisma.$ShopPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      shopId: string
+      date: Date
+      isOpen: boolean
+      startTime: string | null
+      endTime: string | null
+      breakStart: string | null
+      breakEnd: string | null
+      reason: string | null
+    }, ExtArgs["result"]["dateException"]>
+    composites: {}
+  }
+
+  type DateExceptionGetPayload<S extends boolean | null | undefined | DateExceptionDefaultArgs> = $Result.GetResult<Prisma.$DateExceptionPayload, S>
+
+  type DateExceptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DateExceptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DateExceptionCountAggregateInputType | true
+    }
+
+  export interface DateExceptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DateException'], meta: { name: 'DateException' } }
+    /**
+     * Find zero or one DateException that matches the filter.
+     * @param {DateExceptionFindUniqueArgs} args - Arguments to find a DateException
+     * @example
+     * // Get one DateException
+     * const dateException = await prisma.dateException.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DateExceptionFindUniqueArgs>(args: SelectSubset<T, DateExceptionFindUniqueArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DateException that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DateExceptionFindUniqueOrThrowArgs} args - Arguments to find a DateException
+     * @example
+     * // Get one DateException
+     * const dateException = await prisma.dateException.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DateExceptionFindUniqueOrThrowArgs>(args: SelectSubset<T, DateExceptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DateException that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateExceptionFindFirstArgs} args - Arguments to find a DateException
+     * @example
+     * // Get one DateException
+     * const dateException = await prisma.dateException.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DateExceptionFindFirstArgs>(args?: SelectSubset<T, DateExceptionFindFirstArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DateException that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateExceptionFindFirstOrThrowArgs} args - Arguments to find a DateException
+     * @example
+     * // Get one DateException
+     * const dateException = await prisma.dateException.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DateExceptionFindFirstOrThrowArgs>(args?: SelectSubset<T, DateExceptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DateExceptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateExceptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DateExceptions
+     * const dateExceptions = await prisma.dateException.findMany()
+     * 
+     * // Get first 10 DateExceptions
+     * const dateExceptions = await prisma.dateException.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dateExceptionWithIdOnly = await prisma.dateException.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DateExceptionFindManyArgs>(args?: SelectSubset<T, DateExceptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DateException.
+     * @param {DateExceptionCreateArgs} args - Arguments to create a DateException.
+     * @example
+     * // Create one DateException
+     * const DateException = await prisma.dateException.create({
+     *   data: {
+     *     // ... data to create a DateException
+     *   }
+     * })
+     * 
+     */
+    create<T extends DateExceptionCreateArgs>(args: SelectSubset<T, DateExceptionCreateArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DateExceptions.
+     * @param {DateExceptionCreateManyArgs} args - Arguments to create many DateExceptions.
+     * @example
+     * // Create many DateExceptions
+     * const dateException = await prisma.dateException.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DateExceptionCreateManyArgs>(args?: SelectSubset<T, DateExceptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DateExceptions and returns the data saved in the database.
+     * @param {DateExceptionCreateManyAndReturnArgs} args - Arguments to create many DateExceptions.
+     * @example
+     * // Create many DateExceptions
+     * const dateException = await prisma.dateException.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DateExceptions and only return the `id`
+     * const dateExceptionWithIdOnly = await prisma.dateException.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DateExceptionCreateManyAndReturnArgs>(args?: SelectSubset<T, DateExceptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DateException.
+     * @param {DateExceptionDeleteArgs} args - Arguments to delete one DateException.
+     * @example
+     * // Delete one DateException
+     * const DateException = await prisma.dateException.delete({
+     *   where: {
+     *     // ... filter to delete one DateException
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DateExceptionDeleteArgs>(args: SelectSubset<T, DateExceptionDeleteArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DateException.
+     * @param {DateExceptionUpdateArgs} args - Arguments to update one DateException.
+     * @example
+     * // Update one DateException
+     * const dateException = await prisma.dateException.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DateExceptionUpdateArgs>(args: SelectSubset<T, DateExceptionUpdateArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DateExceptions.
+     * @param {DateExceptionDeleteManyArgs} args - Arguments to filter DateExceptions to delete.
+     * @example
+     * // Delete a few DateExceptions
+     * const { count } = await prisma.dateException.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DateExceptionDeleteManyArgs>(args?: SelectSubset<T, DateExceptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DateExceptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateExceptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DateExceptions
+     * const dateException = await prisma.dateException.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DateExceptionUpdateManyArgs>(args: SelectSubset<T, DateExceptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DateExceptions and returns the data updated in the database.
+     * @param {DateExceptionUpdateManyAndReturnArgs} args - Arguments to update many DateExceptions.
+     * @example
+     * // Update many DateExceptions
+     * const dateException = await prisma.dateException.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DateExceptions and only return the `id`
+     * const dateExceptionWithIdOnly = await prisma.dateException.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DateExceptionUpdateManyAndReturnArgs>(args: SelectSubset<T, DateExceptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DateException.
+     * @param {DateExceptionUpsertArgs} args - Arguments to update or create a DateException.
+     * @example
+     * // Update or create a DateException
+     * const dateException = await prisma.dateException.upsert({
+     *   create: {
+     *     // ... data to create a DateException
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DateException we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DateExceptionUpsertArgs>(args: SelectSubset<T, DateExceptionUpsertArgs<ExtArgs>>): Prisma__DateExceptionClient<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DateExceptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateExceptionCountArgs} args - Arguments to filter DateExceptions to count.
+     * @example
+     * // Count the number of DateExceptions
+     * const count = await prisma.dateException.count({
+     *   where: {
+     *     // ... the filter for the DateExceptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends DateExceptionCountArgs>(
+      args?: Subset<T, DateExceptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DateExceptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DateException.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateExceptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DateExceptionAggregateArgs>(args: Subset<T, DateExceptionAggregateArgs>): Prisma.PrismaPromise<GetDateExceptionAggregateType<T>>
+
+    /**
+     * Group by DateException.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DateExceptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DateExceptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DateExceptionGroupByArgs['orderBy'] }
+        : { orderBy?: DateExceptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DateExceptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDateExceptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DateException model
+   */
+  readonly fields: DateExceptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DateException.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DateExceptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    shop<T extends ShopDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShopDefaultArgs<ExtArgs>>): Prisma__ShopClient<$Result.GetResult<Prisma.$ShopPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DateException model
+   */
+  interface DateExceptionFieldRefs {
+    readonly id: FieldRef<"DateException", 'String'>
+    readonly shopId: FieldRef<"DateException", 'String'>
+    readonly date: FieldRef<"DateException", 'DateTime'>
+    readonly isOpen: FieldRef<"DateException", 'Boolean'>
+    readonly startTime: FieldRef<"DateException", 'String'>
+    readonly endTime: FieldRef<"DateException", 'String'>
+    readonly breakStart: FieldRef<"DateException", 'String'>
+    readonly breakEnd: FieldRef<"DateException", 'String'>
+    readonly reason: FieldRef<"DateException", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DateException findUnique
+   */
+  export type DateExceptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DateException to fetch.
+     */
+    where: DateExceptionWhereUniqueInput
+  }
+
+  /**
+   * DateException findUniqueOrThrow
+   */
+  export type DateExceptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DateException to fetch.
+     */
+    where: DateExceptionWhereUniqueInput
+  }
+
+  /**
+   * DateException findFirst
+   */
+  export type DateExceptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DateException to fetch.
+     */
+    where?: DateExceptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DateExceptions to fetch.
+     */
+    orderBy?: DateExceptionOrderByWithRelationInput | DateExceptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DateExceptions.
+     */
+    cursor?: DateExceptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DateExceptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DateExceptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DateExceptions.
+     */
+    distinct?: DateExceptionScalarFieldEnum | DateExceptionScalarFieldEnum[]
+  }
+
+  /**
+   * DateException findFirstOrThrow
+   */
+  export type DateExceptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DateException to fetch.
+     */
+    where?: DateExceptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DateExceptions to fetch.
+     */
+    orderBy?: DateExceptionOrderByWithRelationInput | DateExceptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DateExceptions.
+     */
+    cursor?: DateExceptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DateExceptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DateExceptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DateExceptions.
+     */
+    distinct?: DateExceptionScalarFieldEnum | DateExceptionScalarFieldEnum[]
+  }
+
+  /**
+   * DateException findMany
+   */
+  export type DateExceptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DateExceptions to fetch.
+     */
+    where?: DateExceptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DateExceptions to fetch.
+     */
+    orderBy?: DateExceptionOrderByWithRelationInput | DateExceptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DateExceptions.
+     */
+    cursor?: DateExceptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DateExceptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DateExceptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DateExceptions.
+     */
+    distinct?: DateExceptionScalarFieldEnum | DateExceptionScalarFieldEnum[]
+  }
+
+  /**
+   * DateException create
+   */
+  export type DateExceptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DateException.
+     */
+    data: XOR<DateExceptionCreateInput, DateExceptionUncheckedCreateInput>
+  }
+
+  /**
+   * DateException createMany
+   */
+  export type DateExceptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DateExceptions.
+     */
+    data: DateExceptionCreateManyInput | DateExceptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DateException createManyAndReturn
+   */
+  export type DateExceptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * The data used to create many DateExceptions.
+     */
+    data: DateExceptionCreateManyInput | DateExceptionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DateException update
+   */
+  export type DateExceptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DateException.
+     */
+    data: XOR<DateExceptionUpdateInput, DateExceptionUncheckedUpdateInput>
+    /**
+     * Choose, which DateException to update.
+     */
+    where: DateExceptionWhereUniqueInput
+  }
+
+  /**
+   * DateException updateMany
+   */
+  export type DateExceptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DateExceptions.
+     */
+    data: XOR<DateExceptionUpdateManyMutationInput, DateExceptionUncheckedUpdateManyInput>
+    /**
+     * Filter which DateExceptions to update
+     */
+    where?: DateExceptionWhereInput
+    /**
+     * Limit how many DateExceptions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DateException updateManyAndReturn
+   */
+  export type DateExceptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * The data used to update DateExceptions.
+     */
+    data: XOR<DateExceptionUpdateManyMutationInput, DateExceptionUncheckedUpdateManyInput>
+    /**
+     * Filter which DateExceptions to update
+     */
+    where?: DateExceptionWhereInput
+    /**
+     * Limit how many DateExceptions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DateException upsert
+   */
+  export type DateExceptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DateException to update in case it exists.
+     */
+    where: DateExceptionWhereUniqueInput
+    /**
+     * In case the DateException found by the `where` argument doesn't exist, create a new DateException with this data.
+     */
+    create: XOR<DateExceptionCreateInput, DateExceptionUncheckedCreateInput>
+    /**
+     * In case the DateException was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DateExceptionUpdateInput, DateExceptionUncheckedUpdateInput>
+  }
+
+  /**
+   * DateException delete
+   */
+  export type DateExceptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+    /**
+     * Filter which DateException to delete.
+     */
+    where: DateExceptionWhereUniqueInput
+  }
+
+  /**
+   * DateException deleteMany
+   */
+  export type DateExceptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DateExceptions to delete
+     */
+    where?: DateExceptionWhereInput
+    /**
+     * Limit how many DateExceptions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DateException without action
+   */
+  export type DateExceptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DateException
+     */
+    select?: DateExceptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DateException
+     */
+    omit?: DateExceptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DateExceptionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13244,6 +14513,8 @@ export namespace Prisma {
     dayOfWeek: 'dayOfWeek',
     startTime: 'startTime',
     endTime: 'endTime',
+    breakStart: 'breakStart',
+    breakEnd: 'breakEnd',
     isActive: 'isActive'
   };
 
@@ -13300,6 +14571,21 @@ export namespace Prisma {
   };
 
   export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+  export const DateExceptionScalarFieldEnum: {
+    id: 'id',
+    shopId: 'shopId',
+    date: 'date',
+    isOpen: 'isOpen',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    breakStart: 'breakStart',
+    breakEnd: 'breakEnd',
+    reason: 'reason'
+  };
+
+  export type DateExceptionScalarFieldEnum = (typeof DateExceptionScalarFieldEnum)[keyof typeof DateExceptionScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -13469,6 +14755,7 @@ export namespace Prisma {
     bookings?: BookingListRelationFilter
     blockedSlots?: BlockedSlotListRelationFilter
     config?: XOR<ShopConfigNullableScalarRelationFilter, ShopConfigWhereInput> | null
+    dateExceptions?: DateExceptionListRelationFilter
   }
 
   export type ShopOrderByWithRelationInput = {
@@ -13484,6 +14771,7 @@ export namespace Prisma {
     bookings?: BookingOrderByRelationAggregateInput
     blockedSlots?: BlockedSlotOrderByRelationAggregateInput
     config?: ShopConfigOrderByWithRelationInput
+    dateExceptions?: DateExceptionOrderByRelationAggregateInput
   }
 
   export type ShopWhereUniqueInput = Prisma.AtLeast<{
@@ -13502,6 +14790,7 @@ export namespace Prisma {
     bookings?: BookingListRelationFilter
     blockedSlots?: BlockedSlotListRelationFilter
     config?: XOR<ShopConfigNullableScalarRelationFilter, ShopConfigWhereInput> | null
+    dateExceptions?: DateExceptionListRelationFilter
   }, "id" | "slug">
 
   export type ShopOrderByWithAggregationInput = {
@@ -13793,6 +15082,8 @@ export namespace Prisma {
     dayOfWeek?: IntFilter<"Availability"> | number
     startTime?: StringFilter<"Availability"> | string
     endTime?: StringFilter<"Availability"> | string
+    breakStart?: StringNullableFilter<"Availability"> | string | null
+    breakEnd?: StringNullableFilter<"Availability"> | string | null
     isActive?: BoolFilter<"Availability"> | boolean
     shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
   }
@@ -13803,12 +15094,15 @@ export namespace Prisma {
     dayOfWeek?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    breakStart?: SortOrderInput | SortOrder
+    breakEnd?: SortOrderInput | SortOrder
     isActive?: SortOrder
     shop?: ShopOrderByWithRelationInput
   }
 
   export type AvailabilityWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    shopId_dayOfWeek?: AvailabilityShopIdDayOfWeekCompoundUniqueInput
     AND?: AvailabilityWhereInput | AvailabilityWhereInput[]
     OR?: AvailabilityWhereInput[]
     NOT?: AvailabilityWhereInput | AvailabilityWhereInput[]
@@ -13816,9 +15110,11 @@ export namespace Prisma {
     dayOfWeek?: IntFilter<"Availability"> | number
     startTime?: StringFilter<"Availability"> | string
     endTime?: StringFilter<"Availability"> | string
+    breakStart?: StringNullableFilter<"Availability"> | string | null
+    breakEnd?: StringNullableFilter<"Availability"> | string | null
     isActive?: BoolFilter<"Availability"> | boolean
     shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
-  }, "id">
+  }, "id" | "shopId_dayOfWeek">
 
   export type AvailabilityOrderByWithAggregationInput = {
     id?: SortOrder
@@ -13826,6 +15122,8 @@ export namespace Prisma {
     dayOfWeek?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    breakStart?: SortOrderInput | SortOrder
+    breakEnd?: SortOrderInput | SortOrder
     isActive?: SortOrder
     _count?: AvailabilityCountOrderByAggregateInput
     _avg?: AvailabilityAvgOrderByAggregateInput
@@ -13843,6 +15141,8 @@ export namespace Prisma {
     dayOfWeek?: IntWithAggregatesFilter<"Availability"> | number
     startTime?: StringWithAggregatesFilter<"Availability"> | string
     endTime?: StringWithAggregatesFilter<"Availability"> | string
+    breakStart?: StringNullableWithAggregatesFilter<"Availability"> | string | null
+    breakEnd?: StringNullableWithAggregatesFilter<"Availability"> | string | null
     isActive?: BoolWithAggregatesFilter<"Availability"> | boolean
   }
 
@@ -14117,6 +15417,82 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Booking"> | Date | string
   }
 
+  export type DateExceptionWhereInput = {
+    AND?: DateExceptionWhereInput | DateExceptionWhereInput[]
+    OR?: DateExceptionWhereInput[]
+    NOT?: DateExceptionWhereInput | DateExceptionWhereInput[]
+    id?: StringFilter<"DateException"> | string
+    shopId?: StringFilter<"DateException"> | string
+    date?: DateTimeFilter<"DateException"> | Date | string
+    isOpen?: BoolFilter<"DateException"> | boolean
+    startTime?: StringNullableFilter<"DateException"> | string | null
+    endTime?: StringNullableFilter<"DateException"> | string | null
+    breakStart?: StringNullableFilter<"DateException"> | string | null
+    breakEnd?: StringNullableFilter<"DateException"> | string | null
+    reason?: StringNullableFilter<"DateException"> | string | null
+    shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
+  }
+
+  export type DateExceptionOrderByWithRelationInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    isOpen?: SortOrder
+    startTime?: SortOrderInput | SortOrder
+    endTime?: SortOrderInput | SortOrder
+    breakStart?: SortOrderInput | SortOrder
+    breakEnd?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    shop?: ShopOrderByWithRelationInput
+  }
+
+  export type DateExceptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    shopId_date?: DateExceptionShopIdDateCompoundUniqueInput
+    AND?: DateExceptionWhereInput | DateExceptionWhereInput[]
+    OR?: DateExceptionWhereInput[]
+    NOT?: DateExceptionWhereInput | DateExceptionWhereInput[]
+    shopId?: StringFilter<"DateException"> | string
+    date?: DateTimeFilter<"DateException"> | Date | string
+    isOpen?: BoolFilter<"DateException"> | boolean
+    startTime?: StringNullableFilter<"DateException"> | string | null
+    endTime?: StringNullableFilter<"DateException"> | string | null
+    breakStart?: StringNullableFilter<"DateException"> | string | null
+    breakEnd?: StringNullableFilter<"DateException"> | string | null
+    reason?: StringNullableFilter<"DateException"> | string | null
+    shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
+  }, "id" | "shopId_date">
+
+  export type DateExceptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    isOpen?: SortOrder
+    startTime?: SortOrderInput | SortOrder
+    endTime?: SortOrderInput | SortOrder
+    breakStart?: SortOrderInput | SortOrder
+    breakEnd?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    _count?: DateExceptionCountOrderByAggregateInput
+    _max?: DateExceptionMaxOrderByAggregateInput
+    _min?: DateExceptionMinOrderByAggregateInput
+  }
+
+  export type DateExceptionScalarWhereWithAggregatesInput = {
+    AND?: DateExceptionScalarWhereWithAggregatesInput | DateExceptionScalarWhereWithAggregatesInput[]
+    OR?: DateExceptionScalarWhereWithAggregatesInput[]
+    NOT?: DateExceptionScalarWhereWithAggregatesInput | DateExceptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DateException"> | string
+    shopId?: StringWithAggregatesFilter<"DateException"> | string
+    date?: DateTimeWithAggregatesFilter<"DateException"> | Date | string
+    isOpen?: BoolWithAggregatesFilter<"DateException"> | boolean
+    startTime?: StringNullableWithAggregatesFilter<"DateException"> | string | null
+    endTime?: StringNullableWithAggregatesFilter<"DateException"> | string | null
+    breakStart?: StringNullableWithAggregatesFilter<"DateException"> | string | null
+    breakEnd?: StringNullableWithAggregatesFilter<"DateException"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"DateException"> | string | null
+  }
+
   export type ShopCreateInput = {
     id?: string
     name: string
@@ -14130,6 +15506,7 @@ export namespace Prisma {
     bookings?: BookingCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateInput = {
@@ -14145,6 +15522,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopUpdateInput = {
@@ -14160,6 +15538,7 @@ export namespace Prisma {
     bookings?: BookingUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateInput = {
@@ -14175,6 +15554,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopCreateManyInput = {
@@ -14472,6 +15852,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: string
     endTime: string
+    breakStart?: string | null
+    breakEnd?: string | null
     isActive?: boolean
     shop: ShopCreateNestedOneWithoutAvailabilityInput
   }
@@ -14482,6 +15864,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: string
     endTime: string
+    breakStart?: string | null
+    breakEnd?: string | null
     isActive?: boolean
   }
 
@@ -14490,6 +15874,8 @@ export namespace Prisma {
     dayOfWeek?: IntFieldUpdateOperationsInput | number
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     shop?: ShopUpdateOneRequiredWithoutAvailabilityNestedInput
   }
@@ -14500,6 +15886,8 @@ export namespace Prisma {
     dayOfWeek?: IntFieldUpdateOperationsInput | number
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -14509,6 +15897,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: string
     endTime: string
+    breakStart?: string | null
+    breakEnd?: string | null
     isActive?: boolean
   }
 
@@ -14517,6 +15907,8 @@ export namespace Prisma {
     dayOfWeek?: IntFieldUpdateOperationsInput | number
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -14526,6 +15918,8 @@ export namespace Prisma {
     dayOfWeek?: IntFieldUpdateOperationsInput | number
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -14812,6 +16206,89 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DateExceptionCreateInput = {
+    id?: string
+    date: Date | string
+    isOpen: boolean
+    startTime?: string | null
+    endTime?: string | null
+    breakStart?: string | null
+    breakEnd?: string | null
+    reason?: string | null
+    shop: ShopCreateNestedOneWithoutDateExceptionsInput
+  }
+
+  export type DateExceptionUncheckedCreateInput = {
+    id?: string
+    shopId: string
+    date: Date | string
+    isOpen: boolean
+    startTime?: string | null
+    endTime?: string | null
+    breakStart?: string | null
+    breakEnd?: string | null
+    reason?: string | null
+  }
+
+  export type DateExceptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    isOpen?: BoolFieldUpdateOperationsInput | boolean
+    startTime?: NullableStringFieldUpdateOperationsInput | string | null
+    endTime?: NullableStringFieldUpdateOperationsInput | string | null
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    shop?: ShopUpdateOneRequiredWithoutDateExceptionsNestedInput
+  }
+
+  export type DateExceptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    isOpen?: BoolFieldUpdateOperationsInput | boolean
+    startTime?: NullableStringFieldUpdateOperationsInput | string | null
+    endTime?: NullableStringFieldUpdateOperationsInput | string | null
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DateExceptionCreateManyInput = {
+    id?: string
+    shopId: string
+    date: Date | string
+    isOpen: boolean
+    startTime?: string | null
+    endTime?: string | null
+    breakStart?: string | null
+    breakEnd?: string | null
+    reason?: string | null
+  }
+
+  export type DateExceptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    isOpen?: BoolFieldUpdateOperationsInput | boolean
+    startTime?: NullableStringFieldUpdateOperationsInput | string | null
+    endTime?: NullableStringFieldUpdateOperationsInput | string | null
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DateExceptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    isOpen?: BoolFieldUpdateOperationsInput | boolean
+    startTime?: NullableStringFieldUpdateOperationsInput | string | null
+    endTime?: NullableStringFieldUpdateOperationsInput | string | null
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -14880,6 +16357,12 @@ export namespace Prisma {
     isNot?: ShopConfigWhereInput | null
   }
 
+  export type DateExceptionListRelationFilter = {
+    every?: DateExceptionWhereInput
+    some?: DateExceptionWhereInput
+    none?: DateExceptionWhereInput
+  }
+
   export type ShopUserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -14897,6 +16380,10 @@ export namespace Prisma {
   }
 
   export type BlockedSlotOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DateExceptionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -15252,12 +16739,19 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type AvailabilityShopIdDayOfWeekCompoundUniqueInput = {
+    shopId: string
+    dayOfWeek: number
+  }
+
   export type AvailabilityCountOrderByAggregateInput = {
     id?: SortOrder
     shopId?: SortOrder
     dayOfWeek?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    breakStart?: SortOrder
+    breakEnd?: SortOrder
     isActive?: SortOrder
   }
 
@@ -15271,6 +16765,8 @@ export namespace Prisma {
     dayOfWeek?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    breakStart?: SortOrder
+    breakEnd?: SortOrder
     isActive?: SortOrder
   }
 
@@ -15280,6 +16776,8 @@ export namespace Prisma {
     dayOfWeek?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    breakStart?: SortOrder
+    breakEnd?: SortOrder
     isActive?: SortOrder
   }
 
@@ -15472,6 +16970,47 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type DateExceptionShopIdDateCompoundUniqueInput = {
+    shopId: string
+    date: Date | string
+  }
+
+  export type DateExceptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    isOpen?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    breakStart?: SortOrder
+    breakEnd?: SortOrder
+    reason?: SortOrder
+  }
+
+  export type DateExceptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    isOpen?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    breakStart?: SortOrder
+    breakEnd?: SortOrder
+    reason?: SortOrder
+  }
+
+  export type DateExceptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    isOpen?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    breakStart?: SortOrder
+    breakEnd?: SortOrder
+    reason?: SortOrder
+  }
+
   export type ShopUserCreateNestedManyWithoutShopInput = {
     create?: XOR<ShopUserCreateWithoutShopInput, ShopUserUncheckedCreateWithoutShopInput> | ShopUserCreateWithoutShopInput[] | ShopUserUncheckedCreateWithoutShopInput[]
     connectOrCreate?: ShopUserCreateOrConnectWithoutShopInput | ShopUserCreateOrConnectWithoutShopInput[]
@@ -15513,6 +17052,13 @@ export namespace Prisma {
     connect?: ShopConfigWhereUniqueInput
   }
 
+  export type DateExceptionCreateNestedManyWithoutShopInput = {
+    create?: XOR<DateExceptionCreateWithoutShopInput, DateExceptionUncheckedCreateWithoutShopInput> | DateExceptionCreateWithoutShopInput[] | DateExceptionUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: DateExceptionCreateOrConnectWithoutShopInput | DateExceptionCreateOrConnectWithoutShopInput[]
+    createMany?: DateExceptionCreateManyShopInputEnvelope
+    connect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+  }
+
   export type ShopUserUncheckedCreateNestedManyWithoutShopInput = {
     create?: XOR<ShopUserCreateWithoutShopInput, ShopUserUncheckedCreateWithoutShopInput> | ShopUserCreateWithoutShopInput[] | ShopUserUncheckedCreateWithoutShopInput[]
     connectOrCreate?: ShopUserCreateOrConnectWithoutShopInput | ShopUserCreateOrConnectWithoutShopInput[]
@@ -15552,6 +17098,13 @@ export namespace Prisma {
     create?: XOR<ShopConfigCreateWithoutShopInput, ShopConfigUncheckedCreateWithoutShopInput>
     connectOrCreate?: ShopConfigCreateOrConnectWithoutShopInput
     connect?: ShopConfigWhereUniqueInput
+  }
+
+  export type DateExceptionUncheckedCreateNestedManyWithoutShopInput = {
+    create?: XOR<DateExceptionCreateWithoutShopInput, DateExceptionUncheckedCreateWithoutShopInput> | DateExceptionCreateWithoutShopInput[] | DateExceptionUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: DateExceptionCreateOrConnectWithoutShopInput | DateExceptionCreateOrConnectWithoutShopInput[]
+    createMany?: DateExceptionCreateManyShopInputEnvelope
+    connect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -15646,6 +17199,20 @@ export namespace Prisma {
     update?: XOR<XOR<ShopConfigUpdateToOneWithWhereWithoutShopInput, ShopConfigUpdateWithoutShopInput>, ShopConfigUncheckedUpdateWithoutShopInput>
   }
 
+  export type DateExceptionUpdateManyWithoutShopNestedInput = {
+    create?: XOR<DateExceptionCreateWithoutShopInput, DateExceptionUncheckedCreateWithoutShopInput> | DateExceptionCreateWithoutShopInput[] | DateExceptionUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: DateExceptionCreateOrConnectWithoutShopInput | DateExceptionCreateOrConnectWithoutShopInput[]
+    upsert?: DateExceptionUpsertWithWhereUniqueWithoutShopInput | DateExceptionUpsertWithWhereUniqueWithoutShopInput[]
+    createMany?: DateExceptionCreateManyShopInputEnvelope
+    set?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    disconnect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    delete?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    connect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    update?: DateExceptionUpdateWithWhereUniqueWithoutShopInput | DateExceptionUpdateWithWhereUniqueWithoutShopInput[]
+    updateMany?: DateExceptionUpdateManyWithWhereWithoutShopInput | DateExceptionUpdateManyWithWhereWithoutShopInput[]
+    deleteMany?: DateExceptionScalarWhereInput | DateExceptionScalarWhereInput[]
+  }
+
   export type ShopUserUncheckedUpdateManyWithoutShopNestedInput = {
     create?: XOR<ShopUserCreateWithoutShopInput, ShopUserUncheckedCreateWithoutShopInput> | ShopUserCreateWithoutShopInput[] | ShopUserUncheckedCreateWithoutShopInput[]
     connectOrCreate?: ShopUserCreateOrConnectWithoutShopInput | ShopUserCreateOrConnectWithoutShopInput[]
@@ -15724,6 +17291,20 @@ export namespace Prisma {
     delete?: ShopConfigWhereInput | boolean
     connect?: ShopConfigWhereUniqueInput
     update?: XOR<XOR<ShopConfigUpdateToOneWithWhereWithoutShopInput, ShopConfigUpdateWithoutShopInput>, ShopConfigUncheckedUpdateWithoutShopInput>
+  }
+
+  export type DateExceptionUncheckedUpdateManyWithoutShopNestedInput = {
+    create?: XOR<DateExceptionCreateWithoutShopInput, DateExceptionUncheckedCreateWithoutShopInput> | DateExceptionCreateWithoutShopInput[] | DateExceptionUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: DateExceptionCreateOrConnectWithoutShopInput | DateExceptionCreateOrConnectWithoutShopInput[]
+    upsert?: DateExceptionUpsertWithWhereUniqueWithoutShopInput | DateExceptionUpsertWithWhereUniqueWithoutShopInput[]
+    createMany?: DateExceptionCreateManyShopInputEnvelope
+    set?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    disconnect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    delete?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    connect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+    update?: DateExceptionUpdateWithWhereUniqueWithoutShopInput | DateExceptionUpdateWithWhereUniqueWithoutShopInput[]
+    updateMany?: DateExceptionUpdateManyWithWhereWithoutShopInput | DateExceptionUpdateManyWithWhereWithoutShopInput[]
+    deleteMany?: DateExceptionScalarWhereInput | DateExceptionScalarWhereInput[]
   }
 
   export type ShopCreateNestedOneWithoutConfigInput = {
@@ -16076,6 +17657,20 @@ export namespace Prisma {
     update?: XOR<XOR<RecurrenceGroupUpdateToOneWithWhereWithoutBookingsInput, RecurrenceGroupUpdateWithoutBookingsInput>, RecurrenceGroupUncheckedUpdateWithoutBookingsInput>
   }
 
+  export type ShopCreateNestedOneWithoutDateExceptionsInput = {
+    create?: XOR<ShopCreateWithoutDateExceptionsInput, ShopUncheckedCreateWithoutDateExceptionsInput>
+    connectOrCreate?: ShopCreateOrConnectWithoutDateExceptionsInput
+    connect?: ShopWhereUniqueInput
+  }
+
+  export type ShopUpdateOneRequiredWithoutDateExceptionsNestedInput = {
+    create?: XOR<ShopCreateWithoutDateExceptionsInput, ShopUncheckedCreateWithoutDateExceptionsInput>
+    connectOrCreate?: ShopCreateOrConnectWithoutDateExceptionsInput
+    upsert?: ShopUpsertWithoutDateExceptionsInput
+    connect?: ShopWhereUniqueInput
+    update?: XOR<XOR<ShopUpdateToOneWithWhereWithoutDateExceptionsInput, ShopUpdateWithoutDateExceptionsInput>, ShopUncheckedUpdateWithoutDateExceptionsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16400,6 +17995,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: string
     endTime: string
+    breakStart?: string | null
+    breakEnd?: string | null
     isActive?: boolean
   }
 
@@ -16408,6 +18005,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: string
     endTime: string
+    breakStart?: string | null
+    breakEnd?: string | null
     isActive?: boolean
   }
 
@@ -16516,6 +18115,38 @@ export namespace Prisma {
     create: XOR<ShopConfigCreateWithoutShopInput, ShopConfigUncheckedCreateWithoutShopInput>
   }
 
+  export type DateExceptionCreateWithoutShopInput = {
+    id?: string
+    date: Date | string
+    isOpen: boolean
+    startTime?: string | null
+    endTime?: string | null
+    breakStart?: string | null
+    breakEnd?: string | null
+    reason?: string | null
+  }
+
+  export type DateExceptionUncheckedCreateWithoutShopInput = {
+    id?: string
+    date: Date | string
+    isOpen: boolean
+    startTime?: string | null
+    endTime?: string | null
+    breakStart?: string | null
+    breakEnd?: string | null
+    reason?: string | null
+  }
+
+  export type DateExceptionCreateOrConnectWithoutShopInput = {
+    where: DateExceptionWhereUniqueInput
+    create: XOR<DateExceptionCreateWithoutShopInput, DateExceptionUncheckedCreateWithoutShopInput>
+  }
+
+  export type DateExceptionCreateManyShopInputEnvelope = {
+    data: DateExceptionCreateManyShopInput | DateExceptionCreateManyShopInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ShopUserUpsertWithWhereUniqueWithoutShopInput = {
     where: ShopUserWhereUniqueInput
     update: XOR<ShopUserUpdateWithoutShopInput, ShopUserUncheckedUpdateWithoutShopInput>
@@ -16595,6 +18226,8 @@ export namespace Prisma {
     dayOfWeek?: IntFilter<"Availability"> | number
     startTime?: StringFilter<"Availability"> | string
     endTime?: StringFilter<"Availability"> | string
+    breakStart?: StringNullableFilter<"Availability"> | string | null
+    breakEnd?: StringNullableFilter<"Availability"> | string | null
     isActive?: BoolFilter<"Availability"> | boolean
   }
 
@@ -16695,6 +18328,37 @@ export namespace Prisma {
     slotInterval?: IntFieldUpdateOperationsInput | number
   }
 
+  export type DateExceptionUpsertWithWhereUniqueWithoutShopInput = {
+    where: DateExceptionWhereUniqueInput
+    update: XOR<DateExceptionUpdateWithoutShopInput, DateExceptionUncheckedUpdateWithoutShopInput>
+    create: XOR<DateExceptionCreateWithoutShopInput, DateExceptionUncheckedCreateWithoutShopInput>
+  }
+
+  export type DateExceptionUpdateWithWhereUniqueWithoutShopInput = {
+    where: DateExceptionWhereUniqueInput
+    data: XOR<DateExceptionUpdateWithoutShopInput, DateExceptionUncheckedUpdateWithoutShopInput>
+  }
+
+  export type DateExceptionUpdateManyWithWhereWithoutShopInput = {
+    where: DateExceptionScalarWhereInput
+    data: XOR<DateExceptionUpdateManyMutationInput, DateExceptionUncheckedUpdateManyWithoutShopInput>
+  }
+
+  export type DateExceptionScalarWhereInput = {
+    AND?: DateExceptionScalarWhereInput | DateExceptionScalarWhereInput[]
+    OR?: DateExceptionScalarWhereInput[]
+    NOT?: DateExceptionScalarWhereInput | DateExceptionScalarWhereInput[]
+    id?: StringFilter<"DateException"> | string
+    shopId?: StringFilter<"DateException"> | string
+    date?: DateTimeFilter<"DateException"> | Date | string
+    isOpen?: BoolFilter<"DateException"> | boolean
+    startTime?: StringNullableFilter<"DateException"> | string | null
+    endTime?: StringNullableFilter<"DateException"> | string | null
+    breakStart?: StringNullableFilter<"DateException"> | string | null
+    breakEnd?: StringNullableFilter<"DateException"> | string | null
+    reason?: StringNullableFilter<"DateException"> | string | null
+  }
+
   export type ShopCreateWithoutConfigInput = {
     id?: string
     name: string
@@ -16707,6 +18371,7 @@ export namespace Prisma {
     availability?: AvailabilityCreateNestedManyWithoutShopInput
     bookings?: BookingCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutConfigInput = {
@@ -16721,6 +18386,7 @@ export namespace Prisma {
     availability?: AvailabilityUncheckedCreateNestedManyWithoutShopInput
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutConfigInput = {
@@ -16751,6 +18417,7 @@ export namespace Prisma {
     availability?: AvailabilityUpdateManyWithoutShopNestedInput
     bookings?: BookingUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutConfigInput = {
@@ -16765,6 +18432,7 @@ export namespace Prisma {
     availability?: AvailabilityUncheckedUpdateManyWithoutShopNestedInput
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUserCreateWithoutUserInput = {
@@ -16840,6 +18508,7 @@ export namespace Prisma {
     bookings?: BookingCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutUsersInput = {
@@ -16854,6 +18523,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutUsersInput = {
@@ -16913,6 +18583,7 @@ export namespace Prisma {
     bookings?: BookingUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutUsersInput = {
@@ -16927,6 +18598,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopCreateWithoutServicesInput = {
@@ -16941,6 +18613,7 @@ export namespace Prisma {
     bookings?: BookingCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutServicesInput = {
@@ -16955,6 +18628,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutServicesInput = {
@@ -17029,6 +18703,7 @@ export namespace Prisma {
     bookings?: BookingUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutServicesInput = {
@@ -17043,6 +18718,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type BookingUpsertWithWhereUniqueWithoutServiceInput = {
@@ -17073,6 +18749,7 @@ export namespace Prisma {
     bookings?: BookingCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutAvailabilityInput = {
@@ -17087,6 +18764,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutAvailabilityInput = {
@@ -17117,6 +18795,7 @@ export namespace Prisma {
     bookings?: BookingUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutAvailabilityInput = {
@@ -17131,6 +18810,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopCreateWithoutBlockedSlotsInput = {
@@ -17145,6 +18825,7 @@ export namespace Prisma {
     availability?: AvailabilityCreateNestedManyWithoutShopInput
     bookings?: BookingCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutBlockedSlotsInput = {
@@ -17159,6 +18840,7 @@ export namespace Prisma {
     availability?: AvailabilityUncheckedCreateNestedManyWithoutShopInput
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutBlockedSlotsInput = {
@@ -17189,6 +18871,7 @@ export namespace Prisma {
     availability?: AvailabilityUpdateManyWithoutShopNestedInput
     bookings?: BookingUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutBlockedSlotsInput = {
@@ -17203,6 +18886,7 @@ export namespace Prisma {
     availability?: AvailabilityUncheckedUpdateManyWithoutShopNestedInput
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type BookingCreateWithoutCustomerInput = {
@@ -17337,6 +19021,7 @@ export namespace Prisma {
     availability?: AvailabilityCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutBookingsInput = {
@@ -17351,6 +19036,7 @@ export namespace Prisma {
     availability?: AvailabilityUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutBookingsInput = {
@@ -17442,6 +19128,7 @@ export namespace Prisma {
     availability?: AvailabilityUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutBookingsInput = {
@@ -17456,6 +19143,7 @@ export namespace Prisma {
     availability?: AvailabilityUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type CustomerUpsertWithoutBookingsInput = {
@@ -17537,6 +19225,82 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ShopCreateWithoutDateExceptionsInput = {
+    id?: string
+    name: string
+    slug: string
+    plan?: $Enums.ShopPlan
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: ShopUserCreateNestedManyWithoutShopInput
+    services?: ServiceCreateNestedManyWithoutShopInput
+    availability?: AvailabilityCreateNestedManyWithoutShopInput
+    bookings?: BookingCreateNestedManyWithoutShopInput
+    blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
+    config?: ShopConfigCreateNestedOneWithoutShopInput
+  }
+
+  export type ShopUncheckedCreateWithoutDateExceptionsInput = {
+    id?: string
+    name: string
+    slug: string
+    plan?: $Enums.ShopPlan
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
+    services?: ServiceUncheckedCreateNestedManyWithoutShopInput
+    availability?: AvailabilityUncheckedCreateNestedManyWithoutShopInput
+    bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
+    blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
+    config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+  }
+
+  export type ShopCreateOrConnectWithoutDateExceptionsInput = {
+    where: ShopWhereUniqueInput
+    create: XOR<ShopCreateWithoutDateExceptionsInput, ShopUncheckedCreateWithoutDateExceptionsInput>
+  }
+
+  export type ShopUpsertWithoutDateExceptionsInput = {
+    update: XOR<ShopUpdateWithoutDateExceptionsInput, ShopUncheckedUpdateWithoutDateExceptionsInput>
+    create: XOR<ShopCreateWithoutDateExceptionsInput, ShopUncheckedCreateWithoutDateExceptionsInput>
+    where?: ShopWhereInput
+  }
+
+  export type ShopUpdateToOneWithWhereWithoutDateExceptionsInput = {
+    where?: ShopWhereInput
+    data: XOR<ShopUpdateWithoutDateExceptionsInput, ShopUncheckedUpdateWithoutDateExceptionsInput>
+  }
+
+  export type ShopUpdateWithoutDateExceptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: ShopUserUpdateManyWithoutShopNestedInput
+    services?: ServiceUpdateManyWithoutShopNestedInput
+    availability?: AvailabilityUpdateManyWithoutShopNestedInput
+    bookings?: BookingUpdateManyWithoutShopNestedInput
+    blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
+    config?: ShopConfigUpdateOneWithoutShopNestedInput
+  }
+
+  export type ShopUncheckedUpdateWithoutDateExceptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutShopNestedInput
+    availability?: AvailabilityUncheckedUpdateManyWithoutShopNestedInput
+    bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
+    blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
+    config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+  }
+
   export type ShopUserCreateManyShopInput = {
     id?: string
     role?: $Enums.ShopRole
@@ -17556,6 +19320,8 @@ export namespace Prisma {
     dayOfWeek: number
     startTime: string
     endTime: string
+    breakStart?: string | null
+    breakEnd?: string | null
     isActive?: boolean
   }
 
@@ -17580,6 +19346,17 @@ export namespace Prisma {
     id?: string
     startAt: Date | string
     endAt: Date | string
+    reason?: string | null
+  }
+
+  export type DateExceptionCreateManyShopInput = {
+    id?: string
+    date: Date | string
+    isOpen: boolean
+    startTime?: string | null
+    endTime?: string | null
+    breakStart?: string | null
+    breakEnd?: string | null
     reason?: string | null
   }
 
@@ -17632,6 +19409,8 @@ export namespace Prisma {
     dayOfWeek?: IntFieldUpdateOperationsInput | number
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -17640,6 +19419,8 @@ export namespace Prisma {
     dayOfWeek?: IntFieldUpdateOperationsInput | number
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -17648,6 +19429,8 @@ export namespace Prisma {
     dayOfWeek?: IntFieldUpdateOperationsInput | number
     startTime?: StringFieldUpdateOperationsInput | string
     endTime?: StringFieldUpdateOperationsInput | string
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -17720,6 +19503,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     startAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DateExceptionUpdateWithoutShopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    isOpen?: BoolFieldUpdateOperationsInput | boolean
+    startTime?: NullableStringFieldUpdateOperationsInput | string | null
+    endTime?: NullableStringFieldUpdateOperationsInput | string | null
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DateExceptionUncheckedUpdateWithoutShopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    isOpen?: BoolFieldUpdateOperationsInput | boolean
+    startTime?: NullableStringFieldUpdateOperationsInput | string | null
+    endTime?: NullableStringFieldUpdateOperationsInput | string | null
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DateExceptionUncheckedUpdateManyWithoutShopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    isOpen?: BoolFieldUpdateOperationsInput | boolean
+    startTime?: NullableStringFieldUpdateOperationsInput | string | null
+    endTime?: NullableStringFieldUpdateOperationsInput | string | null
+    breakStart?: NullableStringFieldUpdateOperationsInput | string | null
+    breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     reason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 

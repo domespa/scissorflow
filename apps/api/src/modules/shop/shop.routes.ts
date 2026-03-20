@@ -8,17 +8,12 @@ const router = Router();
 // =========================================
 //              ROTTE PUBBLICHE
 // =========================================
-
-// GET /api/shops/:slug // PAGINA PUBBLICA DEL BARBIERE
 router.get("/:slug", shopController.getPublicShop);
-
 // =========================================
 
 // =========================================
-//              ROTTE POTRETTE
+//              PROTTETE
 // =========================================
-
-// CONFIG
 router.get(
   "/:shopId/config",
   authMiddleware,
@@ -32,9 +27,11 @@ router.put(
   requireRole("OWNER"),
   shopController.updateConfig,
 );
+// =========================================
 
-// SERVIZI
-// COLLARATORE SOLO LETTURA
+// =========================================
+//              SERVIZI
+// =========================================
 router.get(
   "/:shopId/services",
   authMiddleware,
@@ -42,7 +39,6 @@ router.get(
   shopController.getServices,
 );
 
-// OWNER TUTTO
 router.post(
   "/:shopId/services",
   authMiddleware,
@@ -63,9 +59,11 @@ router.delete(
   requireRole("OWNER"),
   shopController.deleteService,
 );
+// =========================================
 
-// DISPONIBILITA'
-// COLLABORATOR SOLO LETTURA
+// =========================================
+//              DISPONIBILITÀ
+// =========================================
 router.get(
   "/:shopId/availability",
   authMiddleware,
@@ -73,16 +71,17 @@ router.get(
   shopController.getAvailability,
 );
 
-// OWNER TUTTO
 router.post(
   "/:shopId/availability",
   authMiddleware,
   requireRole("OWNER"),
   shopController.setAvailability,
 );
+// =========================================
 
-// SLOT BLOCCATI
-// COLLABORATORE SOLO LETTURA
+// =========================================
+//              SLOT BLOCCATI
+// =========================================
 router.get(
   "/:shopId/blocked-slots",
   authMiddleware,
@@ -90,7 +89,6 @@ router.get(
   shopController.getBlockedSlots,
 );
 
-// OWNER TUTTO
 router.post(
   "/:shopId/blocked-slots",
   authMiddleware,
@@ -104,5 +102,31 @@ router.delete(
   requireRole("OWNER"),
   shopController.deleteBlockedSlot,
 );
+// =========================================
+
+// =========================================
+//              ECCEZIONI DATE
+// =========================================
+router.get(
+  "/:shopId/date-exceptions",
+  authMiddleware,
+  requireRole("COLLABORATOR"),
+  shopController.getDateExceptions,
+);
+
+router.post(
+  "/:shopId/date-exceptions",
+  authMiddleware,
+  requireRole("OWNER"),
+  shopController.upsertDateException,
+);
+
+router.delete(
+  "/:shopId/date-exceptions/:date",
+  authMiddleware,
+  requireRole("OWNER"),
+  shopController.deleteDateException,
+);
+// =========================================
 
 export default router;

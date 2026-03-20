@@ -1,13 +1,18 @@
 import { api } from "./api";
 import type { LockSlotDTO, ConfirmBookingOTP } from "@scissorflow/shared";
 
+type SlotWithStatus = {
+  time: string;
+  status: "free" | "pending" | "confirmed";
+};
+
 export const bookingService = {
   // SLOTS MENSILI
   async getMonthSlots(
     shopId: string,
     serviceId: string,
     month: string,
-  ): Promise<Record<string, string[]>> {
+  ): Promise<Record<string, SlotWithStatus[]>> {
     const response = await api.get("/bookings/slots", {
       params: { shopId, serviceId, month },
     });

@@ -234,4 +234,38 @@ export const shopController = {
       res.status(500).json({ message: "Errore interno" });
     }
   },
+  // =========================================
+  //                  DATA
+  // =========================================
+  async getDateExceptions(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const data = await shopService.getDateExceptions(shopId);
+      res.status(200).json(data);
+    } catch {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+
+  async upsertDateException(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const data = await shopService.upsertDateException(shopId, req.body);
+      res.status(200).json(data);
+    } catch {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+
+  async deleteDateException(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const date = getParams(req.params.date);
+      await shopService.deleteDateException(shopId, date);
+      res.status(204).send();
+    } catch {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+  // =========================================
 };

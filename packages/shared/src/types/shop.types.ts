@@ -64,6 +64,8 @@ export interface AvailabilityDTO {
   dayOfWeek: number; // 0=DOMENICA
   startTime: string;
   endTime: string;
+  breakStart?: string | null;
+  breakEnd?: string | null;
   isActive: boolean;
 }
 

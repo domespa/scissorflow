@@ -18,12 +18,13 @@ model Shop {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users        ShopUser[]
-  services     Service[]
-  availability Availability[]
-  bookings     Booking[]
-  blockedSlots BlockedSlot[]
-  config       ShopConfig?
+  users          ShopUser[]
+  services       Service[]
+  availability   Availability[]
+  bookings       Booking[]
+  blockedSlots   BlockedSlot[]
+  config         ShopConfig?
+  dateExceptions DateException[]
 }
 
 enum ShopPlan {
@@ -108,14 +109,18 @@ model Service {
 //            AVAILABILITY
 // =========================================
 model Availability {
-  id        String  @id @default(cuid())
-  shopId    String
-  dayOfWeek Int
-  startTime String
-  endTime   String
-  isActive  Boolean @default(true)
+  id         String  @id @default(cuid())
+  shopId     String
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
+  breakStart String?
+  breakEnd   String?
+  isActive   Boolean @default(true)
 
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, dayOfWeek])
 }
 
 // =========================================
@@ -191,4 +196,23 @@ enum BookingStatus {
   CANCELLED
   NO_SHOW
   EXPIRED
+}
+
+// =========================================
+//            APERTURA E CHIUSURA
+// =========================================
+model DateException {
+  id         String   @id @default(cuid())
+  shopId     String
+  date       DateTime
+  isOpen     Boolean
+  startTime  String?
+  endTime    String?
+  breakStart String?
+  breakEnd   String?
+  reason     String?
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, date])
 }

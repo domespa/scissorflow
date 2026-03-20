@@ -107,11 +107,23 @@ export const shopRepository = {
 
   async upsertAvailability(shopId: string, input: AvailabilityInput) {
     return prisma.availability.upsert({
-      where: {
-        id: `${shopId}-${input.dayOfWeek}`,
+      where: { shopId_dayOfWeek: { shopId, dayOfWeek: input.dayOfWeek } },
+      create: {
+        shopId,
+        dayOfWeek: input.dayOfWeek,
+        startTime: input.startTime,
+        endTime: input.endTime,
+        breakStart: input.breakStart ?? null,
+        breakEnd: input.breakEnd ?? null,
+        isActive: input.isActive,
       },
-      update: input,
-      create: { shopId, ...input },
+      update: {
+        startTime: input.startTime,
+        endTime: input.endTime,
+        breakStart: input.breakStart ?? null,
+        breakEnd: input.breakEnd ?? null,
+        isActive: input.isActive,
+      },
     });
   },
   // =========================================
@@ -143,6 +155,42 @@ export const shopRepository = {
   async deleteBlockedSlot(slotId: string) {
     return prisma.blockedSlot.delete({
       where: { id: slotId },
+    });
+  },
+  // =========================================
+
+  // =========================================
+  //                DATE
+  // =========================================
+  async findDateExceptions(shopId: string) {
+    return prisma.dateException.findMany({
+      where: { shopId },
+      orderBy: { date: "asc" },
+    });
+  },
+
+  async upsertDateException(
+    shopId: string,
+    data: {
+      date: Date;
+      isOpen: boolean;
+      startTime?: string;
+      endTime?: string;
+      breakStart?: string;
+      breakEnd?: string;
+      reason?: string;
+    },
+  ) {
+    return prisma.dateException.upsert({
+      where: { shopId_date: { shopId, date: data.date } },
+      create: { shopId, ...data },
+      update: { ...data },
+    });
+  },
+
+  async deleteDateException(shopId: string, date: Date) {
+    return prisma.dateException.deleteMany({
+      where: { shopId, date },
     });
   },
   // =========================================

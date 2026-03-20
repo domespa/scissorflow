@@ -172,6 +172,8 @@ exports.Prisma.AvailabilityScalarFieldEnum = {
   dayOfWeek: 'dayOfWeek',
   startTime: 'startTime',
   endTime: 'endTime',
+  breakStart: 'breakStart',
+  breakEnd: 'breakEnd',
   isActive: 'isActive'
 };
 
@@ -213,6 +215,18 @@ exports.Prisma.BookingScalarFieldEnum = {
   recurrenceGroupId: 'recurrenceGroupId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DateExceptionScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  date: 'date',
+  isOpen: 'isOpen',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  breakStart: 'breakStart',
+  breakEnd: 'breakEnd',
+  reason: 'reason'
 };
 
 exports.Prisma.SortOrder = {
@@ -265,7 +279,8 @@ exports.Prisma.ModelName = {
   BlockedSlot: 'BlockedSlot',
   Customer: 'Customer',
   RecurrenceGroup: 'RecurrenceGroup',
-  Booking: 'Booking'
+  Booking: 'Booking',
+  DateException: 'DateException'
 };
 
 /**

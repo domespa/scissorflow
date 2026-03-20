@@ -206,4 +206,32 @@ export const bookingRepository = {
       data: { reminderSentAt: new Date() },
     });
   },
+
+  // TROVA PRENOTAZIONE APPENA CREATA
+  async findPendingByCustomerAndShop(customerId: string, shopId: string) {
+    return prisma.booking.findFirst({
+      where: {
+        customerId,
+        shopId,
+        status: "PENDING",
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+  // TROVA DATE DEL MESE
+  async findDateExceptionsByMonth(shopId: string, year: number, month: number) {
+    const startOfMonth = new Date(year, month - 1, 1, 0, 0, 0, 0);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
+    return prisma.dateException.findMany({
+      where: {
+        shopId,
+        date: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+    });
+  },
 };
