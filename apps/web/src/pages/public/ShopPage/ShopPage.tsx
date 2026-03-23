@@ -90,7 +90,7 @@ export const ShopPage = () => {
     }
   };
 
-  // CARICA SLOTS — due mesi per coprire cambio mese
+  // CARICA SLOTS
   const loadSlots = async (shopId: string, serviceId: string) => {
     try {
       setLoadingSlots(true);
@@ -398,7 +398,7 @@ export const ShopPage = () => {
                       <div className="h-8 bg-gray-100 rounded animate-pulse" />
                     ) : daySlots.length === 0 ? (
                       <div className="text-center py-2">
-                        <span className="text-xs text-gray-300">—</span>
+                        <span className="text-xs text-gray-300">-</span>
                       </div>
                     ) : (
                       daySlots.map((slot) => (

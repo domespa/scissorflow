@@ -552,7 +552,7 @@ export const SettingsPage = () => {
               Orari settimanali
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Imposta gli orari base — verranno applicati a tutti i giorni
+              Imposta gli orari base - verranno applicati a tutti i giorni
               aperti
             </p>
           </div>
@@ -631,7 +631,7 @@ export const SettingsPage = () => {
           {/* RIEPILOGO GIORNI */}
           <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">
-              Giorni aperti — clicca sul nome per aprire/chiudere, clicca
+              Giorni aperti - clicca sul nome per aprire/chiudere, clicca
               sull'orario per modificarlo
             </p>
             <div className="grid grid-cols-7 gap-2">
@@ -820,7 +820,7 @@ export const SettingsPage = () => {
                   <div className="flex-1 flex flex-col justify-end">
                     <div className="bg-green-50 dark:bg-green-900/20 rounded px-1.5 py-1">
                       <p className="text-xs text-green-700 dark:text-green-400 font-medium leading-tight">
-                        {startTime} — {endTime}
+                        {startTime} - {endTime}
                       </p>
                       {breakStart && (
                         <p className="text-xs text-orange-500 dark:text-orange-400 leading-tight">
@@ -1014,7 +1014,7 @@ export const SettingsPage = () => {
       <Modal
         isOpen={editingDate !== null}
         onClose={() => setEditingDate(null)}
-        title={`Orario — ${editingDate}`}
+        title={`Orario - ${editingDate}`}
       >
         <div className="flex flex-col gap-4">
           <TimeRangeForm form={editForm} onChange={setEditForm} />
@@ -1041,7 +1041,7 @@ export const SettingsPage = () => {
       <Modal
         isOpen={editingWeekDay !== null}
         onClose={() => setEditingWeekDay(null)}
-        title={`Orario — tutti i ${DAYS_SHORT[editingWeekDay ?? 0]}`}
+        title={`Orario - tutti i ${DAYS_SHORT[editingWeekDay ?? 0]}`}
       >
         <div className="flex flex-col gap-4">
           <TimeRangeForm form={editWeekForm} onChange={setEditWeekForm} />

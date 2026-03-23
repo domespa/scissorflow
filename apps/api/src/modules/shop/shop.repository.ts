@@ -176,21 +176,57 @@ export const shopRepository = {
       isOpen: boolean;
       startTime?: string;
       endTime?: string;
-      breakStart?: string;
-      breakEnd?: string;
+      breakStart?: string | null;
+      breakEnd?: string | null;
       reason?: string;
     },
   ) {
-    return prisma.dateException.upsert({
-      where: { shopId_date: { shopId, date: data.date } },
-      create: { shopId, ...data },
-      update: { ...data },
+    // TROVA SE ESISTE GIÀ UN'ECCEZIONE PER QUELLA DATA
+    const startOfDay = new Date(data.date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(data.date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const existing = await prisma.dateException.findFirst({
+      where: {
+        shopId,
+        date: { gte: startOfDay, lte: endOfDay },
+      },
+    });
+
+    if (existing) {
+      return prisma.dateException.update({
+        where: { id: existing.id },
+        data: {
+          isOpen: data.isOpen,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          breakStart: data.breakStart,
+          breakEnd: data.breakEnd,
+          reason: data.reason,
+        },
+      });
+    }
+
+    return prisma.dateException.create({
+      data: { shopId, ...data },
     });
   },
 
   async deleteDateException(shopId: string, date: Date) {
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     return prisma.dateException.deleteMany({
-      where: { shopId, date },
+      where: {
+        shopId,
+        date: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
     });
   },
   // =========================================

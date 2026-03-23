@@ -163,9 +163,9 @@ export const bookingService = {
       const exception = dateExceptions.find((e) => {
         const exDate = new Date(e.date);
         return (
-          exDate.getUTCFullYear() === year &&
-          exDate.getUTCMonth() === month - 1 &&
-          exDate.getUTCDate() === day
+          exDate.getFullYear() === year &&
+          exDate.getMonth() === month - 1 &&
+          exDate.getDate() === day
         );
       });
 
@@ -173,10 +173,10 @@ export const bookingService = {
         (a) => a.dayOfWeek === dayOfWeek && a.isActive,
       );
 
-      // SE ECCEZIONE CHIUSO — salta il giorno
+      // SE ECCEZIONE CHIUSO SALTA IL GIORNO
       if (exception && !exception.isOpen) continue;
 
-      // SE ECCEZIONE APERTO — usa orari dell'eccezione
+      // SE ECCEZIONE APERTO
       if (exception && exception.isOpen) {
         availabilities = [
           {

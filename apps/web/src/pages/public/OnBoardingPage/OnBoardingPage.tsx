@@ -130,7 +130,7 @@ export const OnboardingPage = () => {
 
         {/* CARD */}
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
-          {/* STEP 1 — NOME SHOP */}
+          {/* STEP 1 NOME SHOP */}
           {step === "shop" && (
             <>
               <div className="flex items-center gap-3 mb-6">
@@ -199,7 +199,7 @@ export const OnboardingPage = () => {
             </>
           )}
 
-          {/* STEP 2 — PERSONALIZZAZIONE */}
+          {/* STEP 2 PERSONALIZZAZIONE */}
           {step === "config" && (
             <>
               <div className="flex items-center gap-3 mb-6">
@@ -298,7 +298,7 @@ export const OnboardingPage = () => {
             </>
           )}
 
-          {/* STEP 3 — DONE */}
+          {/* STEP 3 DONE */}
           {step === "done" && (
             <div className="text-center py-4">
               <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mx-auto mb-4">

@@ -119,27 +119,28 @@ export const shopService = {
       isOpen: boolean;
       startTime?: string;
       endTime?: string;
-      breakStart?: string;
-      breakEnd?: string;
+      breakStart?: string | null;
+      breakEnd?: string | null;
       reason?: string;
     },
   ) {
-    const date = new Date(input.date);
-    date.setUTCHours(0, 0, 0, 0);
+    const [year, month, day] = input.date.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0, 0));
+
     return shopRepository.upsertDateException(shopId, {
       date,
       isOpen: input.isOpen,
       startTime: input.startTime,
       endTime: input.endTime,
-      breakStart: input.breakStart,
-      breakEnd: input.breakEnd,
+      breakStart: input.breakStart ?? null,
+      breakEnd: input.breakEnd ?? null,
       reason: input.reason,
     });
   },
 
   async deleteDateException(shopId: string, date: string) {
-    const d = new Date(date);
-    d.setUTCHours(0, 0, 0, 0);
+    const [year, month, day] = date.split("-").map(Number);
+    const d = new Date(Date.UTC(year, month - 1, day, 12, 0, 0, 0));
     return shopRepository.deleteDateException(shopId, d);
   },
   // =========================================

@@ -112,7 +112,7 @@ export const notificationService = {
     await resend.emails.send({
       from: env.EMAIL_FROM,
       to: data.to,
-      subject: `Nuova prenotazione — ${data.customerName}`,
+      subject: `Nuova prenotazione - ${data.customerName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">Nuova prenotazione! 🎉</h2>
@@ -150,7 +150,7 @@ export const notificationService = {
     await resend.emails.send({
       from: env.EMAIL_FROM,
       to: data.to,
-      subject: `Promemoria — ${data.hoursUntil === 24 ? "domani" : "tra 2 ore"} hai un appuntamento`,
+      subject: `Promemoria - ${data.hoursUntil === 24 ? "domani" : "tra 2 ore"} hai un appuntamento`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">
@@ -217,7 +217,7 @@ export const notificationService = {
     await resend.emails.send({
       from: env.EMAIL_FROM,
       to: data.to,
-      subject: `📋 Appuntamenti di oggi — ${dateStr}`,
+      subject: `📋 Appuntamenti di oggi - ${dateStr}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">Buongiorno! ☀️</h2>
