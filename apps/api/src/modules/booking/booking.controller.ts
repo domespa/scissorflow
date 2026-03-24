@@ -150,4 +150,45 @@ export const bookingController = {
     }
   },
   // =========================================
+
+  // =========================================
+  //           TROVA PRENOTAZIONE
+  // =========================================
+  async getDayBookings(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const date =
+        getParam(req.query.date as string) ??
+        new Date().toISOString().slice(0, 10);
+      const data = await bookingService.getDayBookings(shopId, date);
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+
+  async getMonthBookings(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const year = Number(req.query.year) || new Date().getFullYear();
+      const month = Number(req.query.month) || new Date().getMonth() + 1;
+      const data = await bookingService.getMonthBookings(shopId, year, month);
+      res.status(200).json(data);
+    } catch {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+
+  async getDayTimeline(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const date =
+        getParam(req.query.date as string) ??
+        new Date().toISOString().slice(0, 10);
+      const data = await bookingService.getDayTimeline(shopId, date);
+      res.status(200).json(data);
+    } catch {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
 };

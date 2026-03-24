@@ -234,4 +234,50 @@ export const bookingRepository = {
       },
     });
   },
+
+  // TROVA PRENOTAZIONI PER GIORNO
+  async findBookingsByShopAndDate(shopId: string, date: string) {
+    // PARSIAMO LA DATA
+    const [year, month, day] = date.split("-").map(Number);
+    const startOfDay = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+
+    console.log("SEARCHING BOOKINGS:", { shopId, startOfDay, endOfDay });
+
+    return prisma.booking.findMany({
+      where: {
+        shopId,
+        startAt: { gte: startOfDay, lte: endOfDay },
+        status: { in: ["PENDING", "CONFIRMED"] },
+      },
+      include: {
+        customer: true,
+        service: true,
+      },
+      orderBy: { startAt: "asc" },
+    });
+  },
+
+  // TROVA PRENOTAZIONI PER MESE
+  async findBookingsByShopAndMonth(
+    shopId: string,
+    year: number,
+    month: number,
+  ) {
+    const startOfMonth = new Date(year, month - 1, 1, 0, 0, 0, 0);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
+    return prisma.booking.findMany({
+      where: {
+        shopId,
+        startAt: { gte: startOfMonth, lte: endOfMonth },
+        status: { in: ["PENDING", "CONFIRMED", "COMPLETED"] },
+      },
+      include: {
+        customer: true,
+        service: true,
+      },
+      orderBy: { startAt: "asc" },
+    });
+  },
 };

@@ -36,7 +36,6 @@ const generateTimeSlots = (
   let current = startHour * 60 + startMin;
   const end = endHour * 60 + endMin;
 
-  // CONVERTI PAUSA IN MINUTI
   const breakStartMin = breakStart
     ? breakStart
         .split(":")
@@ -53,7 +52,6 @@ const generateTimeSlots = (
   while (current + duration <= end) {
     const slotEnd = current + duration;
 
-    // SALTA SE LO SLOT INIZIA O FINISCE NELLA PAUSA
     const overlapsBreak =
       breakStartMin !== null &&
       breakEndMin !== null &&
@@ -88,11 +86,9 @@ const getNextRecurrenceDate = (
   if (type === "WEEKLY") {
     next.setDate(next.getDate() + 7 * iteration);
   } else {
-    // MENSILE STESSO GIORNO DEL MESE
     const targetDay = date.getDate();
     next.setMonth(next.getMonth() + iteration);
 
-    // GESTIONE GIORNI MESI DIFFERENTE
     const lastDayOfMonth = new Date(
       next.getFullYear(),
       next.getMonth() + 1,
@@ -108,7 +104,6 @@ const getNextRecurrenceDate = (
 
   return next;
 };
-// =========================================
 
 export const bookingService = {
   // =========================================
@@ -117,7 +112,6 @@ export const bookingService = {
   async getMonthSlots(input: GetMonthSlotsInput) {
     const [year, month] = input.month.split("-").map(Number);
 
-    // NON MOSTRARE MESI PASSATI
     const now = new Date();
     const requestedMonth = new Date(year, month - 1, 1);
     const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -126,40 +120,35 @@ export const bookingService = {
       return {};
     }
 
-    // CARICA SHOP CON CONFIG E SLOT DLIBERI
     const shop = await shopRepository.findById(input.shopId);
     if (!shop) throw new Error("SHOP_NOT_FOUND");
 
-    // SE NO CARICA
     const service = await shopRepository.findServicesById(input.serviceId);
     if (!service) throw new Error("SERVICE_NOT_FOUND");
 
-    // CARICA PRENOTAZIONI E SLOT BLOCCATI DEL MESE
     const [bookings, blockedSlots, dateExceptions] = await Promise.all([
       bookingRepository.findActiveBookingsByMonth(input.shopId, year, month),
       bookingRepository.findBlockedSlotsByMonth(input.shopId, year, month),
       bookingRepository.findDateExceptionsByMonth(input.shopId, year, month),
     ]);
 
-    // GENERAZIONE SLOT PER OGNI GIORNO DEL MESE
-    const result: Record<
-      string,
-      { time: string; status: "free" | "pending" | "confirmed" }[]
-    > = {};
+    const result: {
+      [key: string]: {
+        time: string;
+        status: "free" | "pending" | "confirmed";
+      }[];
+    } = {};
     const daysInMonth = new Date(year, month, 0).getDate();
+
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month - 1, day);
 
-      // SALTA GIORNI PASSATI
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (date < today) continue;
 
-      // CHECK SE IL BARBIERE LAVORA QUEL GIORNO - CHIUISURA FERIE MALATTIA
       const dayOfWeek = date.getDay();
-      const dateStr = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 
-      // CONTROLLA SE ESISTE UN'ECCEZIONE PER QUESTA DATA
       const exception = dateExceptions.find((e) => {
         const exDate = new Date(e.date);
         return (
@@ -173,10 +162,8 @@ export const bookingService = {
         (a) => a.dayOfWeek === dayOfWeek && a.isActive,
       );
 
-      // SE ECCEZIONE CHIUSO SALTA IL GIORNO
       if (exception && !exception.isOpen) continue;
 
-      // SE ECCEZIONE APERTO
       if (exception && exception.isOpen) {
         availabilities = [
           {
@@ -194,11 +181,9 @@ export const bookingService = {
         continue;
       }
 
-      // OTTIENI CONFIG SLOT
       const slotInterval = shop.config?.slotInterval ?? 30;
       const slotMode = shop.config?.slotMode ?? "FIXED";
 
-      // GENERALI
       let allSlots = availabilities.flatMap((availability) =>
         generateTimeSlots(
           availability.startTime,
@@ -210,10 +195,8 @@ export const bookingService = {
         ),
       );
 
-      // RIMUOVI DUPLICATI E ORDINA
       allSlots = [...new Set(allSlots)].sort();
 
-      // FLITRA SLOT OCCUPATI
       const dayBookings = bookings.filter((b) => {
         const bookingData = new Date(b.startAt);
         return (
@@ -229,7 +212,6 @@ export const bookingService = {
         return start <= date && end >= date;
       });
 
-      // RM SLOT OCCUPATI
       allSlots = allSlots.filter((slot) => {
         const [slotHour, slotMin] = slot.split(":").map(Number);
         const slotStart = new Date(
@@ -239,15 +221,12 @@ export const bookingService = {
           slotStart.getTime() + service.duration * 60000,
         );
 
-        // CONTROLLA SOVRAPPOSIZIONE CON PRENOTAZIONI
         const isBooked = dayBookings.some((b) => {
           const bStart = new Date(b.startAt);
           const bEnd = new Date(b.endAt);
-
           return slotStart < bEnd && slotEnd > bStart;
         });
 
-        // CONTROLLA SOVRAPPOSIZIONE CON SLOT BLOCCATI
         const isBlocked = dayBlocked.some((b) => {
           const bStart = new Date(b.startAt);
           const bEnd = new Date(b.endAt);
@@ -257,15 +236,12 @@ export const bookingService = {
         return !isBooked && !isBlocked;
       });
 
-      // MODALITà DYNAMIC RICALCOLA SLOT DOPO PRENOTAZIONE
       if (slotMode === "DYNAMIC" && dayBookings.length > 0) {
-        // ORDINA PRENOTAZIONI PER ORARIO
         const sortedBookings = [...dayBookings].sort(
           (a, b) =>
             new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
         );
 
-        // AGGIUNGI SLOT DOPO OGNI PRENOTAZIONE
         const dynamicSlots: string[] = [];
         for (const booking of sortedBookings) {
           const endAt = new Date(booking.endAt);
@@ -273,18 +249,15 @@ export const bookingService = {
           const endMin = endAt.getMinutes();
           const endSlot = `${endHour.toString().padStart(2, "0")}:${endMin.toString().padStart(2, "0")}`;
 
-          // CONTROLLA SE QUESTO SLOT È GIÀ NELLA LISTA
           if (!allSlots.includes(endSlot)) {
-            // VERIFICA CHE CI SIA SPAZIO PER IL SERVIZIO
             const [endSlotHour, endSlotMin] = endSlot.split(":").map(Number);
             const slotStart = new Date(
               Date.UTC(year, month - 1, day, endSlotHour, endSlotMin),
             );
-
             const slotEnd = new Date(
               slotStart.getTime() + service.duration * 60000,
             );
-            // CONTROLLA SE LO SLOT DINAMICO RIENTRA IN ALMENO UNA FASCIA ORARIA
+
             const fitsInAvailability = availabilities.some((av) => {
               const [availEndHour, availEndMin] = av.endTime
                 .split(":")
@@ -292,7 +265,6 @@ export const bookingService = {
               const availEnd = new Date(
                 Date.UTC(year, month - 1, day, availEndHour, availEndMin),
               );
-
               return slotEnd <= availEnd;
             });
 
@@ -339,12 +311,151 @@ export const bookingService = {
   // =========================================
 
   // =========================================
+  //          TIMELINE GIORNALIERA
+  // =========================================
+  async getDayTimeline(shopId: string, date: string) {
+    const [year, month, day] = date.split("-").map(Number);
+
+    const shop = await shopRepository.findById(shopId);
+    if (!shop) throw new Error("SHOP_NOT_FOUND");
+
+    const bookings = await bookingRepository.findBookingsByShopAndDate(
+      shopId,
+      date,
+    );
+    const dateExceptions = await bookingRepository.findDateExceptionsByMonth(
+      shopId,
+      year,
+      month,
+    );
+
+    const dayOfWeek = new Date(year, month - 1, day).getDay();
+    const exception = dateExceptions.find((e) => {
+      const exDate = new Date(e.date);
+      return (
+        exDate.getFullYear() === year &&
+        exDate.getMonth() === month - 1 &&
+        exDate.getDate() === day
+      );
+    });
+
+    let availabilities = shop.availability.filter(
+      (a) => a.dayOfWeek === dayOfWeek && a.isActive,
+    );
+
+    if (exception && !exception.isOpen) {
+      availabilities = [];
+    } else if (exception && exception.isOpen) {
+      availabilities = [
+        {
+          id: "exception",
+          shopId,
+          dayOfWeek,
+          startTime: exception.startTime ?? "09:00",
+          endTime: exception.endTime ?? "18:00",
+          breakStart: exception.breakStart ?? null,
+          breakEnd: exception.breakEnd ?? null,
+          isActive: true,
+        },
+      ];
+    }
+
+    const slotInterval = shop.config?.slotInterval ?? 30;
+
+    const allSlots = [
+      ...new Set(
+        availabilities.flatMap((av) =>
+          generateTimeSlots(
+            av.startTime,
+            av.endTime,
+            slotInterval,
+            slotInterval,
+            av.breakStart,
+            av.breakEnd,
+          ),
+        ),
+      ),
+    ].sort();
+
+    type TimelineSlot = {
+      time: string;
+      endTime: string;
+      status: "free" | "pending" | "confirmed";
+      booking?: {
+        id: string;
+        customerName: string;
+        serviceName: string;
+        duration: number;
+        price: number | null;
+      };
+    };
+
+    const timeline: TimelineSlot[] = [];
+    const addedBookingIds = new Set<string>();
+
+    for (const slot of allSlots) {
+      const [h, m] = slot.split(":").map(Number);
+      const slotStart = new Date(year, month - 1, day, h, m, 0, 0);
+
+      console.log(`SLOT ${slot} → slotStart: ${slotStart.toISOString()}`);
+
+      // CERCA PRENOTAZIONE CHE COPRE QUESTO SLOT
+      const booking = bookings.find((b) => {
+        const bStart = new Date(b.startAt);
+        const bEnd = new Date(b.endAt);
+        console.log(
+          `  CHECK booking ${bStart.toISOString()} - ${bEnd.toISOString()}`,
+        );
+
+        return slotStart >= bStart && slotStart < bEnd;
+      });
+
+      if (booking) {
+        // SE PRENOTAZIONE GIÀ AGGIUNTA SALTA
+        if (addedBookingIds.has(booking.id)) continue;
+        addedBookingIds.add(booking.id);
+
+        const endDate = new Date(booking.endAt);
+        const endH = endDate.getHours().toString().padStart(2, "0");
+        const endM = endDate.getMinutes().toString().padStart(2, "0");
+
+        timeline.push({
+          time: slot,
+          endTime: `${endH}:${endM}`,
+          status: booking.status === "PENDING" ? "pending" : "confirmed",
+          booking: {
+            id: booking.id,
+            customerName: `${booking.customer.firstName} ${booking.customer.lastName}`,
+            serviceName: booking.service.name,
+            duration: booking.service.duration,
+            price: booking.service.price,
+          },
+        });
+      } else {
+        const endMin = h * 60 + m + slotInterval;
+        const endH = Math.floor(endMin / 60)
+          .toString()
+          .padStart(2, "0");
+        const endM = (endMin % 60).toString().padStart(2, "0");
+
+        timeline.push({
+          time: slot,
+          endTime: `${endH}:${endM}`,
+          status: "free",
+        });
+      }
+    }
+
+    return timeline;
+  },
+  // =========================================
+
+  // =========================================
   //                LOCK SLOT
   // =========================================
   async lockSlot(input: LockSlotInput) {
     const startAt = new Date(input.startAt);
 
-    // CONTROLLA SE EMAIL HA GIA' PRENOTAZIONE ATTIVA
     if (input.customer.email) {
       const existing = await bookingRepository.findActiveBookingByEmail(
         input.customer.email,
@@ -353,7 +464,6 @@ export const bookingService = {
       if (existing) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
     }
 
-    // CONTROLLA SE TELEFONO HA GIA' PRENOTAZIONE ATTIVA
     if (input.customer.phone) {
       const existing = await bookingRepository.findActiveBookingByPhone(
         input.customer.phone,
@@ -362,25 +472,21 @@ export const bookingService = {
       if (existing) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
     }
 
-    // CARICA SERVIZIO
     const service = await shopRepository.findServicesById(input.serviceId);
     if (!service) throw new Error("SERVICE_NOT_FOUND");
 
     const endAt = new Date(startAt.getTime() + service.duration * 60000);
 
-    // CREA O TROVA CUSTOMER
     const customer = await bookingRepository.findOrCreateCustomer(
       input.customer,
     );
 
-    // GENERA OTP
     const otpCode = generateOTP();
     const hashedOtp = await bcrypt.hash(otpCode, 10);
     const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     const lockedAt = new Date();
     const lockedUntil = otpExpiresAt;
 
-    // GESTIONE RICORRENZA
     let recurrenceGroupId: string | undefined;
 
     if (input.recurrence) {
@@ -392,7 +498,6 @@ export const bookingService = {
           i === 0
             ? startAt
             : getNextRecurrenceDate(startAt, input.recurrence.type, i);
-
         const recurrentEndAt = new Date(
           recurrentStartAt.getTime() + service.duration * 60000,
         );
@@ -424,7 +529,6 @@ export const bookingService = {
       });
     }
 
-    // MANDA OTP VIA EMAIL
     if (input.customer.email) {
       await notificationService.sendOtp({
         to: input.customer.email,
@@ -434,14 +538,12 @@ export const bookingService = {
       });
     }
 
-    // WEBSOCKET
     io.to(input.shopId).emit("slot:locked", {
       shopId: input.shopId,
       startAt: startAt.toISOString(),
       endAt: endAt.toISOString(),
     });
 
-    // TROVA PRENOTAZIONE APPENA CREATA
     const booking = await bookingRepository.findPendingByCustomerAndShop(
       customer.id,
       input.shopId,
@@ -461,7 +563,7 @@ export const bookingService = {
   // =========================================
 
   // =========================================
-  //                COFNERMA OTP
+  //                CONFERMA OTP
   // =========================================
   async confirmOtp(input: ConfirmOtpInput) {
     const booking = await bookingRepository.findById(input.bookingId);
@@ -469,23 +571,18 @@ export const bookingService = {
     if (!booking) throw new Error("BOOKING_NOT_FOUND");
     if (booking.status !== "PENDING") throw new Error("BOOKING_NOT_PENDING");
 
-    // CONTROLLA SCADENZA OTP
     if (!booking.otpExpiresAt || booking.otpExpiresAt < new Date()) {
       throw new Error("OTP_EXPIRED");
     }
 
-    // VERIFICA OTP
     if (!booking.otpCode) throw new Error("OTP_NOT_FOUND");
     const isValid = await bcrypt.compare(input.otpCode, booking.otpCode);
     if (!isValid) throw new Error("OTP_INVALID");
 
-    // CONFERMA PRENOTAZIONE
     const confirmed = await bookingRepository.confirmBooking(input.bookingId);
 
-    // GENERA CANCEL URL
     const cancelUrl = `${env.CLIENT_URL}/cancel/${booking.id}`;
 
-    // NOTIFICA CLIENTE SE HA EMAIL
     if (booking.customer.email) {
       await notificationService.sendBookingConfirmedToCustomer({
         to: booking.customer.email,
@@ -497,7 +594,6 @@ export const bookingService = {
       });
     }
 
-    // NOTIFICA BARBIERE
     console.log("📧 Nuova prenotazione confermata:", {
       customer: `${booking.customer.firstName} ${booking.customer.lastName}`,
       service: booking.service.name,
@@ -506,7 +602,6 @@ export const bookingService = {
       }),
     });
 
-    // EMETTE EVENTO WEBSOCKET
     io.to(booking.shopId).emit("slot:confirmed", {
       shopId: booking.shopId,
       startAt: booking.startAt.toISOString(),
@@ -525,7 +620,6 @@ export const bookingService = {
 
     if (!booking) throw new Error("BOOKING_NOT_FOUND");
 
-    // CONTROLLA SE LA CANCELLAZIONE È CONSENTITA  2 ORE PRIMA
     const twoHoursFromNow = new Date(Date.now() + 2 * 60 * 60 * 1000);
     if (booking.startAt < twoHoursFromNow) {
       throw new Error("CANCELLATION_NOT_ALLOWED");
@@ -533,12 +627,22 @@ export const bookingService = {
 
     await bookingRepository.updateStatus(bookingId, "CANCELLED");
 
-    // EMETTE EVENTO WEBSOCKET
     io.to(booking.shopId).emit("slot:cancelled", {
       shopId: booking.shopId,
       startAt: booking.startAt.toISOString(),
       endAt: booking.endAt.toISOString(),
     });
+  },
+
+  // =========================================
+  //           PRENOTAZIONI GIORNO/MESE
+  // =========================================
+  async getDayBookings(shopId: string, date: string) {
+    return bookingRepository.findBookingsByShopAndDate(shopId, date);
+  },
+
+  async getMonthBookings(shopId: string, year: number, month: number) {
+    return bookingRepository.findBookingsByShopAndMonth(shopId, year, month);
   },
   // =========================================
 };

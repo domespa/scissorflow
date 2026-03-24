@@ -11,39 +11,44 @@ export const requireRole = (role: "OWNER" | "COLLABORATOR") => {
       return;
     }
 
-    // PRENDIAMO LO SHOPID DA PARAMS O BODY
+    // PRENDIAMO LO SHOPID DA PARAMS, BODY, O QUERY
     const shopId = Array.isArray(req.params.shopId)
       ? req.params.shopId[0]
-      : (req.params.shopId ?? req.body.shopId);
-    if (!shopId) {
-      res.status(400).json({ message: " ShopId mancante" });
-      return;
-    }
+      : (req.params.shopId ?? req.body?.shopId ?? (req.query.shopId as string));
 
-    // CHECK SE HA IL RUOLO RICHIESTO
-    const shopUser = await prisma.shopUser.findUnique({
-      where: {
-        userId_shopId: {
-          userId,
-          shopId,
-        },
-      },
-    });
-    if (!shopUser) {
-      res.status(403).json({ message: "Non hai accesso a questo shop" });
-      return;
+    if (shopId) {
+      // SHOP SPECIFICO
+      const shopUser = await prisma.shopUser.findUnique({
+        where: { userId_shopId: { userId, shopId } },
+      });
+      if (!shopUser) {
+        res.status(403).json({ message: "Non hai accesso a questo shop" });
+        return;
+      }
+      if (role === "OWNER" && shopUser.role !== "OWNER") {
+        res
+          .status(403)
+          .json({ message: "Solo il proprietario può eseguire questa azione" });
+        return;
+      }
+      req.shopUser = shopUser;
+    } else {
+      // SE NESSUN SHOPID PRENDI IL PRIMO DELL'UTENTE
+      const shopUser = await prisma.shopUser.findFirst({
+        where: { userId },
+      });
+      if (!shopUser) {
+        res.status(403).json({ message: "Nessuno shop associato" });
+        return;
+      }
+      if (role === "OWNER" && shopUser.role !== "OWNER") {
+        res
+          .status(403)
+          .json({ message: "Solo il proprietario può eseguire questa azione" });
+        return;
+      }
+      req.shopUser = shopUser;
     }
-
-    // SOLO OWNER CONSENTITO
-    if (role === "OWNER" && shopUser.role !== "OWNER") {
-      res
-        .status(403)
-        .json({ message: "Solo il proprietario può eseguire questa azione" });
-      return;
-    }
-
-    // METTIAMO LO SHOP ALLA REQUEST PER I CONTROLLER
-    req.shopUser = shopUser;
 
     next();
   };

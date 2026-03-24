@@ -46,3 +46,26 @@ export interface ConfirmBookingOTP {
   bookingId: string;
   otpCode: string;
 }
+
+// DETTAGLI PRENOTAZIONE
+export interface BookingWithDetailsDTO {
+  id: string;
+  shopId: string;
+  startAt: string;
+  endAt: string;
+  status: BookingStatus;
+  customer: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string | null;
+    phone: string | null;
+  };
+  service: {
+    id: string;
+    name: string;
+    duration: number;
+    price: number | null;
+  };
+  createdAt: string;
+}
