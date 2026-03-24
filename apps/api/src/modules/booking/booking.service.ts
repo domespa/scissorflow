@@ -397,16 +397,10 @@ export const bookingService = {
       const [h, m] = slot.split(":").map(Number);
       const slotStart = new Date(year, month - 1, day, h, m, 0, 0);
 
-      console.log(`SLOT ${slot} → slotStart: ${slotStart.toISOString()}`);
-
       // CERCA PRENOTAZIONE CHE COPRE QUESTO SLOT
       const booking = bookings.find((b) => {
         const bStart = new Date(b.startAt);
         const bEnd = new Date(b.endAt);
-        console.log(
-          `  CHECK booking ${bStart.toISOString()} - ${bEnd.toISOString()}`,
-        );
-
         return slotStart >= bStart && slotStart < bEnd;
       });
 
@@ -461,7 +455,15 @@ export const bookingService = {
         input.customer.email,
         input.shopId,
       );
-      if (existing) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
+      if (existing) {
+        const existingDate = new Date(existing.startAt);
+        const newDate = new Date(input.startAt);
+        const sameDay =
+          existingDate.getFullYear() === newDate.getFullYear() &&
+          existingDate.getMonth() === newDate.getMonth() &&
+          existingDate.getDate() === newDate.getDate();
+        if (sameDay) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
+      }
     }
 
     if (input.customer.phone) {
@@ -469,7 +471,15 @@ export const bookingService = {
         input.customer.phone,
         input.shopId,
       );
-      if (existing) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
+      if (existing) {
+        const existingDate = new Date(existing.startAt);
+        const newDate = new Date(input.startAt);
+        const sameDay =
+          existingDate.getFullYear() === newDate.getFullYear() &&
+          existingDate.getMonth() === newDate.getMonth() &&
+          existingDate.getDate() === newDate.getDate();
+        if (sameDay) throw new Error("CUSTOMER_ALREADY_HAS_BOOKING");
+      }
     }
 
     const service = await shopRepository.findServicesById(input.serviceId);
@@ -645,4 +655,13 @@ export const bookingService = {
     return bookingRepository.findBookingsByShopAndMonth(shopId, year, month);
   },
   // =========================================
+
+  // =========================================
+  //          DETTAGLI PRENOTAZIONE
+  // =========================================
+  async getPublicBooking(bookingId: string) {
+    const booking = await bookingRepository.findPublicById(bookingId);
+    if (!booking) throw new Error("BOOKING_NOT_FOUND");
+    return booking;
+  },
 };

@@ -21,6 +21,9 @@ router.post("/confirm", bookingController.confirmOtp);
 // POST /api/bookings/cancel - CLIENTE CANCELLA
 router.post("/cancel", bookingController.cancelBooking);
 
+// GET /api/public/:bookingId
+router.get("/public/:bookingId", bookingController.getPublicBooking);
+
 // =========================================
 
 // =========================================
@@ -43,6 +46,7 @@ router.get(
   bookingController.getMonthBookings,
 );
 
+// GET /api/bookings/timeline?date=2026-03-21
 router.get(
   "/timeline",
   authMiddleware,

@@ -7,6 +7,7 @@ import { PublicOnlyRoute } from "@/router/PublicOnlyRoute";
 import { ShopPage } from "@/pages/public/ShopPage/ShopPage";
 import { LoginPage } from "@/pages/public/LoginPage/LoginPage";
 import { RegisterPage } from "@/pages/public/RegisterPage/RegisterPage";
+import { CancelPage } from "@/pages/public/CancelPage/CancelPage";
 
 // PAGINE PRIVATE
 import { CalendarPage } from "@/pages/dashboard/CalendarPage/CalendarPage";
@@ -37,6 +38,12 @@ export const router = createBrowserRouter([
   {
     path: "/b/:slug",
     element: <ShopPage />,
+  },
+
+  // CANCELLAZIONE PRENOTAZIONE
+  {
+    path: "/cancel/:bookingId",
+    element: <CancelPage />,
   },
 
   // PAGINE PRIVATE

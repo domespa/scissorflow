@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
   ScissorsIcon,
@@ -34,12 +34,10 @@ type SlotWithStatus = { time: string; status: SlotStatus };
 export const ShopPage = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  // DATI SHOP
   const [shop, setShop] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  // CALENDARIO
   const [slots, setSlots] = useState<Record<string, SlotWithStatus[]>>({});
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedService, setSelectedService] = useState<ServiceDTO | null>(
@@ -47,7 +45,9 @@ export const ShopPage = () => {
   );
   const [weekOffset, setWeekOffset] = useState(0);
 
-  // PRENOTAZIONE
+  // MESI GIÀ CARICATI
+  const loadedMonths = useRef<Set<string>>(new Set());
+
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -58,7 +58,6 @@ export const ShopPage = () => {
   const [locking, setLocking] = useState(false);
   const [confirming, setConfirming] = useState(false);
 
-  // FORM CLIENTE
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -67,7 +66,13 @@ export const ShopPage = () => {
     otp: "",
   });
 
-  // CARICA SHOP
+  const isSlotPast = (dateStr: string, time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    const slotDate = new Date(dateStr);
+    slotDate.setHours(h, m, 0, 0);
+    return slotDate < new Date();
+  };
+
   useEffect(() => {
     if (!slug) return;
     loadShop();
@@ -81,7 +86,7 @@ export const ShopPage = () => {
       const firstActive = data.services?.find((s: ServiceDTO) => s.isActive);
       if (firstActive) {
         setSelectedService(firstActive);
-        loadSlots(data.id, firstActive.id);
+        await loadSlots(data.id, firstActive.id);
       }
     } catch {
       setNotFound(true);
@@ -90,8 +95,30 @@ export const ShopPage = () => {
     }
   };
 
-  // CARICA SLOTS
+  // CARICA MESE SPECIFICO SE NON GIÀ CARICATO
+  const ensureMonthLoaded = async (
+    shopId: string,
+    serviceId: string,
+    monthStr: string,
+  ) => {
+    if (loadedMonths.current.has(monthStr)) return;
+    loadedMonths.current.add(monthStr);
+    try {
+      const monthSlots = await bookingService.getMonthSlots(
+        shopId,
+        serviceId,
+        monthStr,
+      );
+      setSlots((prev) => ({ ...prev, ...monthSlots }));
+    } catch {
+      console.error("Errore caricamento mese", monthStr);
+      loadedMonths.current.delete(monthStr);
+    }
+  };
+
+  // CARICA SLOTS INIZIALI
   const loadSlots = async (shopId: string, serviceId: string) => {
+    loadedMonths.current.clear();
     try {
       setLoadingSlots(true);
       const today = new Date();
@@ -108,6 +135,8 @@ export const ShopPage = () => {
         bookingService.getMonthSlots(shopId, serviceId, nextMonth),
       ]);
 
+      loadedMonths.current.add(thisMonth);
+      loadedMonths.current.add(nextMonth);
       setSlots({ ...thisMonthSlots, ...nextMonthSlots });
     } catch {
       console.error("Errore caricamento slot");
@@ -116,7 +145,26 @@ export const ShopPage = () => {
     }
   };
 
-  // SELEZIONA SERVIZIO
+  // CARICA MESI VISIBILI QUANDO CAMBIA SETTIMANA
+  useEffect(() => {
+    if (!shop || !selectedService) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const monthsNeeded = new Set<string>();
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + weekOffset * 7 + i);
+      const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      monthsNeeded.add(monthStr);
+    }
+
+    monthsNeeded.forEach((monthStr) => {
+      ensureMonthLoaded(shop.id, selectedService.id, monthStr);
+    });
+  }, [weekOffset, shop, selectedService]);
+
   const handleSelectService = (e: React.MouseEvent, service: ServiceDTO) => {
     e.preventDefault();
     const scrollY = window.scrollY;
@@ -128,7 +176,6 @@ export const ShopPage = () => {
     });
   };
 
-  // GENERA I 7 GIORNI DELLA SETTIMANA CORRENTE
   const getWeekDays = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -151,7 +198,6 @@ export const ShopPage = () => {
     return days;
   };
 
-  // CLICK SU UNO SLOT
   const handleSlotClick = (dateStr: string, time: string) => {
     setSelectedDate(dateStr);
     setSelectedTime(time);
@@ -161,7 +207,6 @@ export const ShopPage = () => {
     setModalOpen(true);
   };
 
-  // LOCK SLOT
   const handleLockSlot = async () => {
     if (!selectedDate || !selectedTime || !selectedService) return;
     setLocking(true);
@@ -190,7 +235,6 @@ export const ShopPage = () => {
     }
   };
 
-  // CONFERMA OTP
   const handleConfirmOtp = async () => {
     if (!bookingId) return;
     setConfirming(true);
@@ -278,7 +322,7 @@ export const ShopPage = () => {
       <div className="max-w-3xl mx-auto px-4 py-6">
         {/* SERVIZI */}
         <div className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          <h2 className="text-sm font-semibold text.gray-500 uppercase tracking-wide mb-3">
             Servizi
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2">
@@ -289,14 +333,14 @@ export const ShopPage = () => {
                   key={service.id}
                   onClick={(e) => handleSelectService(e, service)}
                   className={`
-                  shrink-0 flex items-center gap-3 px-4 py-3 rounded-xl border
-                  transition-all text-left
-                  ${
-                    selectedService?.id === service.id
-                      ? "border-transparent text-white shadow-md"
-                      : "bg-white border-gray-100 text-gray-900 hover:border-gray-300"
-                  }
-                `}
+                    shrink-0 flex items-center gap-3 px-4 py-3 rounded-xl border
+                    transition-all text-left
+                    ${
+                      selectedService?.id === service.id
+                        ? "border-transparent text-white shadow-md"
+                        : "bg-white border-gray-100 text-gray-900 hover:border-gray-300"
+                    }
+                  `}
                   style={
                     selectedService?.id === service.id
                       ? { backgroundColor: primaryColor }
@@ -351,7 +395,6 @@ export const ShopPage = () => {
             </div>
           </div>
 
-          {/* COLONNE GIORNI */}
           <div className="grid grid-cols-7 gap-2">
             {weekDays.map(
               ({
@@ -364,7 +407,6 @@ export const ShopPage = () => {
                 slots: daySlots,
               }) => (
                 <div key={dateStr} className="flex flex-col gap-1">
-                  {/* INTESTAZIONE GIORNO */}
                   <div
                     className={`text-center pb-2 border-b ${isPast ? "border-gray-100" : "border-gray-200"}`}
                   >
@@ -392,7 +434,6 @@ export const ShopPage = () => {
                     </p>
                   </div>
 
-                  {/* SLOTS */}
                   <div className="flex flex-col gap-1">
                     {loadingSlots ? (
                       <div className="h-8 bg-gray-100 rounded animate-pulse" />
@@ -401,24 +442,29 @@ export const ShopPage = () => {
                         <span className="text-xs text-gray-300">-</span>
                       </div>
                     ) : (
-                      daySlots.map((slot) => (
-                        <button
-                          key={slot.time}
-                          disabled={isPast || slot.status !== "free"}
-                          onClick={() =>
-                            slot.status === "free" &&
-                            handleSlotClick(dateStr, slot.time)
-                          }
-                          className={`
-                          w-full py-1.5 rounded-lg text-xs font-medium transition-all
-                          ${slot.status === "free" ? "bg-green-100 text-green-700 hover:bg-green-200" : ""}
-                          ${slot.status === "pending" ? "bg-yellow-100 text-yellow-700 cursor-not-allowed" : ""}
-                          ${slot.status === "confirmed" ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}
-                        `}
-                        >
-                          {slot.time}
-                        </button>
-                      ))
+                      daySlots.map((slot) => {
+                        const past = isSlotPast(dateStr, slot.time);
+                        return (
+                          <button
+                            key={slot.time}
+                            disabled={past || slot.status !== "free"}
+                            onClick={() =>
+                              !past &&
+                              slot.status === "free" &&
+                              handleSlotClick(dateStr, slot.time)
+                            }
+                            className={`
+                            w-full py-1.5 rounded-lg text-xs font-medium transition-all
+                            ${past ? "bg-gray-100 text-gray-300 cursor-not-allowed" : ""}
+                            ${!past && slot.status === "free" ? "bg-green-100 text-green-700 hover:bg-green-200" : ""}
+                            ${!past && slot.status === "pending" ? "bg-yellow-100 text-yellow-700 cursor-not-allowed" : ""}
+                            ${!past && slot.status === "confirmed" ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}
+                          `}
+                          >
+                            {slot.time}
+                          </button>
+                        );
+                      })
                     )}
                   </div>
                 </div>
@@ -426,7 +472,6 @@ export const ShopPage = () => {
             )}
           </div>
 
-          {/* LEGENDA */}
           <div className="flex items-center gap-4 mt-4">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-green-100" />
@@ -456,26 +501,27 @@ export const ShopPage = () => {
               : "Prenotazione confermata!"
         }
       >
-        {/* STEP FORM */}
         {modalStep === "form" && (
           <div className="flex flex-col gap-4">
-            <div className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100">
-              <p className="text-xs text-gray-500 mb-0.5">Riepilogo</p>
-              <p className="text-sm font-medium text-gray-900">
+            <div className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                Riepilogo
+              </p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {selectedService?.name}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 {selectedDate} alle {selectedTime}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nome *
                 </label>
                 <input
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-gray-900"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                   placeholder="Mario"
                   value={form.firstName}
                   onChange={(e) =>
@@ -484,11 +530,11 @@ export const ShopPage = () => {
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Cognome *
                 </label>
                 <input
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-gray-900"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                   placeholder="Rossi"
                   value={form.lastName}
                   onChange={(e) =>
@@ -499,10 +545,12 @@ export const ShopPage = () => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Email</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Email
+              </label>
               <input
                 type="email"
-                className="px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-gray-900"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 placeholder="mario@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -510,19 +558,19 @@ export const ShopPage = () => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Telefono
               </label>
               <input
                 type="tel"
-                className="px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-gray-900"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 placeholder="+39 333 1234567"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
               />
             </div>
 
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               * Almeno email o telefono richiesti
             </p>
 
@@ -547,21 +595,22 @@ export const ShopPage = () => {
           </div>
         )}
 
-        {/* STEP OTP */}
         {modalStep === "otp" && (
           <div className="flex flex-col gap-4 text-center">
-            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
+            <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto">
               <span className="text-2xl">📧</span>
             </div>
             <div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Abbiamo inviato un codice a
               </p>
-              <p className="text-sm font-medium text-gray-900">{form.email}</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {form.email || form.phone}
+              </p>
             </div>
 
             <input
-              className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest rounded-xl border border-gray-200 outline-none focus:border-gray-900"
+              className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
               placeholder="000000"
               maxLength={6}
               value={form.otp}
@@ -586,7 +635,6 @@ export const ShopPage = () => {
           </div>
         )}
 
-        {/* STEP CONFERMATA */}
         {modalStep === "confirmed" && (
           <div className="text-center py-4 flex flex-col gap-4">
             <div
@@ -596,15 +644,17 @@ export const ShopPage = () => {
               <span className="text-3xl">✅</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                 Prenotazione confermata!
               </h3>
-              <p className="text-sm text-gray-500">{selectedService?.name}</p>
-              <p className="text-sm font-medium text-gray-900 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {selectedService?.name}
+              </p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white mt-1">
                 {selectedDate} alle {selectedTime}
               </p>
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               Riceverai una email di conferma con tutti i dettagli
             </p>
             <button

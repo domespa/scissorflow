@@ -10,6 +10,19 @@ type SlotWithStatus = {
   status: "free" | "pending" | "confirmed";
 };
 
+type TimelineSlot = {
+  time: string;
+  endTime: string;
+  status: "free" | "pending" | "confirmed";
+  booking?: {
+    id: string;
+    customerName: string;
+    serviceName: string;
+    duration: number;
+    price: number | null;
+  };
+};
+
 export const bookingService = {
   // SLOTS MENSILI
   async getMonthSlots(
@@ -44,12 +57,13 @@ export const bookingService = {
     await api.post("/bookings/cancel", { bookingId });
   },
 
-  // TROVA PRENOTAZIONE
+  // TROVA PRENOTAZIONE GIORNO
   async getDayBookings(date: string): Promise<BookingWithDetailsDTO[]> {
     const response = await api.get("/bookings/day", { params: { date } });
     return response.data;
   },
 
+  // TROVA PRENOTAZIONE MESE
   async getMonthBookings(
     year: number,
     month: number,
@@ -60,21 +74,15 @@ export const bookingService = {
     return response.data;
   },
 
-  async getDayTimeline(date: string): Promise<
-    {
-      time: string;
-      endTime: string;
-      status: "free" | "pending" | "confirmed";
-      booking?: {
-        id: string;
-        customerName: string;
-        serviceName: string;
-        duration: number;
-        price: number | null;
-      };
-    }[]
-  > {
+  // TIMELINE GIORNALIERA
+  async getDayTimeline(date: string): Promise<TimelineSlot[]> {
     const response = await api.get("/bookings/timeline", { params: { date } });
+    return response.data;
+  },
+
+  // DETTAGLI PRENOTAZIONE PUBBLICA
+  async getPublicBooking(bookingId: string) {
+    const response = await api.get(`/bookings/public/${bookingId}`);
     return response.data;
   },
 };

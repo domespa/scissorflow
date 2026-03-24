@@ -280,4 +280,16 @@ export const bookingRepository = {
       orderBy: { startAt: "asc" },
     });
   },
+
+  // DETTAGLI PRENOTAZIONE
+  async findPublicById(bookingId: string) {
+    return prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        customer: { select: { firstName: true, lastName: true } },
+        service: { select: { name: true, duration: true } },
+        shop: { select: { name: true, slug: true } },
+      },
+    });
+  },
 };

@@ -191,4 +191,23 @@ export const bookingController = {
       res.status(500).json({ message: "Errore interno" });
     }
   },
+  // =========================================
+
+  // =========================================
+  //           DETTAGLI PRENOTAZIONE
+  // =========================================
+  async getPublicBooking(req: Request, res: Response) {
+    try {
+      const bookingId = getParam(req.params.bookingId);
+      const data = await bookingService.getPublicBooking(bookingId);
+      res.status(200).json(data);
+    } catch (error) {
+      if (error instanceof Error && error.message === "BOOKING_NOT_FOUND") {
+        res.status(404).json({ message: "Prenotazione non trovata" });
+        return;
+      }
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+  // =========================================
 };
