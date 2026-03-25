@@ -103,7 +103,24 @@ export const bookingRepository = {
       },
     });
 
-    if (existing) return existing;
+    if (existing) {
+      // AGGIORNA NOME SE DIVERSO
+      if (
+        existing.firstName !== data.firstName ||
+        existing.lastName !== data.lastName
+      ) {
+        return prisma.customer.update({
+          where: { id: existing.id },
+          data: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email ?? existing.email,
+            phone: data.phone ?? existing.phone,
+          },
+        });
+      }
+      return existing;
+    }
 
     return prisma.customer.create({ data });
   },

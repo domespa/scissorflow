@@ -107,7 +107,7 @@ export const bookingController = {
           return;
         }
         if (error.message === "OTP_INVALID") {
-          res.status(401).json({ message: "Codice OTP non valido" });
+          res.status(422).json({ message: "Codice OTP non valido" });
           return;
         }
       }

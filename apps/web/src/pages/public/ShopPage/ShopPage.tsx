@@ -446,7 +446,7 @@ export const ShopPage = () => {
                         const past = isSlotPast(dateStr, slot.time);
                         return (
                           <button
-                            key={slot.time}
+                            key={`${dateStr}-${slot.time}-${slot.status}`}
                             disabled={past || slot.status !== "free"}
                             onClick={() =>
                               !past &&
@@ -479,7 +479,9 @@ export const ShopPage = () => {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-yellow-100" />
-              <span className="text-xs text-gray-400">In attesa</span>
+              <span className="text-xs text-gray-400">
+                Prenotato, in attesa di conferma OTP
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-gray-100" />

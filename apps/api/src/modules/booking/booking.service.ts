@@ -215,7 +215,13 @@ export const bookingService = {
       allSlots = allSlots.filter((slot) => {
         const [slotHour, slotMin] = slot.split(":").map(Number);
         const slotStart = new Date(
-          Date.UTC(year, month - 1, day, slotHour, slotMin),
+          year,
+          month - 1,
+          day,
+          slotHour,
+          slotMin,
+          0,
+          0,
         );
         const slotEnd = new Date(
           slotStart.getTime() + service.duration * 60000,
@@ -252,7 +258,13 @@ export const bookingService = {
           if (!allSlots.includes(endSlot)) {
             const [endSlotHour, endSlotMin] = endSlot.split(":").map(Number);
             const slotStart = new Date(
-              Date.UTC(year, month - 1, day, endSlotHour, endSlotMin),
+              year,
+              month - 1,
+              day,
+              endSlotHour,
+              endSlotMin,
+              0,
+              0,
             );
             const slotEnd = new Date(
               slotStart.getTime() + service.duration * 60000,
@@ -263,7 +275,13 @@ export const bookingService = {
                 .split(":")
                 .map(Number);
               const availEnd = new Date(
-                Date.UTC(year, month - 1, day, availEndHour, availEndMin),
+                year,
+                month - 1,
+                day,
+                availEndHour,
+                availEndMin,
+                0,
+                0,
               );
               return slotEnd <= availEnd;
             });
@@ -279,15 +297,22 @@ export const bookingService = {
 
       const dateKey = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 
-      const freeSlots = allSlots.map((time) => ({
-        time,
-        status: "free" as const,
-      }));
+      // NON AGGIUNGERE FREE SE GIÀ OCCUPATO
+      const bookedTimes = new Set(
+        dayBookings.map((b) => {
+          const bookingDate = new Date(b.startAt);
+          return `${bookingDate.getHours().toString().padStart(2, "0")}:${bookingDate.getMinutes().toString().padStart(2, "0")}`;
+        }),
+      );
+
+      const freeSlots = allSlots
+        .filter((time) => !bookedTimes.has(time))
+        .map((time) => ({ time, status: "free" as const }));
 
       const bookedSlots = dayBookings.map((b) => {
         const bookingDate = new Date(b.startAt);
-        const hour = bookingDate.getUTCHours().toString().padStart(2, "0");
-        const min = bookingDate.getUTCMinutes().toString().padStart(2, "0");
+        const hour = bookingDate.getHours().toString().padStart(2, "0");
+        const min = bookingDate.getMinutes().toString().padStart(2, "0");
         return {
           time: `${hour}:${min}`,
           status:
