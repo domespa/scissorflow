@@ -54,6 +54,14 @@ router.get(
   bookingController.getDayTimeline,
 );
 
+// POST /api/confirm-admin
+router.post(
+  "/confirm-admin",
+  authMiddleware,
+  requireRole("COLLABORATOR"),
+  bookingController.confirmBookingAdmin,
+);
+
 // =========================================
 
 export default router;

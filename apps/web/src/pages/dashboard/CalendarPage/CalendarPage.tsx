@@ -4,14 +4,16 @@ import {
   CaretRightIcon,
   CalendarIcon,
   ClockIcon,
-  UserIcon,
   ScissorsIcon,
   PlusIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import { bookingService } from "@/services/booking.service";
+import { shopService } from "@/services/shop.service";
 import { useShop } from "@/hooks/useShop";
 import { socket, joinShop, leaveShop } from "@/lib/socket";
-import { formatDateIT, formatDateOnly } from "@/lib/utils";
+import { formatDateOnly } from "@/lib/utils";
+import type { ServiceDTO } from "@scissorflow/shared";
 
 const DAYS_IT = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
 const MONTHS_IT = [
@@ -60,9 +62,32 @@ export const CalendarPage = () => {
   const [timeline, setTimeline] = useState<TimelineSlot[]>([]);
   const [monthBookings, setMonthBookings] = useState<MonthBooking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [services, setServices] = useState<ServiceDTO[]>([]);
+
+  // MODAL PRENOTAZIONE MANUALE
+  const [bookingModal, setBookingModal] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<TimelineSlot | null>(null);
+  const [bookingForm, setBookingForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    serviceId: "",
+  });
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [bookingSuccess, setBookingSuccess] = useState(false);
 
   const getDateStr = (date: Date) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  // SLOT PASSATI
+  const isSlotPast = (time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    const slotDate = new Date(selectedDate);
+    slotDate.setHours(h, m, 0, 0);
+    return slotDate < new Date();
+  };
 
   const loadTimeline = useCallback(
     async (date: Date) => {
@@ -96,9 +121,20 @@ export const CalendarPage = () => {
     [shopId],
   );
 
+  const loadServices = useCallback(async () => {
+    if (!shopId) return;
+    try {
+      const data = await shopService.getServices(shopId);
+      setServices(data.filter((s: ServiceDTO) => s.isActive));
+    } catch {
+      console.error("Errore caricamento servizi");
+    }
+  }, [shopId]);
+
   useEffect(() => {
     if (!shopId) return;
     loadTimeline(selectedDate);
+    loadServices();
     joinShop(shopId);
 
     socket.on("slot:confirmed", () => loadTimeline(selectedDate));
@@ -122,9 +158,74 @@ export const CalendarPage = () => {
     loadTimeline(date);
   };
 
-  const daysWithBookings = new Set(
-    monthBookings.map((b) => new Date(b.startAt).getDate()),
-  );
+  const handleOpenBookingModal = (slot: TimelineSlot) => {
+    setSelectedSlot(slot);
+    setBookingForm({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      serviceId: services[0]?.id ?? "",
+    });
+    setBookingError("");
+    setBookingSuccess(false);
+    setBookingModal(true);
+  };
+
+  // PRENOTA MANUALMENTE
+  const handleManualBooking = async () => {
+    if (!selectedSlot || !shopId) return;
+    if (!bookingForm.firstName) {
+      setBookingError("Il nome è obbligatorio");
+      return;
+    }
+    if (!bookingForm.serviceId) {
+      setBookingError("Seleziona un servizio");
+      return;
+    }
+
+    setBookingLoading(true);
+    setBookingError("");
+
+    try {
+      const dateStr = getDateStr(selectedDate);
+      const startAt = new Date(
+        `${dateStr}T${selectedSlot.time}:00`,
+      ).toISOString();
+
+      const result = await bookingService.lockSlot({
+        shopId,
+        serviceId: bookingForm.serviceId,
+        startAt,
+        customer: {
+          firstName: bookingForm.firstName,
+          lastName: bookingForm.lastName || "-",
+          email: bookingForm.email || undefined,
+          phone: bookingForm.phone || undefined,
+        },
+      });
+
+      await bookingService.confirmBookingAdmin(result.bookingId);
+
+      setBookingSuccess(true);
+      await loadTimeline(selectedDate);
+
+      setTimeout(() => {
+        setBookingModal(false);
+        setBookingSuccess(false);
+      }, 1500);
+    } catch (err: any) {
+      if (err?.response?.status === 409) {
+        setBookingError(
+          "Il cliente ha già una prenotazione attiva per questo giorno",
+        );
+      } else {
+        setBookingError("Errore durante la prenotazione. Riprova.");
+      }
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   const getCalendarCells = () => {
     const firstDay = new Date(calYear, calMonth, 1).getDay();
@@ -198,9 +299,7 @@ export const CalendarPage = () => {
         </div>
       </div>
 
-      {/* =========================================
-                      VISTA GIORNO
-          ========================================= */}
+      {/* VISTA GIORNO */}
       {view === "day" && (
         <div className="flex flex-col gap-4">
           {/* NAVIGAZIONE SETTIMANA */}
@@ -232,11 +331,7 @@ export const CalendarPage = () => {
                     onClick={() => handleDayChange(new Date(date))}
                     className={`
                       flex flex-col items-center py-2 px-2 rounded-xl flex-1 transition-all
-                      ${
-                        isSel
-                          ? "bg-gray-900 dark:bg-white"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                      }
+                      ${isSel ? "bg-gray-900 dark:bg-white" : "hover:bg-gray-100 dark:hover:bg-gray-800"}
                     `}
                   >
                     <span
@@ -272,7 +367,7 @@ export const CalendarPage = () => {
             </button>
           </div>
 
-          {/* RIEPILOGO GIORNO */}
+          {/* RIEPILOGO */}
           {confirmedCount > 0 && (
             <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -305,116 +400,117 @@ export const CalendarPage = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-1.5">
-              {timeline.map((slot) => (
-                <div
-                  key={`${slot.time}-${slot.status}`}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl border transition-all
-                    ${
-                      slot.status === "confirmed"
-                        ? "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900"
-                        : slot.status === "pending"
-                          ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900"
-                          : "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700"
-                    }
-                  `}
-                >
-                  {/* ORARIO */}
-                  <div className="w-20 shrink-0">
-                    <p
-                      className={`text-sm font-semibold ${
-                        slot.status === "confirmed"
-                          ? "text-green-700 dark:text-green-400"
-                          : slot.status === "pending"
-                            ? "text-yellow-700 dark:text-yellow-400"
-                            : "text-gray-400 dark:text-gray-600"
-                      }`}
-                    >
-                      {slot.time}
-                    </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-600">
-                      {slot.endTime}
-                    </p>
-                  </div>
-
-                  {/* BARRA COLORATA */}
+              {timeline.map((slot) => {
+                const past = isSlotPast(slot.time);
+                return (
                   <div
-                    className={`w-0.5 h-10 rounded-full shrink-0 ${
-                      slot.status === "confirmed"
-                        ? "bg-green-400"
-                        : slot.status === "pending"
-                          ? "bg-yellow-400"
-                          : "bg-gray-200 dark:bg-gray-700"
-                    }`}
-                  />
-
-                  {/* CONTENUTO */}
-                  {slot.status === "free" ? (
-                    <div className="flex items-center justify-between flex-1">
-                      <span className="text-sm text-gray-400 dark:text-gray-600">
-                        Disponibile
-                      </span>
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                        <PlusIcon size={12} weight="bold" />
-                        Prenota
-                      </button>
+                    key={`${slot.time}-${slot.status}`}
+                    className={`
+                      flex items-center gap-3 px-4 py-3 rounded-xl border transition-all
+                      ${past ? "opacity-40 pointer-events-none" : ""}
+                      ${slot.status === "confirmed" ? "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900" : ""}
+                      ${slot.status === "pending" ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900" : ""}
+                      ${slot.status === "free" ? "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700" : ""}
+                    `}
+                  >
+                    {/* ORARIO */}
+                    <div className="w-20 shrink-0">
+                      <p
+                        className={`text-sm font-semibold ${
+                          slot.status === "confirmed"
+                            ? "text-green-700 dark:text-green-400"
+                            : slot.status === "pending"
+                              ? "text-yellow-700 dark:text-yellow-400"
+                              : "text-gray-400 dark:text-gray-600"
+                        }`}
+                      >
+                        {slot.time}
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-600">
+                        {slot.endTime}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="flex items-center justify-between flex-1 min-w-0">
-                      <div className="min-w-0">
-                        <p
-                          className={`text-sm font-semibold truncate ${
-                            slot.status === "confirmed"
-                              ? "text-gray-900 dark:text-white"
-                              : "text-gray-700 dark:text-gray-300"
-                          }`}
+
+                    {/* BARRA */}
+                    <div
+                      className={`w-0.5 h-10 rounded-full shrink-0 ${
+                        slot.status === "confirmed"
+                          ? "bg-green-400"
+                          : slot.status === "pending"
+                            ? "bg-yellow-400"
+                            : "bg-gray-200 dark:bg-gray-700"
+                      }`}
+                    />
+
+                    {/* CONTENUTO */}
+                    {slot.status === "free" ? (
+                      <div className="flex items-center justify-between flex-1">
+                        <span className="text-sm text-gray-400 dark:text-gray-600">
+                          Disponibile
+                        </span>
+                        <button
+                          onClick={() => handleOpenBookingModal(slot)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
-                          {slot.booking?.customerName}
-                        </p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span
-                            className={`text-xs flex items-center gap-1 ${
+                          <PlusIcon size={12} weight="bold" />
+                          Prenota
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between flex-1 min-w-0">
+                        <div className="min-w-0">
+                          <p
+                            className={`text-sm font-semibold truncate ${
                               slot.status === "confirmed"
-                                ? "text-green-600 dark:text-green-500"
-                                : "text-yellow-600 dark:text-yellow-500"
+                                ? "text-gray-900 dark:text-white"
+                                : "text-gray-700 dark:text-gray-300"
                             }`}
                           >
-                            <ScissorsIcon size={10} weight="duotone" />
-                            {slot.booking?.serviceName}
-                          </span>
-                          <span className="text-xs text-gray-400 flex items-center gap-1">
-                            <ClockIcon size={10} weight="duotone" />
-                            {slot.booking
-                              ? formatDuration(slot.booking.duration)
-                              : ""}
-                          </span>
+                            {slot.booking?.customerName}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span
+                              className={`text-xs flex items-center gap-1 ${
+                                slot.status === "confirmed"
+                                  ? "text-green-600 dark:text-green-500"
+                                  : "text-yellow-600 dark:text-yellow-500"
+                              }`}
+                            >
+                              <ScissorsIcon size={10} weight="duotone" />
+                              {slot.booking?.serviceName}
+                            </span>
+                            <span className="text-xs text-gray-400 flex items-center gap-1">
+                              <ClockIcon size={10} weight="duotone" />
+                              {slot.booking
+                                ? formatDuration(slot.booking.duration)
+                                : ""}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          {slot.booking?.price != null && (
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                              €{slot.booking.price.toFixed(2)}
+                            </p>
+                          )}
+                          {slot.status === "pending" && (
+                            <span className="text-xs bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 px-2 py-0.5 rounded-full">
+                              OTP atteso
+                            </span>
+                          )}
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-3 shrink-0">
-                        {slot.booking?.price != null && (
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                            €{slot.booking.price.toFixed(2)}
-                          </p>
-                        )}
-                        {slot.status === "pending" && (
-                          <span className="text-xs bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 px-2 py-0.5 rounded-full">
-                            OTP atteso
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
       )}
 
-      {/* =========================================
-                      VISTA MESE
-          ========================================= */}
+      {/* VISTA MESE */}
       {view === "month" && (
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
@@ -487,31 +583,195 @@ export const CalendarPage = () => {
                   `}
                 >
                   <span
-                    className={`
-                    text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center
-                    ${
+                    className={`text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center ${
                       isToday(day)
                         ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
                         : "text-gray-900 dark:text-white"
-                    }
-                  `}
+                    }`}
                   >
                     {day}
                   </span>
-
                   {count > 0 && (
-                    <div className="mt-1">
-                      <div className="flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {count} prev.
-                        </span>
-                      </div>
+                    <div className="mt-1 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {count} prev.
+                      </span>
                     </div>
                   )}
                 </button>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PRENOTAZIONE MANUALE */}
+      {bookingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setBookingModal(false)}
+          />
+          <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+              <div>
+                <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                  Nuova prenotazione
+                </h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  {formatDateOnly(selectedDate)} alle {selectedSlot?.time}
+                </p>
+              </div>
+              <button
+                onClick={() => setBookingModal(false)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <XIcon size={18} />
+              </button>
+            </div>
+
+            <div className="px-6 py-4 flex flex-col gap-4">
+              {bookingSuccess ? (
+                <div className="text-center py-6">
+                  <div className="text-4xl mb-3">✅</div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Prenotazione confermata!
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* SERVIZIO */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Servizio *
+                    </label>
+                    <select
+                      value={bookingForm.serviceId}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          serviceId: e.target.value,
+                        })
+                      }
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
+                    >
+                      {services.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} - {s.duration}min
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* NOME */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Nome *
+                    </label>
+                    <input
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      placeholder="es. Mario"
+                      value={bookingForm.firstName}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          firstName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  {/* COGNOME (opzionale) */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Cognome{" "}
+                      <span className="text-gray-400 font-normal">
+                        (opzionale)
+                      </span>
+                    </label>
+                    <input
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      placeholder="es. Rossi"
+                      value={bookingForm.lastName}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          lastName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  {/* EMAIL (opzionale) */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Email{" "}
+                      <span className="text-gray-400 font-normal">
+                        (opzionale)
+                      </span>
+                    </label>
+                    <input
+                      type="email"
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      placeholder="mario@example.com"
+                      value={bookingForm.email}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          email: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  {/* TELEFONO (opzionale) */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Telefono{" "}
+                      <span className="text-gray-400 font-normal">
+                        (opzionale)
+                      </span>
+                    </label>
+                    <input
+                      type="tel"
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      placeholder="+39 333 1234567"
+                      value={bookingForm.phone}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          phone: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  {bookingError && (
+                    <p className="text-sm text-red-500">{bookingError}</p>
+                  )}
+
+                  <div className="flex gap-3 pt-1">
+                    <button
+                      onClick={() => setBookingModal(false)}
+                      className="flex-1 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Annulla
+                    </button>
+                    <button
+                      onClick={handleManualBooking}
+                      disabled={bookingLoading}
+                      className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-100 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                    >
+                      {bookingLoading && (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white dark:border-gray-900/30 dark:border-t-gray-900 rounded-full animate-spin" />
+                      )}
+                      Conferma
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

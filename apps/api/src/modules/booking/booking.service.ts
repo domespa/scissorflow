@@ -623,6 +623,22 @@ export const bookingService = {
   // =========================================
 
   // =========================================
+  //         CONFERMA SENZA OTP ADMIN
+  // =========================================
+  async confirmBookingAdmin(bookingId: string) {
+    const booking = await bookingRepository.findById(bookingId);
+    if (!booking) throw new Error("BOOKING_NOT_FOUND");
+    await bookingRepository.confirmBooking(bookingId);
+
+    io.to(booking.shopId).emit("slot:confirmed", {
+      shopId: booking.shopId,
+      startAt: booking.startAt.toISOString(),
+      endAt: booking.endAt.toISOString(),
+    });
+  },
+  // =========================================
+
+  // =========================================
   //           CANCELLA PRENOTAZIONE
   // =========================================
   async cancelBooking(bookingId: string) {

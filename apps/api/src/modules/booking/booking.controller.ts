@@ -117,6 +117,24 @@ export const bookingController = {
   // =========================================
 
   // =========================================
+  //              CONFERMA SENZA OTP
+  // =========================================
+  async confirmBookingAdmin(req: Request, res: Response) {
+    try {
+      const { bookingId } = req.body;
+      await bookingService.confirmBookingAdmin(bookingId);
+      res.status(200).json({ message: "Prenotazione confermata" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "BOOKING_NOT_FOUND") {
+        res.status(404).json({ message: "Prenotazione non trovata" });
+        return;
+      }
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+  // =========================================
+
+  // =========================================
   //           CANCELLA PRENOTAZIONE
   // =========================================
   async cancelBooking(req: Request, res: Response) {

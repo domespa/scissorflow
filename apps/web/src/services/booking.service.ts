@@ -52,6 +52,11 @@ export const bookingService = {
     await api.post("/bookings/confirm", data);
   },
 
+  // CONFERMA ADMIN SENZA OTP
+  async confirmBookingAdmin(bookingId: string): Promise<void> {
+    await api.post("/bookings/confirm-admin", { bookingId });
+  },
+
   // CANCELLA PRENOTAZIONE
   async cancelBooking(bookingId: string): Promise<void> {
     await api.post("/bookings/cancel", { bookingId });
