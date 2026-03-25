@@ -178,18 +178,21 @@ export const bookingRepository = {
   // TROVA PRENOTAZIONI PER REMINDER
   async findBookingsForReminder(hoursFromNow: number) {
     const now = new Date();
-    const target = new Date();
-    target.setHours(target.getHours() + hoursFromNow);
+    const windowFrom = new Date(
+      now.getTime() + (hoursFromNow - 1) * 60 * 60 * 1000,
+    );
+    const windowTo = new Date(
+      now.getTime() + (hoursFromNow + 1) * 60 * 60 * 1000,
+    );
+
+    const field =
+      hoursFromNow === 24 ? "reminder24hSentAt" : "reminder2hSentAt";
 
     return prisma.booking.findMany({
       where: {
         status: "CONFIRMED",
-        startAt: {
-          gte: now,
-          lte: target,
-        },
-        // SOLO SE NON GIA' MANDATO
-        reminderSentAt: null,
+        startAt: { gte: windowFrom, lte: windowTo },
+        [field]: null,
       },
       include: {
         customer: true,
@@ -200,10 +203,15 @@ export const bookingRepository = {
   },
 
   // MARCA REMINDER COME INVIATO
-  async markReminderSent(bookingId: string) {
+  async markReminderSent(bookingId: string, hoursFromNow: number) {
+    const data =
+      hoursFromNow === 24
+        ? { reminder24hSentAt: new Date() }
+        : { reminder2hSentAt: new Date() };
+
     return prisma.booking.update({
       where: { id: bookingId },
-      data: { reminderSentAt: new Date() },
+      data,
     });
   },
 
@@ -241,8 +249,6 @@ export const bookingRepository = {
     const [year, month, day] = date.split("-").map(Number);
     const startOfDay = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
     const endOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
-
-    console.log("SEARCHING BOOKINGS:", { shopId, startOfDay, endOfDay });
 
     return prisma.booking.findMany({
       where: {

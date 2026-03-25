@@ -3,6 +3,14 @@ import { env } from "@/config/env";
 
 const resend = new Resend(env.RESEND_API_KEY);
 
+// HELPER PER COSTRUIRE IL FROM
+const buildFrom = (shopName?: string) => {
+  if (shopName) {
+    return `${shopName} <${env.EMAIL_FROM.split("<")[1]?.replace(">", "") ?? env.EMAIL_FROM}>`;
+  }
+  return env.EMAIL_FROM;
+};
+
 export const notificationService = {
   // =========================================
   //            OTP AL CLIENTE
@@ -12,11 +20,12 @@ export const notificationService = {
     firstName: string;
     otpCode: string;
     expiresInMinutes: number;
+    shopName?: string;
   }) {
     await resend.emails.send({
-      from: env.EMAIL_FROM,
+      from: buildFrom(data.shopName),
       to: data.to,
-      subject: "Il tuo codice di conferma - ScissorFlow",
+      subject: `Il tuo codice di conferma${data.shopName ? ` - ${data.shopName}` : ""}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">Ciao ${data.firstName}!</h2>
@@ -61,7 +70,7 @@ export const notificationService = {
     });
 
     await resend.emails.send({
-      from: env.EMAIL_FROM,
+      from: buildFrom(data.shopName),
       to: data.to,
       subject: `Prenotazione confermata - ${data.shopName}`,
       html: `
@@ -148,7 +157,7 @@ export const notificationService = {
     });
 
     await resend.emails.send({
-      from: env.EMAIL_FROM,
+      from: buildFrom(data.shopName),
       to: data.to,
       subject: `Promemoria - ${data.hoursUntil === 24 ? "domani" : "tra 2 ore"} hai un appuntamento`,
       html: `

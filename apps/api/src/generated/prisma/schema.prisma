@@ -172,11 +172,13 @@ model Booking {
   endAt      DateTime
   status     BookingStatus @default(PENDING)
 
-  otpCode        String?
-  otpExpiresAt   DateTime?
-  lockedAt       DateTime?
-  lockedUntil    DateTime?
-  reminderSentAt DateTime?
+  otpCode      String?
+  otpExpiresAt DateTime?
+  lockedAt     DateTime?
+  lockedUntil  DateTime?
+
+  reminder24hSentAt DateTime?
+  reminder2hSentAt  DateTime?
 
   recurrenceGroupId String?
 

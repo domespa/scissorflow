@@ -483,6 +483,8 @@ export const bookingService = {
     }
 
     const service = await shopRepository.findServicesById(input.serviceId);
+    const shop = await shopRepository.findById(input.shopId);
+    const shopName = shop?.name ?? "ScissorFlow";
     if (!service) throw new Error("SERVICE_NOT_FOUND");
 
     const endAt = new Date(startAt.getTime() + service.duration * 60000);
@@ -545,6 +547,7 @@ export const bookingService = {
         firstName: input.customer.firstName,
         otpCode,
         expiresInMinutes: 5,
+        shopName,
       });
     }
 

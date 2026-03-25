@@ -12103,7 +12103,8 @@ export namespace Prisma {
     otpExpiresAt: Date | null
     lockedAt: Date | null
     lockedUntil: Date | null
-    reminderSentAt: Date | null
+    reminder24hSentAt: Date | null
+    reminder2hSentAt: Date | null
     recurrenceGroupId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -12121,7 +12122,8 @@ export namespace Prisma {
     otpExpiresAt: Date | null
     lockedAt: Date | null
     lockedUntil: Date | null
-    reminderSentAt: Date | null
+    reminder24hSentAt: Date | null
+    reminder2hSentAt: Date | null
     recurrenceGroupId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -12139,7 +12141,8 @@ export namespace Prisma {
     otpExpiresAt: number
     lockedAt: number
     lockedUntil: number
-    reminderSentAt: number
+    reminder24hSentAt: number
+    reminder2hSentAt: number
     recurrenceGroupId: number
     createdAt: number
     updatedAt: number
@@ -12159,7 +12162,8 @@ export namespace Prisma {
     otpExpiresAt?: true
     lockedAt?: true
     lockedUntil?: true
-    reminderSentAt?: true
+    reminder24hSentAt?: true
+    reminder2hSentAt?: true
     recurrenceGroupId?: true
     createdAt?: true
     updatedAt?: true
@@ -12177,7 +12181,8 @@ export namespace Prisma {
     otpExpiresAt?: true
     lockedAt?: true
     lockedUntil?: true
-    reminderSentAt?: true
+    reminder24hSentAt?: true
+    reminder2hSentAt?: true
     recurrenceGroupId?: true
     createdAt?: true
     updatedAt?: true
@@ -12195,7 +12200,8 @@ export namespace Prisma {
     otpExpiresAt?: true
     lockedAt?: true
     lockedUntil?: true
-    reminderSentAt?: true
+    reminder24hSentAt?: true
+    reminder2hSentAt?: true
     recurrenceGroupId?: true
     createdAt?: true
     updatedAt?: true
@@ -12286,7 +12292,8 @@ export namespace Prisma {
     otpExpiresAt: Date | null
     lockedAt: Date | null
     lockedUntil: Date | null
-    reminderSentAt: Date | null
+    reminder24hSentAt: Date | null
+    reminder2hSentAt: Date | null
     recurrenceGroupId: string | null
     createdAt: Date
     updatedAt: Date
@@ -12321,7 +12328,8 @@ export namespace Prisma {
     otpExpiresAt?: boolean
     lockedAt?: boolean
     lockedUntil?: boolean
-    reminderSentAt?: boolean
+    reminder24hSentAt?: boolean
+    reminder2hSentAt?: boolean
     recurrenceGroupId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -12343,7 +12351,8 @@ export namespace Prisma {
     otpExpiresAt?: boolean
     lockedAt?: boolean
     lockedUntil?: boolean
-    reminderSentAt?: boolean
+    reminder24hSentAt?: boolean
+    reminder2hSentAt?: boolean
     recurrenceGroupId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -12365,7 +12374,8 @@ export namespace Prisma {
     otpExpiresAt?: boolean
     lockedAt?: boolean
     lockedUntil?: boolean
-    reminderSentAt?: boolean
+    reminder24hSentAt?: boolean
+    reminder2hSentAt?: boolean
     recurrenceGroupId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -12387,13 +12397,14 @@ export namespace Prisma {
     otpExpiresAt?: boolean
     lockedAt?: boolean
     lockedUntil?: boolean
-    reminderSentAt?: boolean
+    reminder24hSentAt?: boolean
+    reminder2hSentAt?: boolean
     recurrenceGroupId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "customerId" | "serviceId" | "startAt" | "endAt" | "status" | "otpCode" | "otpExpiresAt" | "lockedAt" | "lockedUntil" | "reminderSentAt" | "recurrenceGroupId" | "createdAt" | "updatedAt", ExtArgs["result"]["booking"]>
+  export type BookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "customerId" | "serviceId" | "startAt" | "endAt" | "status" | "otpCode" | "otpExpiresAt" | "lockedAt" | "lockedUntil" | "reminder24hSentAt" | "reminder2hSentAt" | "recurrenceGroupId" | "createdAt" | "updatedAt", ExtArgs["result"]["booking"]>
   export type BookingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     shop?: boolean | ShopDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
@@ -12433,7 +12444,8 @@ export namespace Prisma {
       otpExpiresAt: Date | null
       lockedAt: Date | null
       lockedUntil: Date | null
-      reminderSentAt: Date | null
+      reminder24hSentAt: Date | null
+      reminder2hSentAt: Date | null
       recurrenceGroupId: string | null
       createdAt: Date
       updatedAt: Date
@@ -12875,7 +12887,8 @@ export namespace Prisma {
     readonly otpExpiresAt: FieldRef<"Booking", 'DateTime'>
     readonly lockedAt: FieldRef<"Booking", 'DateTime'>
     readonly lockedUntil: FieldRef<"Booking", 'DateTime'>
-    readonly reminderSentAt: FieldRef<"Booking", 'DateTime'>
+    readonly reminder24hSentAt: FieldRef<"Booking", 'DateTime'>
+    readonly reminder2hSentAt: FieldRef<"Booking", 'DateTime'>
     readonly recurrenceGroupId: FieldRef<"Booking", 'String'>
     readonly createdAt: FieldRef<"Booking", 'DateTime'>
     readonly updatedAt: FieldRef<"Booking", 'DateTime'>
@@ -14564,7 +14577,8 @@ export namespace Prisma {
     otpExpiresAt: 'otpExpiresAt',
     lockedAt: 'lockedAt',
     lockedUntil: 'lockedUntil',
-    reminderSentAt: 'reminderSentAt',
+    reminder24hSentAt: 'reminder24hSentAt',
+    reminder2hSentAt: 'reminder2hSentAt',
     recurrenceGroupId: 'recurrenceGroupId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -15318,7 +15332,8 @@ export namespace Prisma {
     otpExpiresAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     lockedAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     lockedUntil?: DateTimeNullableFilter<"Booking"> | Date | string | null
-    reminderSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
+    reminder24hSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
+    reminder2hSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     recurrenceGroupId?: StringNullableFilter<"Booking"> | string | null
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     updatedAt?: DateTimeFilter<"Booking"> | Date | string
@@ -15340,7 +15355,8 @@ export namespace Prisma {
     otpExpiresAt?: SortOrderInput | SortOrder
     lockedAt?: SortOrderInput | SortOrder
     lockedUntil?: SortOrderInput | SortOrder
-    reminderSentAt?: SortOrderInput | SortOrder
+    reminder24hSentAt?: SortOrderInput | SortOrder
+    reminder2hSentAt?: SortOrderInput | SortOrder
     recurrenceGroupId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15365,7 +15381,8 @@ export namespace Prisma {
     otpExpiresAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     lockedAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     lockedUntil?: DateTimeNullableFilter<"Booking"> | Date | string | null
-    reminderSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
+    reminder24hSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
+    reminder2hSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     recurrenceGroupId?: StringNullableFilter<"Booking"> | string | null
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     updatedAt?: DateTimeFilter<"Booking"> | Date | string
@@ -15387,7 +15404,8 @@ export namespace Prisma {
     otpExpiresAt?: SortOrderInput | SortOrder
     lockedAt?: SortOrderInput | SortOrder
     lockedUntil?: SortOrderInput | SortOrder
-    reminderSentAt?: SortOrderInput | SortOrder
+    reminder24hSentAt?: SortOrderInput | SortOrder
+    reminder2hSentAt?: SortOrderInput | SortOrder
     recurrenceGroupId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15411,7 +15429,8 @@ export namespace Prisma {
     otpExpiresAt?: DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
     lockedAt?: DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
     lockedUntil?: DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
-    reminderSentAt?: DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
+    reminder24hSentAt?: DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
+    reminder2hSentAt?: DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
     recurrenceGroupId?: StringNullableWithAggregatesFilter<"Booking"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Booking"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Booking"> | Date | string
@@ -16093,7 +16112,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     shop: ShopCreateNestedOneWithoutBookingsInput
@@ -16114,7 +16134,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16129,7 +16150,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     shop?: ShopUpdateOneRequiredWithoutBookingsNestedInput
@@ -16150,7 +16172,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16168,7 +16191,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16183,7 +16207,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16200,7 +16225,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16904,7 +16930,8 @@ export namespace Prisma {
     otpExpiresAt?: SortOrder
     lockedAt?: SortOrder
     lockedUntil?: SortOrder
-    reminderSentAt?: SortOrder
+    reminder24hSentAt?: SortOrder
+    reminder2hSentAt?: SortOrder
     recurrenceGroupId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16922,7 +16949,8 @@ export namespace Prisma {
     otpExpiresAt?: SortOrder
     lockedAt?: SortOrder
     lockedUntil?: SortOrder
-    reminderSentAt?: SortOrder
+    reminder24hSentAt?: SortOrder
+    reminder2hSentAt?: SortOrder
     recurrenceGroupId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16940,7 +16968,8 @@ export namespace Prisma {
     otpExpiresAt?: SortOrder
     lockedAt?: SortOrder
     lockedUntil?: SortOrder
-    reminderSentAt?: SortOrder
+    reminder24hSentAt?: SortOrder
+    reminder2hSentAt?: SortOrder
     recurrenceGroupId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18029,7 +18058,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customer: CustomerCreateNestedOneWithoutBookingsInput
@@ -18048,7 +18078,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18262,7 +18293,8 @@ export namespace Prisma {
     otpExpiresAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     lockedAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     lockedUntil?: DateTimeNullableFilter<"Booking"> | Date | string | null
-    reminderSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
+    reminder24hSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
+    reminder2hSentAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     recurrenceGroupId?: StringNullableFilter<"Booking"> | string | null
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     updatedAt?: DateTimeFilter<"Booking"> | Date | string
@@ -18645,7 +18677,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     shop: ShopCreateNestedOneWithoutBookingsInput
@@ -18664,7 +18697,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18898,7 +18932,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     shop: ShopCreateNestedOneWithoutBookingsInput
@@ -18917,7 +18952,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18958,7 +18994,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     shop: ShopCreateNestedOneWithoutBookingsInput
@@ -18978,7 +19015,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19336,7 +19374,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19443,7 +19482,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneRequiredWithoutBookingsNestedInput
@@ -19462,7 +19502,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19479,7 +19520,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19574,7 +19616,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19589,7 +19632,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     shop?: ShopUpdateOneRequiredWithoutBookingsNestedInput
@@ -19608,7 +19652,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19625,7 +19670,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19642,7 +19688,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     recurrenceGroupId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19657,7 +19704,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     shop?: ShopUpdateOneRequiredWithoutBookingsNestedInput
@@ -19676,7 +19724,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19693,7 +19742,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurrenceGroupId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19711,7 +19761,8 @@ export namespace Prisma {
     otpExpiresAt?: Date | string | null
     lockedAt?: Date | string | null
     lockedUntil?: Date | string | null
-    reminderSentAt?: Date | string | null
+    reminder24hSentAt?: Date | string | null
+    reminder2hSentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19725,7 +19776,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     shop?: ShopUpdateOneRequiredWithoutBookingsNestedInput
@@ -19745,7 +19797,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19762,7 +19815,8 @@ export namespace Prisma {
     otpExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reminderSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reminder2hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

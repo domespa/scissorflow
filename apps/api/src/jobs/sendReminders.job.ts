@@ -19,7 +19,7 @@ export const sendRemindersJob = cron.createTask("0 * * * *", async () => {
           cancelUrl: `${env.CLIENT_URL}/cancel/${booking.id}`,
           hoursUntil: 24,
         });
-        await bookingRepository.markReminderSent(booking.id);
+        await bookingRepository.markReminderSent(booking.id, 24);
       }
     }
 
@@ -36,7 +36,7 @@ export const sendRemindersJob = cron.createTask("0 * * * *", async () => {
           cancelUrl: `${env.CLIENT_URL}/cancel/${booking.id}`,
           hoursUntil: 2,
         });
-        await bookingRepository.markReminderSent(booking.id);
+        await bookingRepository.markReminderSent(booking.id, 2);
       }
     }
 
