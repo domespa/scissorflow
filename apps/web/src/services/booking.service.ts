@@ -90,4 +90,24 @@ export const bookingService = {
     const response = await api.get(`/bookings/public/${bookingId}`);
     return response.data;
   },
+
+  // ANALYTICS
+  async getAnalytics(): Promise<{
+    thisMonth: { bookings: number; revenue: number; noShowRate: number };
+    byMonth: { month: string; bookings: number; revenue: number }[];
+    byDayOfWeek: { day: string; bookings: number }[];
+    topServices: { name: string; count: number; revenue: number }[];
+  }> {
+    const response = await api.get("/bookings/analytics");
+    return response.data;
+  },
+
+  // NO-SHOW
+  async markNoShow(bookingId: string): Promise<void> {
+    await api.post("/bookings/no-show", { bookingId });
+  },
+
+  async undoNoShow(bookingId: string): Promise<void> {
+    await api.post("/bookings/undo-no-show", { bookingId });
+  },
 };

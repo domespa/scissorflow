@@ -10,17 +10,10 @@ import { io } from "@/server";
 import { notificationService } from "../notification/notification.service";
 import { env } from "@/config/env";
 
-// =========================================
-//              GENERAZIONE OTP
-// =========================================
 const generateOTP = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
-// =========================================
 
-// =========================================
-//             GENERAZIONE SLOTS
-// =========================================
 const generateTimeSlots = (
   startTime: string,
   endTime: string,
@@ -71,11 +64,7 @@ const generateTimeSlots = (
 
   return slots;
 };
-// =========================================
 
-// =========================================
-//          CALCOLA DATA RICORRENZA
-// =========================================
 const getNextRecurrenceDate = (
   date: Date,
   type: "WEEKLY" | "MONTHLY",
@@ -116,9 +105,7 @@ export const bookingService = {
     const requestedMonth = new Date(year, month - 1, 1);
     const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    if (requestedMonth < currentMonth) {
-      return {};
-    }
+    if (requestedMonth < currentMonth) return {};
 
     const shop = await shopRepository.findById(input.shopId);
     if (!shop) throw new Error("SHOP_NOT_FOUND");
@@ -138,6 +125,7 @@ export const bookingService = {
         status: "free" | "pending" | "confirmed";
       }[];
     } = {};
+
     const daysInMonth = new Date(year, month, 0).getDate();
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -181,7 +169,8 @@ export const bookingService = {
         continue;
       }
 
-      const slotInterval = shop.config?.slotInterval ?? 30;
+      const baseInterval = shop.config?.slotInterval ?? 30;
+      const slotInterval = Math.min(baseInterval, service.duration);
       const slotMode = shop.config?.slotMode ?? "FIXED";
 
       let allSlots = availabilities.flatMap((availability) =>
@@ -286,9 +275,7 @@ export const bookingService = {
               return slotEnd <= availEnd;
             });
 
-            if (fitsInAvailability) {
-              dynamicSlots.push(endSlot);
-            }
+            if (fitsInAvailability) dynamicSlots.push(endSlot);
           }
         }
 
@@ -326,9 +313,7 @@ export const bookingService = {
         a.time.localeCompare(b.time),
       );
 
-      if (allWithStatus.length > 0) {
-        result[dateKey] = allWithStatus;
-      }
+      if (allWithStatus.length > 0) result[dateKey] = allWithStatus;
     }
 
     return result;
@@ -405,7 +390,7 @@ export const bookingService = {
     type TimelineSlot = {
       time: string;
       endTime: string;
-      status: "free" | "pending" | "confirmed";
+      status: "free" | "pending" | "confirmed" | "noshow";
       booking?: {
         id: string;
         customerName: string;
@@ -422,6 +407,17 @@ export const bookingService = {
       const [h, m] = slot.split(":").map(Number);
       const slotStart = new Date(year, month - 1, day, h, m, 0, 0);
 
+      // SALTA SE COPERTO DA PRENOTAZIONE GIÀ AGGIUNTA
+      const isCoveredByAdded = [...addedBookingIds].some((id) => {
+        const bk = bookings.find((b) => b.id === id);
+        if (!bk) return false;
+        const bStart = new Date(bk.startAt);
+        const bEnd = new Date(bk.endAt);
+        return slotStart >= bStart && slotStart < bEnd;
+      });
+
+      if (isCoveredByAdded) continue;
+
       // CERCA PRENOTAZIONE CHE COPRE QUESTO SLOT
       const booking = bookings.find((b) => {
         const bStart = new Date(b.startAt);
@@ -430,7 +426,6 @@ export const bookingService = {
       });
 
       if (booking) {
-        // SE PRENOTAZIONE GIÀ AGGIUNTA SALTA
         if (addedBookingIds.has(booking.id)) continue;
         addedBookingIds.add(booking.id);
 
@@ -441,7 +436,12 @@ export const bookingService = {
         timeline.push({
           time: slot,
           endTime: `${endH}:${endM}`,
-          status: booking.status === "PENDING" ? "pending" : "confirmed",
+          status:
+            booking.status === "PENDING"
+              ? "pending"
+              : booking.status === "NO_SHOW"
+                ? "noshow"
+                : "confirmed",
           booking: {
             id: booking.id,
             customerName: `${booking.customer.firstName} ${booking.customer.lastName}`,
@@ -632,14 +632,6 @@ export const bookingService = {
       });
     }
 
-    console.log("📧 Nuova prenotazione confermata:", {
-      customer: `${booking.customer.firstName} ${booking.customer.lastName}`,
-      service: booking.service.name,
-      startAt: booking.startAt.toLocaleString("it-IT", {
-        timeZone: "Europe/Rome",
-      }),
-    });
-
     io.to(booking.shopId).emit("slot:confirmed", {
       shopId: booking.shopId,
       startAt: booking.startAt.toISOString(),
@@ -664,14 +656,12 @@ export const bookingService = {
       endAt: booking.endAt.toISOString(),
     });
   },
-  // =========================================
 
   // =========================================
   //           CANCELLA PRENOTAZIONE
   // =========================================
   async cancelBooking(bookingId: string) {
     const booking = await bookingRepository.findById(bookingId);
-
     if (!booking) throw new Error("BOOKING_NOT_FOUND");
 
     const twoHoursFromNow = new Date(Date.now() + 2 * 60 * 60 * 1000);
@@ -687,6 +677,36 @@ export const bookingService = {
       endAt: booking.endAt.toISOString(),
     });
   },
+  // =========================================
+
+  // =========================================
+  //              NO-SHOW
+  // =========================================
+  async markNoShow(bookingId: string) {
+    const booking = await bookingRepository.findById(bookingId);
+    if (!booking) throw new Error("BOOKING_NOT_FOUND");
+    await bookingRepository.updateStatus(bookingId, "NO_SHOW");
+
+    io.to(booking.shopId).emit("slot:cancelled", {
+      shopId: booking.shopId,
+      startAt: booking.startAt.toISOString(),
+      endAt: booking.endAt.toISOString(),
+    });
+  },
+
+  async undoNoShow(bookingId: string) {
+    const booking = await bookingRepository.findById(bookingId);
+    if (!booking) throw new Error("BOOKING_NOT_FOUND");
+    if (booking.status !== "NO_SHOW") throw new Error("BOOKING_NOT_NO_SHOW");
+    await bookingRepository.updateStatus(bookingId, "CONFIRMED");
+
+    io.to(booking.shopId).emit("slot:confirmed", {
+      shopId: booking.shopId,
+      startAt: booking.startAt.toISOString(),
+      endAt: booking.endAt.toISOString(),
+    });
+  },
+  // =========================================
 
   // =========================================
   //           PRENOTAZIONI GIORNO/MESE
@@ -708,4 +728,5 @@ export const bookingService = {
     if (!booking) throw new Error("BOOKING_NOT_FOUND");
     return booking;
   },
+  // =========================================
 };

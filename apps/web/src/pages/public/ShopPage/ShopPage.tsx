@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
   ScissorsIcon,
   ClockIcon,
   CaretLeftIcon,
   CaretRightIcon,
+  RepeatIcon,
 } from "@phosphor-icons/react";
 import { shopService } from "@/services/shop.service";
 import { bookingService } from "@/services/booking.service";
@@ -26,10 +27,23 @@ const MONTHS_IT = [
   "Nov",
   "Dic",
 ];
+const CACHE_TTL_MS = 3 * 60 * 1000;
 
 type BookingModalStep = "form" | "otp" | "confirmed";
 type SlotStatus = "free" | "pending" | "confirmed";
 type SlotWithStatus = { time: string; status: SlotStatus };
+type RecurrenceConfig = {
+  enabled: boolean;
+  type: "WEEKLY" | "MONTHLY";
+  repeat: number;
+};
+
+type ServiceSlots = {
+  data: Record<string, SlotWithStatus[]>;
+  loadedAt: number;
+  loading: boolean;
+  loadedMonths: Set<string>;
+};
 
 export const ShopPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -38,15 +52,16 @@ export const ShopPage = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  const [slots, setSlots] = useState<Record<string, SlotWithStatus[]>>({});
-  const [loadingSlots, setLoadingSlots] = useState(false);
+  // CACHE SLOT PER SERVIZIO
+  const [slotsCache, setSlotsCache] = useState<Record<string, ServiceSlots>>(
+    {},
+  );
+  const prefetchedRef = useRef<Set<string>>(new Set());
+
   const [selectedService, setSelectedService] = useState<ServiceDTO | null>(
     null,
   );
   const [weekOffset, setWeekOffset] = useState(0);
-
-  // MESI GIÀ CARICATI
-  const loadedMonths = useRef<Set<string>>(new Set());
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -65,6 +80,11 @@ export const ShopPage = () => {
     phone: "",
     otp: "",
   });
+  const [recurrence, setRecurrence] = useState<RecurrenceConfig>({
+    enabled: false,
+    type: "WEEKLY",
+    repeat: 4,
+  });
 
   const isSlotPast = (dateStr: string, time: string) => {
     const [h, m] = time.split(":").map(Number);
@@ -72,6 +92,110 @@ export const ShopPage = () => {
     slotDate.setHours(h, m, 0, 0);
     return slotDate < new Date();
   };
+
+  // CARICA SLOT PER UN SERVIZIO
+  const loadServiceSlots = useCallback(
+    async (shopId: string, serviceId: string, forceReload = false) => {
+      setSlotsCache((prev) => {
+        const existing = prev[serviceId];
+        // SE GIÀ IN CACHE, SALTA
+        if (
+          !forceReload &&
+          existing &&
+          !existing.loading &&
+          Date.now() - existing.loadedAt < CACHE_TTL_MS
+        ) {
+          return prev;
+        }
+        // IMPOSTA LOADING MA MANTIENI DATI ESISTENTI
+        return {
+          ...prev,
+          [serviceId]: {
+            data: existing?.data ?? {},
+            loadedAt: existing?.loadedAt ?? 0,
+            loading: true,
+            loadedMonths: existing?.loadedMonths ?? new Set(),
+          },
+        };
+      });
+
+      try {
+        const today = new Date();
+        const thisMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+        const nextMonthDate = new Date(
+          today.getFullYear(),
+          today.getMonth() + 1,
+          1,
+        );
+        const nextMonth = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2, "0")}`;
+
+        const [thisMonthSlots, nextMonthSlots] = await Promise.all([
+          bookingService.getMonthSlots(shopId, serviceId, thisMonth),
+          bookingService.getMonthSlots(shopId, serviceId, nextMonth),
+        ]);
+
+        setSlotsCache((prev) => ({
+          ...prev,
+          [serviceId]: {
+            data: { ...thisMonthSlots, ...nextMonthSlots },
+            loadedAt: Date.now(),
+            loading: false,
+            loadedMonths: new Set([thisMonth, nextMonth]),
+          },
+        }));
+      } catch {
+        console.error("Errore caricamento slot per servizio", serviceId);
+        setSlotsCache((prev) => ({
+          ...prev,
+          [serviceId]: {
+            ...prev[serviceId],
+            loading: false,
+            loadedAt: prev[serviceId]?.loadedAt ?? 0,
+          },
+        }));
+      }
+    },
+    [],
+  );
+
+  // CARICA MESE EXTRA SE NECESSARIO
+  const ensureMonthLoaded = useCallback(
+    async (shopId: string, serviceId: string, monthStr: string) => {
+      setSlotsCache((prev) => {
+        const existing = prev[serviceId];
+        if (existing?.loadedMonths?.has(monthStr)) return prev;
+        return prev;
+      });
+
+      const existing = slotsCache[serviceId];
+      if (existing?.loadedMonths?.has(monthStr)) return;
+
+      try {
+        const monthSlots = await bookingService.getMonthSlots(
+          shopId,
+          serviceId,
+          monthStr,
+        );
+        setSlotsCache((prev) => {
+          const curr = prev[serviceId];
+          if (!curr) return prev;
+          const newLoadedMonths = new Set(curr.loadedMonths);
+          newLoadedMonths.add(monthStr);
+          return {
+            ...prev,
+            [serviceId]: {
+              ...curr,
+              data: { ...curr.data, ...monthSlots },
+              loadedMonths: newLoadedMonths,
+            },
+          };
+        });
+      } catch {
+        console.error("Errore caricamento mese extra", monthStr);
+      }
+    },
+    [slotsCache],
+  );
 
   useEffect(() => {
     if (!slug) return;
@@ -83,10 +207,27 @@ export const ShopPage = () => {
       setLoading(true);
       const data = await shopService.getPublicShop(slug!);
       setShop(data);
-      const firstActive = data.services?.find((s: ServiceDTO) => s.isActive);
-      if (firstActive) {
-        setSelectedService(firstActive);
-        await loadSlots(data.id, firstActive.id);
+
+      const activeServices =
+        data.services?.filter((s: ServiceDTO) => s.isActive) ?? [];
+      if (activeServices.length === 0) return;
+
+      const firstService = activeServices[0];
+      setSelectedService(firstService);
+
+      // CARICA PRIMO SERVIZIO SUBITO
+      await loadServiceSlots(data.id, firstService.id);
+
+      // PREFETCH ALTRI SERVIZI IN BACKGROUND
+      if (activeServices.length > 1) {
+        setTimeout(() => {
+          activeServices.slice(1).forEach((s: ServiceDTO) => {
+            if (!prefetchedRef.current.has(s.id)) {
+              prefetchedRef.current.add(s.id);
+              loadServiceSlots(data.id, s.id);
+            }
+          });
+        }, 500);
       }
     } catch {
       setNotFound(true);
@@ -95,63 +236,11 @@ export const ShopPage = () => {
     }
   };
 
-  // CARICA MESE SPECIFICO SE NON GIÀ CARICATO
-  const ensureMonthLoaded = async (
-    shopId: string,
-    serviceId: string,
-    monthStr: string,
-  ) => {
-    if (loadedMonths.current.has(monthStr)) return;
-    loadedMonths.current.add(monthStr);
-    try {
-      const monthSlots = await bookingService.getMonthSlots(
-        shopId,
-        serviceId,
-        monthStr,
-      );
-      setSlots((prev) => ({ ...prev, ...monthSlots }));
-    } catch {
-      console.error("Errore caricamento mese", monthStr);
-      loadedMonths.current.delete(monthStr);
-    }
-  };
-
-  // CARICA SLOTS INIZIALI
-  const loadSlots = async (shopId: string, serviceId: string) => {
-    loadedMonths.current.clear();
-    try {
-      setLoadingSlots(true);
-      const today = new Date();
-      const thisMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-      const nextMonthDate = new Date(
-        today.getFullYear(),
-        today.getMonth() + 1,
-        1,
-      );
-      const nextMonth = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2, "0")}`;
-
-      const [thisMonthSlots, nextMonthSlots] = await Promise.all([
-        bookingService.getMonthSlots(shopId, serviceId, thisMonth),
-        bookingService.getMonthSlots(shopId, serviceId, nextMonth),
-      ]);
-
-      loadedMonths.current.add(thisMonth);
-      loadedMonths.current.add(nextMonth);
-      setSlots({ ...thisMonthSlots, ...nextMonthSlots });
-    } catch {
-      console.error("Errore caricamento slot");
-    } finally {
-      setLoadingSlots(false);
-    }
-  };
-
-  // CARICA MESI VISIBILI QUANDO CAMBIA SETTIMANA
+  // CARICA MESI EXTRA QUANDO CAMBIA SETTIMANA
   useEffect(() => {
     if (!shop || !selectedService) return;
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     const monthsNeeded = new Set<string>();
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
@@ -159,26 +248,26 @@ export const ShopPage = () => {
       const monthStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
       monthsNeeded.add(monthStr);
     }
-
     monthsNeeded.forEach((monthStr) => {
       ensureMonthLoaded(shop.id, selectedService.id, monthStr);
     });
   }, [weekOffset, shop, selectedService]);
 
-  const handleSelectService = (e: React.MouseEvent, service: ServiceDTO) => {
-    e.preventDefault();
-    const scrollY = window.scrollY;
+  const handleSelectService = (service: ServiceDTO) => {
     setSelectedService(service);
     setSelectedDate(null);
     setSelectedTime(null);
-    loadSlots(shop.id, service.id).then(() => {
-      window.scrollTo(0, scrollY);
-    });
+    // SE NON IN CACHE O SCADUTA RICARICA, ALTRIMENTI MOSTRA SUBITO
+    const cached = slotsCache[service.id];
+    if (!cached || Date.now() - cached.loadedAt > CACHE_TTL_MS) {
+      loadServiceSlots(shop.id, service.id);
+    }
   };
 
   const getWeekDays = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const currentSlots = slotsCache[selectedService?.id ?? ""]?.data ?? {};
     const days = [];
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
@@ -192,7 +281,7 @@ export const ShopPage = () => {
         monthName: MONTHS_IT[date.getMonth()],
         isToday: i === 0 && weekOffset === 0,
         isPast: date < new Date(new Date().setHours(0, 0, 0, 0)),
-        slots: (slots[dateStr] ?? []) as SlotWithStatus[],
+        slots: (currentSlots[dateStr] ?? []) as SlotWithStatus[],
       });
     }
     return days;
@@ -203,6 +292,7 @@ export const ShopPage = () => {
     setSelectedTime(time);
     setModalStep("form");
     setLockError("");
+    setRecurrence({ enabled: false, type: "WEEKLY", repeat: 4 });
     setForm({ firstName: "", lastName: "", email: "", phone: "", otp: "" });
     setModalOpen(true);
   };
@@ -225,6 +315,9 @@ export const ShopPage = () => {
           email: form.email || undefined,
           phone: form.phone || undefined,
         },
+        recurrence: recurrence.enabled
+          ? { type: recurrence.type, repeat: recurrence.repeat }
+          : undefined,
       });
       setBookingId(result.bookingId);
       setModalStep("otp");
@@ -242,9 +335,16 @@ export const ShopPage = () => {
     try {
       await bookingService.confirmOtp({ bookingId, otpCode: form.otp });
       setModalStep("confirmed");
-      if (selectedService) loadSlots(shop.id, selectedService.id);
-    } catch {
-      setOtpError("Codice OTP non valido");
+      // INVALIDA E RICARICA SOLO IL SERVIZIO CORRENTE IN BACKGROUND
+      if (selectedService) {
+        loadServiceSlots(shop.id, selectedService.id, true);
+      }
+    } catch (err: any) {
+      if (err?.response?.status === 422) {
+        setOtpError("Codice OTP non valido");
+      } else {
+        setOtpError("Errore durante la conferma. Riprova.");
+      }
     } finally {
       setConfirming(false);
     }
@@ -259,6 +359,9 @@ export const ShopPage = () => {
 
   const primaryColor = shop?.config?.primaryColor ?? "#1a1a1a";
   const weekDays = shop ? getWeekDays() : [];
+  const currentServiceCache = slotsCache[selectedService?.id ?? ""];
+  const loadingSlots =
+    currentServiceCache?.loading && !currentServiceCache?.data;
 
   if (loading) {
     return (
@@ -322,53 +425,61 @@ export const ShopPage = () => {
       <div className="max-w-3xl mx-auto px-4 py-6">
         {/* SERVIZI */}
         <div className="mb-6">
-          <h2 className="text-sm font-semibold text.gray-500 uppercase tracking-wide mb-3">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
             Servizi
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {shop.services
               ?.filter((s: ServiceDTO) => s.isActive)
-              .map((service: ServiceDTO) => (
-                <button
-                  key={service.id}
-                  onClick={(e) => handleSelectService(e, service)}
-                  className={`
-                    shrink-0 flex items-center gap-3 px-4 py-3 rounded-xl border
-                    transition-all text-left
-                    ${
+              .map((service: ServiceDTO) => {
+                const isCached = !!slotsCache[service.id]?.loadedAt;
+                return (
+                  <button
+                    key={service.id}
+                    type="button"
+                    onClick={() => handleSelectService(service)}
+                    className={`
+                      shrink-0 flex items-center gap-3 px-4 py-3 rounded-xl border
+                      transition-all text-left relative
+                      ${
+                        selectedService?.id === service.id
+                          ? "border-transparent text-white shadow-md"
+                          : "bg-white border-gray-100 text-gray-900 hover:border-gray-300"
+                      }
+                    `}
+                    style={
                       selectedService?.id === service.id
-                        ? "border-transparent text-white shadow-md"
-                        : "bg-white border-gray-100 text-gray-900 hover:border-gray-300"
+                        ? { backgroundColor: primaryColor }
+                        : {}
                     }
-                  `}
-                  style={
-                    selectedService?.id === service.id
-                      ? { backgroundColor: primaryColor }
-                      : {}
-                  }
-                >
-                  <div>
-                    <p className="text-sm font-medium whitespace-nowrap">
-                      {service.name}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span
-                        className={`text-xs ${selectedService?.id === service.id ? "text-white/70" : "text-gray-400"}`}
-                      >
-                        <ClockIcon size={10} className="inline mr-0.5" />
-                        {formatDuration(service.duration)}
-                      </span>
-                      {service.price != null && shop.config?.showPrices && (
+                  >
+                    <div>
+                      <p className="text-sm font-medium whitespace-nowrap">
+                        {service.name}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
                         <span
                           className={`text-xs ${selectedService?.id === service.id ? "text-white/70" : "text-gray-400"}`}
                         >
-                          €{service.price.toFixed(2)}
+                          <ClockIcon size={10} className="inline mr-0.5" />
+                          {formatDuration(service.duration)}
                         </span>
-                      )}
+                        {service.price != null && shop.config?.showPrices && (
+                          <span
+                            className={`text-xs ${selectedService?.id === service.id ? "text-white/70" : "text-gray-400"}`}
+                          >
+                            €{service.price.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </button>
-              ))}
+                    {/* INDICATORE PREFETCH IN CORSO */}
+                    {!isCached && selectedService?.id !== service.id && (
+                      <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-gray-300 animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
           </div>
         </div>
 
@@ -380,6 +491,7 @@ export const ShopPage = () => {
             </h2>
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
                 disabled={weekOffset === 0}
                 className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -387,6 +499,7 @@ export const ShopPage = () => {
                 <CaretLeftIcon size={16} />
               </button>
               <button
+                type="button"
                 onClick={() => setWeekOffset(weekOffset + 1)}
                 className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors"
               >
@@ -436,7 +549,10 @@ export const ShopPage = () => {
 
                   <div className="flex flex-col gap-1">
                     {loadingSlots ? (
-                      <div className="h-8 bg-gray-100 rounded animate-pulse" />
+                      <>
+                        <div className="h-7 bg-gray-100 rounded animate-pulse" />
+                        <div className="h-7 bg-gray-100 rounded animate-pulse" />
+                      </>
                     ) : daySlots.length === 0 ? (
                       <div className="text-center py-2">
                         <span className="text-xs text-gray-300">-</span>
@@ -447,6 +563,7 @@ export const ShopPage = () => {
                         return (
                           <button
                             key={`${dateStr}-${slot.time}-${slot.status}`}
+                            type="button"
                             disabled={past || slot.status !== "free"}
                             onClick={() =>
                               !past &&
@@ -480,7 +597,7 @@ export const ShopPage = () => {
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-yellow-100" />
               <span className="text-xs text-gray-400">
-                Prenotato, in attesa di conferma OTP
+                In attesa, conferma OTP in corso
               </span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -572,13 +689,106 @@ export const ShopPage = () => {
               />
             </div>
 
+            {/* RICORRENZA */}
+            <div className="border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden">
+              <button
+                type="button"
+                onClick={() =>
+                  setRecurrence((r) => ({ ...r, enabled: !r.enabled }))
+                }
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <RepeatIcon
+                    size={16}
+                    className="text-gray-500 dark:text-gray-400"
+                  />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Prenotazione ricorrente
+                  </span>
+                </div>
+                <div
+                  className={`w-9 h-5 rounded-full transition-colors relative ${recurrence.enabled ? "bg-gray-900 dark:bg-white" : "bg-gray-200 dark:bg-gray-600"}`}
+                >
+                  <div
+                    className={`absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-gray-900 shadow transition-all ${recurrence.enabled ? "left-4" : "left-0.5"}`}
+                  />
+                </div>
+              </button>
+
+              {recurrence.enabled && (
+                <div className="px-4 py-3 flex flex-col gap-3 bg-white dark:bg-gray-900">
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Ripeti automaticamente questa prenotazione
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRecurrence((r) => ({ ...r, type: "WEEKLY" }))
+                      }
+                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all border ${
+                        recurrence.type === "WEEKLY"
+                          ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
+                          : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
+                      }`}
+                    >
+                      Ogni settimana
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRecurrence((r) => ({ ...r, type: "MONTHLY" }))
+                      }
+                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all border ${
+                        recurrence.type === "MONTHLY"
+                          ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
+                          : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
+                      }`}
+                    >
+                      Ogni mese
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-500 dark:text-gray-400">
+                      Numero di appuntamenti
+                    </label>
+                    <div className="flex gap-2">
+                      {[2, 3, 4, 6, 8, 12].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          onClick={() =>
+                            setRecurrence((r) => ({ ...r, repeat: n }))
+                          }
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                            recurrence.repeat === n
+                              ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
+                              : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
+                          }`}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-lg">
+                    Verranno create <strong>{recurrence.repeat}</strong>{" "}
+                    prenotazioni{" "}
+                    {recurrence.type === "WEEKLY" ? "settimanali" : "mensili"} a
+                    partire dal {selectedDate}
+                  </p>
+                </div>
+              )}
+            </div>
+
             <p className="text-xs text-gray-400 dark:text-gray-500">
               * Almeno email o telefono richiesti
             </p>
-
             {lockError && <p className="text-sm text-red-500">{lockError}</p>}
 
             <button
+              type="button"
               onClick={handleLockSlot}
               disabled={
                 !form.firstName ||
@@ -592,7 +802,9 @@ export const ShopPage = () => {
               {locking && (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               )}
-              Continua
+              {recurrence.enabled
+                ? `Prenota ${recurrence.repeat} appuntamenti`
+                : "Continua"}
             </button>
           </div>
         )}
@@ -610,7 +822,6 @@ export const ShopPage = () => {
                 {form.email || form.phone}
               </p>
             </div>
-
             <input
               className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
               placeholder="000000"
@@ -620,10 +831,9 @@ export const ShopPage = () => {
                 setForm({ ...form, otp: e.target.value.replace(/\D/g, "") })
               }
             />
-
             {otpError && <p className="text-sm text-red-500">{otpError}</p>}
-
             <button
+              type="button"
               onClick={handleConfirmOtp}
               disabled={form.otp.length !== 6 || confirming}
               className="w-full py-3 rounded-xl text-white text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
@@ -647,7 +857,9 @@ export const ShopPage = () => {
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                Prenotazione confermata!
+                {recurrence.enabled
+                  ? `${recurrence.repeat} appuntamenti confermati!`
+                  : "Prenotazione confermata!"}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {selectedService?.name}
@@ -655,11 +867,20 @@ export const ShopPage = () => {
               <p className="text-sm font-medium text-gray-900 dark:text-white mt-1">
                 {selectedDate} alle {selectedTime}
               </p>
+              {recurrence.enabled && (
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  {recurrence.type === "WEEKLY"
+                    ? "Ogni settimana"
+                    : "Ogni mese"}{" "}
+                  per {recurrence.repeat} volte
+                </p>
+              )}
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500">
               Riceverai una email di conferma con tutti i dettagli
             </p>
             <button
+              type="button"
               onClick={() => setModalOpen(false)}
               className="w-full py-3 rounded-xl text-white text-sm font-medium"
               style={{ backgroundColor: primaryColor }}

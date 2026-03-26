@@ -24,6 +24,30 @@ router.post("/cancel", bookingController.cancelBooking);
 // GET /api/public/:bookingId
 router.get("/public/:bookingId", bookingController.getPublicBooking);
 
+// GET /api/analytics
+router.get(
+  "/analytics",
+  authMiddleware,
+  requireRole("COLLABORATOR"),
+  bookingController.getAnalytics,
+);
+
+// POST /api/no-show
+router.post(
+  "/no-show",
+  authMiddleware,
+  requireRole("COLLABORATOR"),
+  bookingController.markNoShow,
+);
+
+// POAT /api/undo-no-show
+router.post(
+  "/undo-no-show",
+  authMiddleware,
+  requireRole("COLLABORATOR"),
+  bookingController.undoNoShow,
+);
+
 // =========================================
 
 // =========================================

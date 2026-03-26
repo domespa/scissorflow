@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { bookingService } from "./booking.service";
+import { bookingRepository } from "./booking.repository";
 import {
   lockSlotSchema,
   confirmOtpSchema,
@@ -219,6 +220,150 @@ export const bookingController = {
       const bookingId = getParam(req.params.bookingId);
       const data = await bookingService.getPublicBooking(bookingId);
       res.status(200).json(data);
+    } catch (error) {
+      if (error instanceof Error && error.message === "BOOKING_NOT_FOUND") {
+        res.status(404).json({ message: "Prenotazione non trovata" });
+        return;
+      }
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+  // =========================================
+
+  // =========================================
+  //              ANALYTICS
+  // =========================================
+  async getAnalytics(req: Request, res: Response) {
+    try {
+      const shopId = req.shopUser!.shopId;
+      const now = new Date();
+      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+      const bookings = await bookingRepository.findBookingsByShopAndDateRange(
+        shopId,
+        sixMonthsAgo,
+        now,
+      );
+
+      // PRENOTAZIONI PER MESE
+      const byMonth: Record<
+        string,
+        { month: string; bookings: number; revenue: number }
+      > = {};
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        const label = d.toLocaleDateString("it-IT", {
+          month: "short",
+          year: "2-digit",
+        });
+        byMonth[key] = { month: label, bookings: 0, revenue: 0 };
+      }
+
+      // PRENOTAZIONI PER GIORNO SETTIMANA
+      const DAYS = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+      const byDayOfWeek = DAYS.map((d) => ({ day: d, bookings: 0 }));
+
+      // SERVIZI PIÙ RICHIESTI
+      const byService: Record<
+        string,
+        { name: string; count: number; revenue: number }
+      > = {};
+
+      // STATS MESE CORRENTE
+      const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      let thisMonthBookings = 0;
+      let thisMonthRevenue = 0;
+      let noShows = 0;
+      let totalConfirmed = 0;
+
+      for (const b of bookings) {
+        const date = new Date(b.startAt);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+        // MESE
+        if (
+          byMonth[key] &&
+          (b.status === "CONFIRMED" || b.status === "COMPLETED")
+        ) {
+          byMonth[key].bookings++;
+          byMonth[key].revenue += b.service.price ?? 0;
+        }
+
+        // GIORNO SETTIMANA
+        if (b.status === "CONFIRMED" || b.status === "COMPLETED") {
+          byDayOfWeek[date.getDay()].bookings++;
+        }
+
+        // SERVIZI
+        if (b.status === "CONFIRMED" || b.status === "COMPLETED") {
+          if (!byService[b.serviceId]) {
+            byService[b.serviceId] = {
+              name: b.service.name,
+              count: 0,
+              revenue: 0,
+            };
+          }
+          byService[b.serviceId].count++;
+          byService[b.serviceId].revenue += b.service.price ?? 0;
+        }
+
+        // QUESTO MESE
+        if (key === thisMonthKey) {
+          if (b.status === "CONFIRMED" || b.status === "COMPLETED") {
+            thisMonthBookings++;
+            thisMonthRevenue += b.service.price ?? 0;
+            totalConfirmed++;
+          }
+          if (b.status === "NO_SHOW") noShows++;
+        }
+      }
+
+      const noShowRate =
+        totalConfirmed + noShows > 0
+          ? Math.round((noShows / (totalConfirmed + noShows)) * 100)
+          : 0;
+
+      res.status(200).json({
+        thisMonth: {
+          bookings: thisMonthBookings,
+          revenue: thisMonthRevenue,
+          noShowRate,
+        },
+        byMonth: Object.values(byMonth),
+        byDayOfWeek,
+        topServices: Object.values(byService)
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5),
+      });
+    } catch {
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+  // =========================================
+
+  // =========================================
+  //              NO SHOW
+  // =========================================
+  async markNoShow(req: Request, res: Response) {
+    try {
+      const { bookingId } = req.body;
+      await bookingService.markNoShow(bookingId);
+      res.status(200).json({ message: "No-show registrato" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "BOOKING_NOT_FOUND") {
+        res.status(404).json({ message: "Prenotazione non trovata" });
+        return;
+      }
+      res.status(500).json({ message: "Errore interno" });
+    }
+  },
+
+  async undoNoShow(req: Request, res: Response) {
+    try {
+      const { bookingId } = req.body;
+      await bookingService.undoNoShow(bookingId);
+      res.status(200).json({ message: "No-show annullato" });
     } catch (error) {
       if (error instanceof Error && error.message === "BOOKING_NOT_FOUND") {
         res.status(404).json({ message: "Prenotazione non trovata" });

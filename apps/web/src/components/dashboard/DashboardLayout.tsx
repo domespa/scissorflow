@@ -26,11 +26,11 @@ const navItems: NavItem[] = [
     path: "/dashboard",
     icon: <CalendarCheckIcon size={20} weight="duotone" />,
   },
-  {
-    label: "Prenotazioni",
-    path: "/dashboard/bookings",
-    icon: <ClipboardTextIcon size={20} weight="duotone" />,
-  },
+  // {
+  //   label: "Prenotazioni",
+  //   path: "/dashboard/bookings",
+  //   icon: <ClipboardTextIcon size={20} weight="duotone" />,
+  // },
   {
     label: "Servizi",
     path: "/dashboard/services",

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   CaretLeftIcon,
   CaretRightIcon,
@@ -34,7 +34,7 @@ const MONTHS_IT = [
 type TimelineSlot = {
   time: string;
   endTime: string;
-  status: "free" | "pending" | "confirmed";
+  status: "free" | "pending" | "confirmed" | "noshow";
   booking?: {
     id: string;
     customerName: string;
@@ -64,7 +64,10 @@ export const CalendarPage = () => {
   const [loading, setLoading] = useState(true);
   const [services, setServices] = useState<ServiceDTO[]>([]);
 
-  // MODAL PRENOTAZIONE MANUALE
+  const [noShowLoadingId, setNoShowLoadingId] = useState<string | null>(null);
+  const [noShowConfirmId, setNoShowConfirmId] = useState<string | null>(null);
+  const [undoLoadingId, setUndoLoadingId] = useState<string | null>(null);
+
   const [bookingModal, setBookingModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<TimelineSlot | null>(null);
   const [bookingForm, setBookingForm] = useState({
@@ -81,7 +84,6 @@ export const CalendarPage = () => {
   const getDateStr = (date: Date) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
-  // SLOT PASSATI
   const isSlotPast = (time: string) => {
     const [h, m] = time.split(":").map(Number);
     const slotDate = new Date(selectedDate);
@@ -136,11 +138,9 @@ export const CalendarPage = () => {
     loadTimeline(selectedDate);
     loadServices();
     joinShop(shopId);
-
     socket.on("slot:confirmed", () => loadTimeline(selectedDate));
     socket.on("slot:cancelled", () => loadTimeline(selectedDate));
     socket.on("slot:locked", () => loadTimeline(selectedDate));
-
     return () => {
       leaveShop();
       socket.off("slot:confirmed");
@@ -172,7 +172,36 @@ export const CalendarPage = () => {
     setBookingModal(true);
   };
 
-  // PRENOTA MANUALMENTE
+  const handleNoShow = async (bookingId: string) => {
+    if (noShowConfirmId !== bookingId) {
+      setNoShowConfirmId(bookingId);
+      setTimeout(() => setNoShowConfirmId(null), 3000);
+      return;
+    }
+    try {
+      setNoShowLoadingId(bookingId);
+      setNoShowConfirmId(null);
+      await bookingService.markNoShow(bookingId);
+      await loadTimeline(selectedDate);
+    } catch {
+      console.error("Errore no-show");
+    } finally {
+      setNoShowLoadingId(null);
+    }
+  };
+
+  const handleUndoNoShow = async (bookingId: string) => {
+    try {
+      setUndoLoadingId(bookingId);
+      await bookingService.undoNoShow(bookingId);
+      await loadTimeline(selectedDate);
+    } catch {
+      console.error("Errore undo no-show");
+    } finally {
+      setUndoLoadingId(null);
+    }
+  };
+
   const handleManualBooking = async () => {
     if (!selectedSlot || !shopId) return;
     if (!bookingForm.firstName) {
@@ -192,7 +221,6 @@ export const CalendarPage = () => {
       const startAt = new Date(
         `${dateStr}T${selectedSlot.time}:00`,
       ).toISOString();
-
       const result = await bookingService.lockSlot({
         shopId,
         serviceId: bookingForm.serviceId,
@@ -204,12 +232,9 @@ export const CalendarPage = () => {
           phone: bookingForm.phone || undefined,
         },
       });
-
       await bookingService.confirmBookingAdmin(result.bookingId);
-
       setBookingSuccess(true);
       await loadTimeline(selectedDate);
-
       setTimeout(() => {
         setBookingModal(false);
         setBookingSuccess(false);
@@ -259,6 +284,43 @@ export const CalendarPage = () => {
   const totalRevenue = timeline
     .filter((s) => s.status === "confirmed" && s.booking?.price != null)
     .reduce((sum, s) => sum + (s.booking?.price ?? 0), 0);
+
+  const getSlotBg = (status: TimelineSlot["status"]) => {
+    if (status === "confirmed")
+      return "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900";
+    if (status === "pending")
+      return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900";
+    if (status === "noshow")
+      return "bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-900";
+    return "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700";
+  };
+
+  const getBarColor = (status: TimelineSlot["status"]) => {
+    if (status === "confirmed") return "bg-green-400";
+    if (status === "pending") return "bg-yellow-400";
+    if (status === "noshow") return "bg-orange-400";
+    return "bg-gray-200 dark:bg-gray-700";
+  };
+
+  const getTimeColor = (status: TimelineSlot["status"]) => {
+    if (status === "confirmed") return "text-green-700 dark:text-green-400";
+    if (status === "pending") return "text-yellow-700 dark:text-yellow-400";
+    if (status === "noshow") return "text-orange-700 dark:text-orange-400";
+    return "text-gray-400 dark:text-gray-600";
+  };
+
+  const getNameColor = (status: TimelineSlot["status"]) => {
+    if (status === "confirmed") return "text-gray-900 dark:text-white";
+    if (status === "noshow")
+      return "text-orange-700 dark:text-orange-400 line-through";
+    return "text-gray-700 dark:text-gray-300";
+  };
+
+  const getServiceColor = (status: TimelineSlot["status"]) => {
+    if (status === "confirmed") return "text-green-600 dark:text-green-500";
+    if (status === "noshow") return "text-orange-500 dark:text-orange-400";
+    return "text-yellow-600 dark:text-yellow-500";
+  };
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl">
@@ -312,9 +374,11 @@ export const CalendarPage = () => {
               }}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <CaretLeftIcon size={16} />
+              <CaretLeftIcon
+                size={16}
+                className="text-gray-900 dark:text-white"
+              />
             </button>
-
             <div className="flex gap-1 flex-1">
               {Array.from({ length: 7 }, (_, i) => {
                 const date = new Date(selectedDate);
@@ -324,15 +388,15 @@ export const CalendarPage = () => {
                 const isSel =
                   date.toDateString() === selectedDate.toDateString();
                 const isTod = date.toDateString() === today.toDateString();
-
                 return (
                   <button
                     key={i}
                     onClick={() => handleDayChange(new Date(date))}
-                    className={`
-                      flex flex-col items-center py-2 px-2 rounded-xl flex-1 transition-all
-                      ${isSel ? "bg-gray-900 dark:bg-white" : "hover:bg-gray-100 dark:hover:bg-gray-800"}
-                    `}
+                    className={`flex flex-col items-center py-2 px-2 rounded-xl flex-1 transition-all ${
+                      isSel
+                        ? "bg-gray-900 dark:bg-white"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
                   >
                     <span
                       className={`text-xs font-medium ${isSel ? "text-white/70 dark:text-gray-600" : "text-gray-500 dark:text-gray-400"}`}
@@ -354,7 +418,6 @@ export const CalendarPage = () => {
                 );
               })}
             </div>
-
             <button
               onClick={() => {
                 const next = new Date(selectedDate);
@@ -363,7 +426,10 @@ export const CalendarPage = () => {
               }}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <CaretRightIcon size={16} />
+              <CaretRightIcon
+                size={16}
+                className="text-gray-900 dark:text-white"
+              />
             </button>
           </div>
 
@@ -402,27 +468,23 @@ export const CalendarPage = () => {
             <div className="flex flex-col gap-1.5">
               {timeline.map((slot) => {
                 const past = isSlotPast(slot.time);
+                const isConfirming = noShowConfirmId === slot.booking?.id;
+                const isNoShowLoading = noShowLoadingId === slot.booking?.id;
+                const isUndoLoading = undoLoadingId === slot.booking?.id;
+
                 return (
                   <div
                     key={`${slot.time}-${slot.status}`}
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-xl border transition-all
-                      ${past ? "opacity-40 pointer-events-none" : ""}
-                      ${slot.status === "confirmed" ? "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900" : ""}
-                      ${slot.status === "pending" ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900" : ""}
-                      ${slot.status === "free" ? "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700" : ""}
+                      ${past && slot.status === "free" ? "opacity-40 pointer-events-none" : ""}
+                      ${getSlotBg(slot.status)}
                     `}
                   >
                     {/* ORARIO */}
                     <div className="w-20 shrink-0">
                       <p
-                        className={`text-sm font-semibold ${
-                          slot.status === "confirmed"
-                            ? "text-green-700 dark:text-green-400"
-                            : slot.status === "pending"
-                              ? "text-yellow-700 dark:text-yellow-400"
-                              : "text-gray-400 dark:text-gray-600"
-                        }`}
+                        className={`text-sm font-semibold ${getTimeColor(slot.status)}`}
                       >
                         {slot.time}
                       </p>
@@ -433,13 +495,7 @@ export const CalendarPage = () => {
 
                     {/* BARRA */}
                     <div
-                      className={`w-0.5 h-10 rounded-full shrink-0 ${
-                        slot.status === "confirmed"
-                          ? "bg-green-400"
-                          : slot.status === "pending"
-                            ? "bg-yellow-400"
-                            : "bg-gray-200 dark:bg-gray-700"
-                      }`}
+                      className={`w-0.5 h-10 rounded-full shrink-0 ${getBarColor(slot.status)}`}
                     />
 
                     {/* CONTENUTO */}
@@ -460,21 +516,13 @@ export const CalendarPage = () => {
                       <div className="flex items-center justify-between flex-1 min-w-0">
                         <div className="min-w-0">
                           <p
-                            className={`text-sm font-semibold truncate ${
-                              slot.status === "confirmed"
-                                ? "text-gray-900 dark:text-white"
-                                : "text-gray-700 dark:text-gray-300"
-                            }`}
+                            className={`text-sm font-semibold truncate ${getNameColor(slot.status)}`}
                           >
                             {slot.booking?.customerName}
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span
-                              className={`text-xs flex items-center gap-1 ${
-                                slot.status === "confirmed"
-                                  ? "text-green-600 dark:text-green-500"
-                                  : "text-yellow-600 dark:text-yellow-500"
-                              }`}
+                              className={`text-xs flex items-center gap-1 ${getServiceColor(slot.status)}`}
                             >
                               <ScissorsIcon size={10} weight="duotone" />
                               {slot.booking?.serviceName}
@@ -488,16 +536,56 @@ export const CalendarPage = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-2 shrink-0">
                           {slot.booking?.price != null && (
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                            <p
+                              className={`text-sm font-semibold ${slot.status === "noshow" ? "text-orange-500 line-through" : "text-gray-900 dark:text-white"}`}
+                            >
                               €{slot.booking.price.toFixed(2)}
                             </p>
                           )}
+
                           {slot.status === "pending" && (
                             <span className="text-xs bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 px-2 py-0.5 rounded-full">
                               OTP atteso
                             </span>
+                          )}
+
+                          {/* NO-SHOW BUTTON */}
+                          {slot.status === "confirmed" && slot.booking && (
+                            <button
+                              onClick={() => handleNoShow(slot.booking!.id)}
+                              disabled={isNoShowLoading}
+                              className={`text-xs px-2 py-0.5 rounded-full font-medium transition-all disabled:opacity-50 ${
+                                isConfirming
+                                  ? "bg-red-500 text-white animate-pulse"
+                                  : "bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50"
+                              }`}
+                            >
+                              {isNoShowLoading
+                                ? "..."
+                                : isConfirming
+                                  ? "Conferma?"
+                                  : "No-show"}
+                            </button>
+                          )}
+
+                          {/* UNDO NO-SHOW */}
+                          {slot.status === "noshow" && slot.booking && (
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 font-medium">
+                                No-show
+                              </span>
+                              <button
+                                onClick={() =>
+                                  handleUndoNoShow(slot.booking!.id)
+                                }
+                                disabled={isUndoLoading}
+                                className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                              >
+                                {isUndoLoading ? "..." : "Annulla"}
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -522,7 +610,10 @@ export const CalendarPage = () => {
               }}
               className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <CaretLeftIcon size={16} />
+              <CaretLeftIcon
+                size={16}
+                className="text-gray-900 dark:text-white"
+              />
             </button>
             <span className="text-sm font-semibold text-gray-900 dark:text-white">
               {MONTHS_IT[calMonth]} {calYear}
@@ -535,7 +626,10 @@ export const CalendarPage = () => {
               }}
               className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <CaretRightIcon size={16} />
+              <CaretRightIcon
+                size={16}
+                className="text-gray-900 dark:text-white"
+              />
             </button>
           </div>
 
@@ -559,14 +653,12 @@ export const CalendarPage = () => {
                     className="bg-white dark:bg-gray-900 h-20"
                   />
                 );
-
               const count = monthBookings.filter(
                 (b) =>
                   new Date(b.startAt).getDate() === day &&
                   new Date(b.startAt).getMonth() === calMonth &&
                   new Date(b.startAt).getFullYear() === calYear,
               ).length;
-
               return (
                 <button
                   key={day}
@@ -576,11 +668,11 @@ export const CalendarPage = () => {
                     setView("day");
                     loadTimeline(date);
                   }}
-                  className={`
-                    bg-white dark:bg-gray-900 h-20 p-2 flex flex-col
-                    hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left
-                    ${isSelected(day) ? "ring-2 ring-inset ring-gray-900 dark:ring-white" : ""}
-                  `}
+                  className={`bg-white dark:bg-gray-900 h-20 p-2 flex flex-col hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left ${
+                    isSelected(day)
+                      ? "ring-2 ring-inset ring-gray-900 dark:ring-white"
+                      : ""
+                  }`}
                 >
                   <span
                     className={`text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center ${
@@ -641,7 +733,6 @@ export const CalendarPage = () => {
                 </div>
               ) : (
                 <>
-                  {/* SERVIZIO */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Servizio *
@@ -664,7 +755,6 @@ export const CalendarPage = () => {
                     </select>
                   </div>
 
-                  {/* NOME */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Nome *
@@ -682,7 +772,6 @@ export const CalendarPage = () => {
                     />
                   </div>
 
-                  {/* COGNOME (opzionale) */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Cognome{" "}
@@ -703,7 +792,6 @@ export const CalendarPage = () => {
                     />
                   </div>
 
-                  {/* EMAIL (opzionale) */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Email{" "}
@@ -725,7 +813,6 @@ export const CalendarPage = () => {
                     />
                   </div>
 
-                  {/* TELEFONO (opzionale) */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Telefono{" "}

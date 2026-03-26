@@ -103,24 +103,7 @@ export const bookingRepository = {
       },
     });
 
-    if (existing) {
-      // AGGIORNA NOME SE DIVERSO
-      if (
-        existing.firstName !== data.firstName ||
-        existing.lastName !== data.lastName
-      ) {
-        return prisma.customer.update({
-          where: { id: existing.id },
-          data: {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email ?? existing.email,
-            phone: data.phone ?? existing.phone,
-          },
-        });
-      }
-      return existing;
-    }
+    if (existing) return existing;
 
     return prisma.customer.create({ data });
   },
@@ -271,7 +254,7 @@ export const bookingRepository = {
       where: {
         shopId,
         startAt: { gte: startOfDay, lte: endOfDay },
-        status: { in: ["PENDING", "CONFIRMED"] },
+        status: { in: ["PENDING", "CONFIRMED", "NO_SHOW"] },
       },
       include: {
         customer: true,
@@ -313,6 +296,22 @@ export const bookingRepository = {
         service: { select: { name: true, duration: true } },
         shop: { select: { name: true, slug: true } },
       },
+    });
+  },
+
+  // ANALYTICS
+  async findBookingsByShopAndDateRange(shopId: string, from: Date, to: Date) {
+    return prisma.booking.findMany({
+      where: {
+        shopId,
+        startAt: { gte: from, lte: to },
+        status: { in: ["CONFIRMED", "COMPLETED", "CANCELLED", "NO_SHOW"] },
+      },
+      include: {
+        service: true,
+        customer: true,
+      },
+      orderBy: { startAt: "asc" },
     });
   },
 };
