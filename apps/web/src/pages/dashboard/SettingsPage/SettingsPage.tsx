@@ -527,7 +527,7 @@ export const SettingsPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl">
+    <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
           Impostazioni

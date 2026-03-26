@@ -393,7 +393,7 @@ export const ShopPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* HERO */}
       <div
-        className="relative h-64 md:h-80 flex items-end"
+        className="relative h-72 md:h-96 flex items-end"
         style={{
           background: shop.config?.coverImage
             ? `url(${shop.config.coverImage}) center/cover`
