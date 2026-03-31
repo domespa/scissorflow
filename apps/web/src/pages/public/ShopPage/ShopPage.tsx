@@ -6,6 +6,7 @@ import {
   CaretLeftIcon,
   CaretRightIcon,
   RepeatIcon,
+  CheckCircleIcon,
 } from "@phosphor-icons/react";
 import { shopService } from "@/services/shop.service";
 import { bookingService } from "@/services/booking.service";
@@ -269,9 +270,11 @@ export const ShopPage = () => {
     today.setHours(0, 0, 0, 0);
     const currentSlots = slotsCache[selectedService?.id ?? ""]?.data ?? {};
     const days = [];
+    const dayOfWeek = today.getDay(); // 0=dom, 1=lun...
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
-      date.setDate(today.getDate() + weekOffset * 7 + i);
+      date.setDate(today.getDate() + mondayOffset + weekOffset * 7 + i);
       const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
       days.push({
         date,
@@ -393,7 +396,7 @@ export const ShopPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* HERO */}
       <div
-        className="relative h-72 md:h-96 flex items-end"
+        className="relative h-72 md:h-screen flex items-end"
         style={{
           background: shop.config?.coverImage
             ? `url(${shop.config.coverImage}) center/cover`
@@ -401,7 +404,7 @@ export const ShopPage = () => {
         }}
       >
         <div className="absolute inset-0 bg-black/40" />
-        <div className="relative w-full px-4 pb-8 max-w-3xl mx-auto">
+        <div className="relative w-full px-4 pb-8 max-w-5xl mx-auto">
           <div className="flex items-end gap-4">
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border-2 border-white/30"
@@ -422,7 +425,7 @@ export const ShopPage = () => {
       </div>
 
       {/* CONTENUTO */}
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {/* SERVIZI */}
         <div className="mb-6">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
@@ -508,7 +511,7 @@ export const ShopPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-3 md:gap-4">
             {weekDays.map(
               ({
                 dateStr,
@@ -571,7 +574,7 @@ export const ShopPage = () => {
                               handleSlotClick(dateStr, slot.time)
                             }
                             className={`
-                            w-full py-1.5 rounded-lg text-xs font-medium transition-all
+                            w-full py-2 rounded-lg text-xs font-medium transition-all
                             ${past ? "bg-gray-100 text-gray-300 cursor-not-allowed" : ""}
                             ${!past && slot.status === "free" ? "bg-green-100 text-green-700 hover:bg-green-200" : ""}
                             ${!past && slot.status === "pending" ? "bg-yellow-100 text-yellow-700 cursor-not-allowed" : ""}
@@ -623,13 +626,13 @@ export const ShopPage = () => {
         {modalStep === "form" && (
           <div className="flex flex-col gap-4">
             <div className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+              <p className="text-xs text-gray-600 dark:text-gray-300 mb-0.5">
                 Riepilogo
               </p>
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {selectedService?.name}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                 {selectedDate} alle {selectedTime}
               </p>
             </div>
@@ -640,7 +643,7 @@ export const ShopPage = () => {
                   Nome *
                 </label>
                 <input
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                   placeholder="Mario"
                   value={form.firstName}
                   onChange={(e) =>
@@ -653,7 +656,7 @@ export const ShopPage = () => {
                   Cognome *
                 </label>
                 <input
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                   placeholder="Rossi"
                   value={form.lastName}
                   onChange={(e) =>
@@ -669,7 +672,7 @@ export const ShopPage = () => {
               </label>
               <input
                 type="email"
-                className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 placeholder="mario@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -682,7 +685,7 @@ export const ShopPage = () => {
               </label>
               <input
                 type="tel"
-                className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 placeholder="+39 333 1234567"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -701,7 +704,7 @@ export const ShopPage = () => {
                 <div className="flex items-center gap-2">
                   <RepeatIcon
                     size={16}
-                    className="text-gray-500 dark:text-gray-400"
+                    className="text-gray-600 dark:text-gray-300"
                   />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Prenotazione ricorrente
@@ -750,7 +753,7 @@ export const ShopPage = () => {
                     </button>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-500 dark:text-gray-400">
+                    <label className="text-xs text-gray-600 dark:text-gray-300">
                       Numero di appuntamenti
                     </label>
                     <div className="flex gap-2">
@@ -772,7 +775,7 @@ export const ShopPage = () => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-lg">
+                  <p className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-lg">
                     Verranno create <strong>{recurrence.repeat}</strong>{" "}
                     prenotazioni{" "}
                     {recurrence.type === "WEEKLY" ? "settimanali" : "mensili"} a
@@ -815,7 +818,7 @@ export const ShopPage = () => {
               <span className="text-2xl">📧</span>
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 Abbiamo inviato un codice a
               </p>
               <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -823,7 +826,7 @@ export const ShopPage = () => {
               </p>
             </div>
             <input
-              className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
+              className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
               placeholder="000000"
               maxLength={6}
               value={form.otp}
@@ -853,7 +856,13 @@ export const ShopPage = () => {
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
               style={{ backgroundColor: `${primaryColor}20` }}
             >
-              <span className="text-3xl">✅</span>
+              <span className="text-3xl">
+                <CheckCircleIcon
+                  size={16}
+                  weight="duotone"
+                  className="inline mr-1.5 text-green-600 dark:text-green-400"
+                />
+              </span>
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
@@ -861,7 +870,7 @@ export const ShopPage = () => {
                   ? `${recurrence.repeat} appuntamenti confermati!`
                   : "Prenotazione confermata!"}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 {selectedService?.name}
               </p>
               <p className="text-sm font-medium text-gray-900 dark:text-white mt-1">

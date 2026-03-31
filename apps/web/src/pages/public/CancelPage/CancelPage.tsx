@@ -159,31 +159,41 @@ export const CancelPage = () => {
           {/* DETTAGLI */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6 flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Shop</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Shop
+              </span>
               <span className="text-sm font-medium text-gray-900">
                 {booking.shop.name}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Servizio</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Servizio
+              </span>
               <span className="text-sm font-medium text-gray-900">
                 {booking.service.name}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Data</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Data
+              </span>
               <span className="text-sm font-medium text-gray-900">
                 {formatDateOnly(booking.startAt)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Orario</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Orario
+              </span>
               <span className="text-sm font-medium text-gray-900">
                 {formatTimeIT(booking.startAt)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Cliente</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Cliente
+              </span>
               <span className="text-sm font-medium text-gray-900">
                 {booking.customer.firstName} {booking.customer.lastName}
               </span>

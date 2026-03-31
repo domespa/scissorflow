@@ -40,7 +40,7 @@ const CustomTooltip = ({
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-3 py-2 shadow-lg">
-      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+      <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
         {label}
       </p>
       {payload.map((p: any, i: number) => (
@@ -103,21 +103,21 @@ export const AnalyticsPage = () => {
         <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
           Analytics
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
           Statistiche e andamento del tuo shop
         </p>
       </div>
 
       {/* CARD STATS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 px-4 py-4">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md px-4 py-4">
           <div className="flex items-center gap-2 mb-2">
             <CalendarIcon
               size={16}
               weight="duotone"
               className="text-blue-500"
             />
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
               Prenotazioni
             </span>
           </div>
@@ -127,14 +127,14 @@ export const AnalyticsPage = () => {
           <p className="text-xs text-gray-400 mt-0.5">questo mese</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 px-4 py-4">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md px-4 py-4">
           <div className="flex items-center gap-2 mb-2">
             <TrendUpIcon
               size={16}
               weight="duotone"
               className="text-green-500"
             />
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
               Incasso
             </span>
           </div>
@@ -144,10 +144,10 @@ export const AnalyticsPage = () => {
           <p className="text-xs text-gray-400 mt-0.5">questo mese</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 px-4 py-4">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md px-4 py-4">
           <div className="flex items-center gap-2 mb-2">
             <UsersIcon size={16} weight="duotone" className="text-purple-500" />
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
               Clienti
             </span>
           </div>
@@ -157,14 +157,14 @@ export const AnalyticsPage = () => {
           <p className="text-xs text-gray-400 mt-0.5">totali</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 px-4 py-4">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md px-4 py-4">
           <div className="flex items-center gap-2 mb-2">
             <WarningIcon
               size={16}
               weight="duotone"
               className="text-orange-500"
             />
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
               No-show
             </span>
           </div>
@@ -176,7 +176,7 @@ export const AnalyticsPage = () => {
       </div>
 
       {/* GRAFICO ANDAMENTO MENSILE */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md p-5">
         <div className="flex items-center justify-between mb-5">
           <div>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -192,7 +192,7 @@ export const AnalyticsPage = () => {
               className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
                 revenueView === "bookings"
                   ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                  : "text-gray-500 dark:text-gray-400"
+                  : "text-gray-600 dark:text-gray-300"
               }`}
             >
               Prenotazioni
@@ -202,7 +202,7 @@ export const AnalyticsPage = () => {
               className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
                 revenueView === "revenue"
                   ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                  : "text-gray-500 dark:text-gray-400"
+                  : "text-gray-600 dark:text-gray-300"
               }`}
             >
               Incasso
@@ -265,7 +265,7 @@ export const AnalyticsPage = () => {
       {/* GRIGLIA INFERIORE */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* GIORNI SETTIMANA */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md p-5">
           <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
             Giorni più trafficati
           </p>
@@ -315,7 +315,7 @@ export const AnalyticsPage = () => {
         </div>
 
         {/* TOP SERVIZI */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md p-5">
           <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
             Servizi più richiesti
           </p>

@@ -29,6 +29,19 @@ export interface OnboardingDTO {
   shopName: string;
   shopSlug?: string;
   config: Omit<ShopConfigDTO, "id" | "shopId">;
+  availability?: {
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+    breakStart?: string | null;
+    breakEnd?: string | null;
+    isActive: boolean;
+  }[];
+  services?: {
+    name: string;
+    duration: number;
+    price?: number;
+  }[];
 }
 
 // RESPONSE DOPO LOGIN O REGISTRAZIONE

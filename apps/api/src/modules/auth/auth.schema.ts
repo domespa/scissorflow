@@ -21,7 +21,7 @@ export const onboardingSchema = z.object({
     .min(2, "Il nome dello shop deve essere di almeno 2 caratteri"),
   shopSlug: z
     .string()
-    .min(2, "Lo slug deve essere di almeno 2 caratteri")
+    .min(2)
     .regex(
       /^[a-z0-9-]+$/,
       "Lo slug può contenere solo lettere minuscole, numeri e trattini",
@@ -30,15 +30,35 @@ export const onboardingSchema = z.object({
   config: z.object({
     primaryColor: z
       .string()
-      .regex(
-        /^#[0-9A-Fa-f]{6}$/,
-        "Il colore deve essere un hex valido es. #1a1a1a",
-      ),
+      .regex(/^#[0-9A-Fa-f]{6}$/, "Colore hex non valido"),
     coverImage: z.url().optional(),
     logo: z.url().optional(),
     tagline: z.string().max(100).optional(),
     showPrices: z.boolean(),
   }),
+  // ORARI
+  availability: z
+    .array(
+      z.object({
+        dayOfWeek: z.number().min(0).max(6),
+        startTime: z.string(),
+        endTime: z.string(),
+        breakStart: z.string().nullable().optional(),
+        breakEnd: z.string().nullable().optional(),
+        isActive: z.boolean(),
+      }),
+    )
+    .optional(),
+  // SERVIZI
+  services: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        duration: z.number().min(5),
+        price: z.number().min(0).optional(),
+      }),
+    )
+    .optional(),
 });
 
 // USIAMO .infer DI ZOD PER DEFINIRIRE I TIPI - SI AGGIORNANO IN AUTOMATICO SE CAMBIA LO SCHEMA

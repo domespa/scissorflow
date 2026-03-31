@@ -56,11 +56,11 @@ export const RegisterPage = () => {
         </div>
 
         {/* CARD */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 p-6 shadow-sm">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
             Crea il tuo account
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
             Inizia gratis, nessuna carta richiesta
           </p>
 
@@ -108,7 +108,7 @@ export const RegisterPage = () => {
           </form>
         </div>
 
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+        <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-4">
           Hai già un account?{" "}
           <Link
             to="/login"

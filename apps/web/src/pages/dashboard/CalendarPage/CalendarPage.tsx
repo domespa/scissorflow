@@ -7,6 +7,7 @@ import {
   ScissorsIcon,
   PlusIcon,
   XIcon,
+  CheckCircleIcon,
 } from "@phosphor-icons/react";
 import { bookingService } from "@/services/booking.service";
 import { shopService } from "@/services/shop.service";
@@ -292,14 +293,14 @@ export const CalendarPage = () => {
       return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900";
     if (status === "noshow")
       return "bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-900";
-    return "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700";
+    return "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-700";
   };
 
   const getBarColor = (status: TimelineSlot["status"]) => {
     if (status === "confirmed") return "bg-green-400";
     if (status === "pending") return "bg-yellow-400";
     if (status === "noshow") return "bg-orange-400";
-    return "bg-gray-200 dark:bg-gray-700";
+    return "bg-gray-300 dark:bg-gray-600";
   };
 
   const getTimeColor = (status: TimelineSlot["status"]) => {
@@ -330,7 +331,7 @@ export const CalendarPage = () => {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
             Calendario
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
             {formatDateOnly(selectedDate)}
           </p>
         </div>
@@ -340,7 +341,7 @@ export const CalendarPage = () => {
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
               view === "day"
                 ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-500 dark:text-gray-400"
+                : "text-gray-600 dark:text-gray-300"
             }`}
           >
             Giorno
@@ -353,7 +354,7 @@ export const CalendarPage = () => {
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
               view === "month"
                 ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-500 dark:text-gray-400"
+                : "text-gray-600 dark:text-gray-300"
             }`}
           >
             Mese
@@ -399,7 +400,7 @@ export const CalendarPage = () => {
                     }`}
                   >
                     <span
-                      className={`text-xs font-medium ${isSel ? "text-white/70 dark:text-gray-600" : "text-gray-500 dark:text-gray-400"}`}
+                      className={`text-xs font-medium ${isSel ? "text-white/70 dark:text-gray-600" : "text-gray-600 dark:text-gray-300"}`}
                     >
                       {DAYS_IT[date.getDay()]}
                     </span>
@@ -436,7 +437,7 @@ export const CalendarPage = () => {
           {/* RIEPILOGO */}
           {confirmedCount > 0 && (
             <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 {confirmedCount} prenotazioni confermate
               </p>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -457,7 +458,7 @@ export const CalendarPage = () => {
                 weight="duotone"
                 className="text-gray-300 dark:text-gray-700 mb-3"
               />
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Nessuno slot disponibile per questo giorno
               </p>
               <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">
@@ -506,7 +507,7 @@ export const CalendarPage = () => {
                         </span>
                         <button
                           onClick={() => handleOpenBookingModal(slot)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
                           <PlusIcon size={12} weight="bold" />
                           Prenota
@@ -581,7 +582,7 @@ export const CalendarPage = () => {
                                   handleUndoNoShow(slot.booking!.id)
                                 }
                                 disabled={isUndoLoading}
-                                className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                                className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                               >
                                 {isUndoLoading ? "..." : "Annulla"}
                               </button>
@@ -600,8 +601,8 @@ export const CalendarPage = () => {
 
       {/* VISTA MESE */}
       {view === "month" && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-md">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={() => {
                 const d = new Date(calYear, calMonth - 1);
@@ -633,7 +634,7 @@ export const CalendarPage = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-7 border-b border-gray-100 dark:border-gray-800">
+          <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
             {DAYS_IT.map((d) => (
               <div
                 key={d}
@@ -644,7 +645,7 @@ export const CalendarPage = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800">
+          <div className="grid grid-cols-7 gap-[2px] bg-gray-300 dark:bg-gray-600">
             {getCalendarCells().map((day, i) => {
               if (!day)
                 return (
@@ -686,7 +687,7 @@ export const CalendarPage = () => {
                   {count > 0 && (
                     <div className="mt-1 flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-600 dark:text-gray-300">
                         {count} prev.
                       </span>
                     </div>
@@ -705,13 +706,13 @@ export const CalendarPage = () => {
             className="absolute inset-0 bg-black/50"
             onClick={() => setBookingModal(false)}
           />
-          <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+          <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div>
                 <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                   Nuova prenotazione
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
                   {formatDateOnly(selectedDate)} alle {selectedSlot?.time}
                 </p>
               </div>
@@ -726,7 +727,13 @@ export const CalendarPage = () => {
             <div className="px-6 py-4 flex flex-col gap-4">
               {bookingSuccess ? (
                 <div className="text-center py-6">
-                  <div className="text-4xl mb-3">✅</div>
+                  <div className="text-4xl mb-3">
+                    <CheckCircleIcon
+                      size={16}
+                      weight="duotone"
+                      className="inline mr-1.5 text-green-600 dark:text-green-400"
+                    />
+                  </div>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     Prenotazione confermata!
                   </p>
@@ -745,7 +752,7 @@ export const CalendarPage = () => {
                           serviceId: e.target.value,
                         })
                       }
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
                     >
                       {services.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -760,7 +767,7 @@ export const CalendarPage = () => {
                       Nome *
                     </label>
                     <input
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                       placeholder="es. Mario"
                       value={bookingForm.firstName}
                       onChange={(e) =>
@@ -780,7 +787,7 @@ export const CalendarPage = () => {
                       </span>
                     </label>
                     <input
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                       placeholder="es. Rossi"
                       value={bookingForm.lastName}
                       onChange={(e) =>
@@ -801,7 +808,7 @@ export const CalendarPage = () => {
                     </label>
                     <input
                       type="email"
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                       placeholder="mario@example.com"
                       value={bookingForm.email}
                       onChange={(e) =>
@@ -822,7 +829,7 @@ export const CalendarPage = () => {
                     </label>
                     <input
                       type="tel"
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                       placeholder="+39 333 1234567"
                       value={bookingForm.phone}
                       onChange={(e) =>

@@ -130,7 +130,7 @@ export const ServicesPage = () => {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
             Servizi
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
             Gestisci i servizi del tuo shop
           </p>
         </div>
@@ -149,7 +149,7 @@ export const ServicesPage = () => {
 
       {/* LISTA VUOTA */}
       {!loading && services.length === 0 && (
-        <Card className="flex flex-col items-center justify-center py-16 text-center">
+        <Card className="shadow-md border border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center py-16 text-center">
           <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
             <ScissorsIcon
               size={24}
@@ -160,7 +160,7 @@ export const ServicesPage = () => {
           <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
             Nessun servizio
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
             Aggiungi il primo servizio del tuo shop
           </p>
           <Button onClick={handleNew}>
@@ -174,7 +174,10 @@ export const ServicesPage = () => {
       {!loading && services.length > 0 && (
         <div className="flex flex-col gap-3">
           {services.map((service) => (
-            <Card key={service.id} className="flex items-center gap-4">
+            <Card
+              key={service.id}
+              className="shadow-md border border-gray-300 dark:border-gray-600 flex items-center gap-4"
+            >
               {/* ICONA */}
               <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
                 <ScissorsIcon
@@ -196,11 +199,11 @@ export const ServicesPage = () => {
                   />
                 </div>
                 <div className="flex items-center gap-3 mt-0.5">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-600 dark:text-gray-300">
                     ⏱ {formatDuration(service.duration)}
                   </span>
                   {service.price != null && (
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-gray-600 dark:text-gray-300">
                       💶 €{service.price.toFixed(2)}
                     </span>
                   )}
@@ -275,7 +278,7 @@ export const ServicesPage = () => {
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 Servizio attivo
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-600 dark:text-gray-300">
                 I clienti possono prenotare questo servizio
               </p>
             </div>
@@ -283,7 +286,7 @@ export const ServicesPage = () => {
               onClick={() => setForm({ ...form, isActive: !form.isActive })}
               className={`
                 relative w-11 h-6 rounded-full transition-colors
-                ${form.isActive ? "bg-gray-900 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"}
+                ${form.isActive ? "bg-gray-900 dark:bg-white" : "bg-gray-300 dark:bg-gray-600"}
               `}
             >
               <span
@@ -319,7 +322,7 @@ export const ServicesPage = () => {
         title="Elimina servizio"
       >
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             Sei sicuro di voler eliminare questo servizio? L'operazione non può
             essere annullata.
           </p>

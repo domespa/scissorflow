@@ -24,7 +24,7 @@ const statusLabel: Record<string, { label: string; color: string }> = {
   },
   COMPLETED: {
     label: "Completata",
-    color: "text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800",
+    color: "text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800",
   },
   CANCELLED: {
     label: "Cancellata",
@@ -112,7 +112,7 @@ export const CustomersPage = () => {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
             Clienti
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
             {customers.length} clienti totali
           </p>
         </div>
@@ -129,7 +129,7 @@ export const CustomersPage = () => {
           placeholder="Cerca per nome, email o telefono..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+          className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
         />
       </div>
 
@@ -141,7 +141,7 @@ export const CustomersPage = () => {
             weight="duotone"
             className="text-gray-300 dark:text-gray-700 mb-3"
           />
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
             {search ? "Nessun cliente trovato" : "Nessun cliente ancora"}
           </p>
         </div>
@@ -151,7 +151,7 @@ export const CustomersPage = () => {
             <button
               key={customer.id}
               onClick={() => handleSelectCustomer(customer.id)}
-              className="flex items-center gap-4 px-4 py-3.5 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-all text-left"
+              className="flex items-center gap-4 px-4 py-3.5 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all text-left"
             >
               {/* AVATAR */}
               <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
@@ -168,12 +168,12 @@ export const CustomersPage = () => {
                 </p>
                 <div className="flex items-center gap-3 mt-0.5">
                   {customer.email && (
-                    <span className="text-xs text-gray-400 truncate">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
                       {customer.email}
                     </span>
                   )}
                   {customer.phone && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {customer.phone}
                     </span>
                   )}
@@ -208,9 +208,9 @@ export const CustomersPage = () => {
             className="absolute inset-0 bg-black/50"
             onClick={() => setSelectedCustomer(null)}
           />
-          <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-xl max-h-[85vh] flex flex-col">
+          <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-600 shadow-xl max-h-[85vh] flex flex-col">
             {/* HEADER */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
               <div className="flex items-center justify-between w-full">
                 {/* SINISTRA - AVATAR + NOME */}
                 <div className="flex items-center gap-3">
@@ -256,15 +256,15 @@ export const CustomersPage = () => {
             </div>
 
             {/* CONTATTI */}
-            <div className="px-6 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-4 shrink-0">
+            <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-4 shrink-0">
               {selectedCustomer.email && (
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
                   <EnvelopeIcon size={13} weight="duotone" />
                   {selectedCustomer.email}
                 </div>
               )}
               {selectedCustomer.phone && (
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
                   <PhoneIcon size={13} weight="duotone" />
                   {selectedCustomer.phone}
                 </div>
@@ -283,7 +283,7 @@ export const CustomersPage = () => {
                 </p>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-1">
                     Storico prenotazioni
                   </p>
                   {selectedCustomer.bookings.map((booking) => {
@@ -306,7 +306,7 @@ export const CustomersPage = () => {
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <span className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1">
                               <ScissorsIcon size={10} weight="duotone" />
                               {booking.serviceName}
                             </span>

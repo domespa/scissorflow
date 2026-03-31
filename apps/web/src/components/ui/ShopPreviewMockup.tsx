@@ -16,13 +16,13 @@ export const ShopPreviewMockup = ({
   return (
     <div className="flex items-end gap-4 w-full">
       {/* DESKTOP */}
-      <div className="flex-1 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="flex-1 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600 shadow-sm">
         {/* BROWSER BAR */}
         <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1.5 flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-red-400" />
           <div className="w-2 h-2 rounded-full bg-yellow-400" />
           <div className="w-2 h-2 rounded-full bg-green-400" />
-          <div className="flex-1 mx-2 h-3 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className="flex-1 mx-2 h-3 bg-gray-300 dark:bg-gray-600 rounded-full" />
         </div>
 
         {/* HERO */}
