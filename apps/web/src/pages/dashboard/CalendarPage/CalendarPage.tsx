@@ -3,11 +3,11 @@ import {
   CaretLeftIcon,
   CaretRightIcon,
   CalendarIcon,
-  ClockIcon,
   ScissorsIcon,
   PlusIcon,
   XIcon,
   CheckCircleIcon,
+  CheckIcon,
 } from "@phosphor-icons/react";
 import { bookingService } from "@/services/booking.service";
 import { shopService } from "@/services/shop.service";
@@ -51,6 +51,187 @@ type MonthBooking = {
   status: string;
 };
 
+const isSlotPastFn = (date: Date, time: string) => {
+  const [h, m] = time.split(":").map(Number);
+  const slotDate = new Date(date);
+  slotDate.setHours(h, m, 0, 0);
+  return slotDate < new Date();
+};
+
+const SlotCard = ({
+  slot,
+  date,
+  noShowConfirmId,
+  noShowLoadingId,
+  undoLoadingId,
+  onBook,
+  onNoShow,
+  onUndoNoShow,
+}: {
+  slot: TimelineSlot;
+  date: Date;
+  noShowConfirmId: string | null;
+  noShowLoadingId: string | null;
+  undoLoadingId: string | null;
+  onBook: (slot: TimelineSlot) => void;
+  onNoShow: (id: string) => void;
+  onUndoNoShow: (id: string) => void;
+}) => {
+  const past = isSlotPastFn(date, slot.time);
+  const isConfirming = noShowConfirmId === slot.booking?.id;
+  const isNoShowLoading = noShowLoadingId === slot.booking?.id;
+  const isUndoLoading = undoLoadingId === slot.booking?.id;
+
+  // STATI VISIVI
+  const getCardStyle = () => {
+    if (slot.status === "noshow")
+      return "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800";
+    if (slot.status === "pending")
+      return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800";
+    if (slot.status === "confirmed") {
+      if (past)
+        return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
+      return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
+    }
+    // FREE
+    if (past)
+      return "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600";
+    return "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600";
+  };
+
+  const getBarColor = () => {
+    if (slot.status === "noshow") return "bg-orange-400";
+    if (slot.status === "pending") return "bg-yellow-400";
+    if (slot.status === "confirmed") return "bg-green-500";
+    if (past) return "bg-gray-400 dark:bg-gray-500";
+    return "bg-gray-300 dark:bg-gray-600";
+  };
+
+  const getTimeColor = () => {
+    if (slot.status === "noshow") return "text-orange-600 dark:text-orange-400";
+    if (slot.status === "pending")
+      return "text-yellow-600 dark:text-yellow-400";
+    if (slot.status === "confirmed")
+      return "text-green-700 dark:text-green-400";
+    if (past) return "text-gray-500 dark:text-gray-400";
+    return "text-gray-500 dark:text-gray-400";
+  };
+
+  return (
+    <div
+      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-all ${getCardStyle()} ${past && slot.status === "free" ? "opacity-60" : ""}`}
+    >
+      {/* BARRA */}
+      <div className={`w-1 h-10 rounded-full shrink-0 ${getBarColor()}`} />
+
+      {/* ORARIO */}
+      <div className="w-16 shrink-0">
+        <p className={`text-base font-bold ${getTimeColor()}`}>{slot.time}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          {slot.endTime}
+        </p>
+      </div>
+
+      {/* CONTENUTO */}
+      {slot.status === "free" ? (
+        <div className="flex items-center justify-between flex-1">
+          <span
+            className={`text-sm ${past ? "text-gray-400 dark:text-gray-500" : "text-gray-700 dark:text-gray-200"}`}
+          >
+            {past ? "Non disponibile" : "Disponibile"}
+          </span>
+          {!past && (
+            <button
+              onClick={() => onBook(slot)}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <PlusIcon size={11} weight="bold" />
+              Prenota
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center justify-between flex-1 min-w-0 gap-2">
+          <div className="min-w-0 flex-1">
+            <p
+              className={`text-xs font-semibold truncate ${
+                slot.status === "noshow"
+                  ? "text-orange-600 dark:text-orange-400 line-through"
+                  : "text-gray-900 dark:text-white"
+              }`}
+            >
+              {slot.booking?.customerName}
+            </p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span
+                className={`text-xs flex items-center gap-0.5 truncate ${
+                  slot.status === "confirmed"
+                    ? "text-green-600 dark:text-green-500"
+                    : slot.status === "noshow"
+                      ? "text-orange-500"
+                      : "text-yellow-600"
+                }`}
+              >
+                <ScissorsIcon size={9} weight="duotone" />
+                {slot.booking?.serviceName}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {slot.booking?.price != null && (
+              <p
+                className={`text-xs font-semibold ${slot.status === "noshow" ? "text-orange-400 line-through" : "text-gray-900 dark:text-white"}`}
+              >
+                €{slot.booking.price.toFixed(0)}
+              </p>
+            )}
+
+            {/* BADGE STATO */}
+            {slot.status === "pending" && (
+              <span className="text-xs bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 px-1.5 py-0.5 rounded-full font-medium">
+                OTP
+              </span>
+            )}
+            {slot.status === "confirmed" && past && (
+              <span className="text-xs bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                <CheckIcon size={9} weight="bold" />
+                OK
+              </span>
+            )}
+
+            {/* NO-SHOW */}
+            {slot.status === "confirmed" && slot.booking && (
+              <button
+                onClick={() => onNoShow(slot.booking!.id)}
+                disabled={isNoShowLoading}
+                className={`text-xs px-1.5 py-0.5 rounded-full font-medium transition-all disabled:opacity-50 ${
+                  isConfirming
+                    ? "bg-red-500 text-white animate-pulse"
+                    : "bg-red-50 dark:bg-red-900/30 text-red-500 hover:bg-red-100"
+                }`}
+              >
+                {isNoShowLoading ? "..." : isConfirming ? "Sicuro?" : "NS"}
+              </button>
+            )}
+
+            {/* UNDO NO-SHOW */}
+            {slot.status === "noshow" && slot.booking && (
+              <button
+                onClick={() => onUndoNoShow(slot.booking!.id)}
+                disabled={isUndoLoading}
+                className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                {isUndoLoading ? "..." : "Annulla"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const CalendarPage = () => {
   const { shopId } = useShop();
   const today = new Date();
@@ -81,16 +262,13 @@ export const CalendarPage = () => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [dayBreak, setDayBreak] = useState<{
+    start: string;
+    end: string;
+  } | null>(null);
 
   const getDateStr = (date: Date) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-
-  const isSlotPast = (time: string) => {
-    const [h, m] = time.split(":").map(Number);
-    const slotDate = new Date(selectedDate);
-    slotDate.setHours(h, m, 0, 0);
-    return slotDate < new Date();
-  };
 
   const loadTimeline = useCallback(
     async (date: Date) => {
@@ -99,6 +277,20 @@ export const CalendarPage = () => {
         setLoading(true);
         const data = await bookingService.getDayTimeline(getDateStr(date));
         setTimeline(data);
+        const dow = date.getDay();
+        const availData = await shopService.getAvailability(shopId!);
+        const dayAvail = availData.find(
+          (a: {
+            dayOfWeek: number;
+            breakStart?: string | null;
+            breakEnd?: string | null;
+          }) => a.dayOfWeek === dow,
+        );
+        if (dayAvail?.breakStart && dayAvail?.breakEnd) {
+          setDayBreak({ start: dayAvail.breakStart, end: dayAvail.breakEnd });
+        } else {
+          setDayBreak(null);
+        }
       } catch {
         console.error("Errore caricamento timeline");
       } finally {
@@ -213,10 +405,8 @@ export const CalendarPage = () => {
       setBookingError("Seleziona un servizio");
       return;
     }
-
     setBookingLoading(true);
     setBookingError("");
-
     try {
       const dateStr = getDateStr(selectedDate);
       const startAt = new Date(
@@ -240,8 +430,8 @@ export const CalendarPage = () => {
         setBookingModal(false);
         setBookingSuccess(false);
       }, 1500);
-    } catch (err: any) {
-      if (err?.response?.status === 409) {
+    } catch (error) {
+      if (isAxiosError(error) && error.response.status === 409) {
         setBookingError(
           "Il cliente ha già una prenotazione attiva per questo giorno",
         );
@@ -266,65 +456,60 @@ export const CalendarPage = () => {
     day === today.getDate() &&
     calMonth === today.getMonth() &&
     calYear === today.getFullYear();
-
   const isSelected = (day: number) =>
     day === selectedDate.getDate() &&
     calMonth === selectedDate.getMonth() &&
     calYear === selectedDate.getFullYear();
 
-  const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes}min`;
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return m > 0 ? `${h}h ${m}min` : `${h}h`;
+  // SPLIT TIMELINE IN DUE COLONNE
+  const splitTimeline = () => {
+    if (timeline.length === 0) return { left: [], right: [] };
+
+    // SE PAUSA PRANZO CONFIGURATA DIVID COLONNE IN BASE ALLA PUASA
+    if (dayBreak) {
+      const [bh, bm] = dayBreak.start.split(":").map(Number);
+      const breakStartMin = bh * 60 + bm;
+
+      const splitIdx = timeline.findIndex((s) => {
+        const [h, m] = s.time.split(":").map(Number);
+        return h * 60 + m >= breakStartMin;
+      });
+
+      if (splitIdx > 0) {
+        return {
+          left: timeline.slice(0, splitIdx),
+          right: timeline.slice(splitIdx),
+        };
+      }
+    }
+
+    // FALLBACK A METà
+    const mid = Math.ceil(timeline.length / 2);
+    return { left: timeline.slice(0, mid), right: timeline.slice(mid) };
   };
 
-  const confirmedCount = timeline.filter(
-    (s) => s.status === "confirmed",
-  ).length;
-  const totalRevenue = timeline
-    .filter((s) => s.status === "confirmed" && s.booking?.price != null)
-    .reduce((sum, s) => sum + (s.booking?.price ?? 0), 0);
+  const { left: leftSlots, right: rightSlots } = splitTimeline();
 
-  const getSlotBg = (status: TimelineSlot["status"]) => {
-    if (status === "confirmed")
-      return "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900";
-    if (status === "pending")
-      return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900";
-    if (status === "noshow")
-      return "bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-900";
-    return "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-700";
-  };
-
-  const getBarColor = (status: TimelineSlot["status"]) => {
-    if (status === "confirmed") return "bg-green-400";
-    if (status === "pending") return "bg-yellow-400";
-    if (status === "noshow") return "bg-orange-400";
-    return "bg-gray-300 dark:bg-gray-600";
-  };
-
-  const getTimeColor = (status: TimelineSlot["status"]) => {
-    if (status === "confirmed") return "text-green-700 dark:text-green-400";
-    if (status === "pending") return "text-yellow-700 dark:text-yellow-400";
-    if (status === "noshow") return "text-orange-700 dark:text-orange-400";
-    return "text-gray-400 dark:text-gray-600";
-  };
-
-  const getNameColor = (status: TimelineSlot["status"]) => {
-    if (status === "confirmed") return "text-gray-900 dark:text-white";
-    if (status === "noshow")
-      return "text-orange-700 dark:text-orange-400 line-through";
-    return "text-gray-700 dark:text-gray-300";
-  };
-
-  const getServiceColor = (status: TimelineSlot["status"]) => {
-    if (status === "confirmed") return "text-green-600 dark:text-green-500";
-    if (status === "noshow") return "text-orange-500 dark:text-orange-400";
-    return "text-yellow-600 dark:text-yellow-500";
-  };
+  // RIEPILOGO
+  const confirmed = timeline.filter((s) => s.status === "confirmed");
+  const completedSlots = confirmed.filter((s) =>
+    isSlotPastFn(selectedDate, s.time),
+  );
+  const upcomingSlots = confirmed.filter(
+    (s) => !isSlotPastFn(selectedDate, s.time),
+  );
+  const noShowSlots = timeline.filter((s) => s.status === "noshow");
+  const completedRevenue = completedSlots.reduce(
+    (sum, s) => sum + (s.booking?.price ?? 0),
+    0,
+  );
+  const upcomingRevenue = upcomingSlots.reduce(
+    (sum, s) => sum + (s.booking?.price ?? 0),
+    0,
+  );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
@@ -338,11 +523,7 @@ export const CalendarPage = () => {
         <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
           <button
             onClick={() => setView("day")}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-              view === "day"
-                ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-600 dark:text-gray-300"
-            }`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === "day" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-600 dark:text-gray-300"}`}
           >
             Giorno
           </button>
@@ -351,11 +532,7 @@ export const CalendarPage = () => {
               setView("month");
               loadMonthBookings(calYear, calMonth);
             }}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-              view === "month"
-                ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-600 dark:text-gray-300"
-            }`}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === "month" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-600 dark:text-gray-300"}`}
           >
             Mese
           </button>
@@ -365,13 +542,13 @@ export const CalendarPage = () => {
       {/* VISTA GIORNO */}
       {view === "day" && (
         <div className="flex flex-col gap-4">
-          {/* NAVIGAZIONE SETTIMANA */}
+          {/* NAVIGAZIONE GIORNI */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
-                const prev = new Date(selectedDate);
-                prev.setDate(prev.getDate() - 1);
-                handleDayChange(prev);
+                const p = new Date(selectedDate);
+                p.setDate(p.getDate() - 1);
+                handleDayChange(p);
               }}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
@@ -393,25 +570,15 @@ export const CalendarPage = () => {
                   <button
                     key={i}
                     onClick={() => handleDayChange(new Date(date))}
-                    className={`flex flex-col items-center py-2 px-2 rounded-xl flex-1 transition-all ${
-                      isSel
-                        ? "bg-gray-900 dark:bg-white"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
+                    className={`flex flex-col items-center py-2 px-2 rounded-xl flex-1 transition-all ${isSel ? "bg-gray-900 dark:bg-white" : "hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                   >
                     <span
-                      className={`text-xs font-medium ${isSel ? "text-white/70 dark:text-gray-600" : "text-gray-600 dark:text-gray-300"}`}
+                      className={`text-sm font-medium ${isSel ? "text-white/70 dark:text-gray-600" : "text-gray-600 dark:text-gray-300"}`}
                     >
                       {DAYS_IT[date.getDay()]}
                     </span>
                     <span
-                      className={`text-sm font-semibold mt-0.5 ${
-                        isSel
-                          ? "text-white dark:text-gray-900"
-                          : isTod
-                            ? "text-blue-600 dark:text-blue-400"
-                            : "text-gray-900 dark:text-white"
-                      }`}
+                      className={`text-sm font-semibold mt-0.5 ${isSel ? "text-white dark:text-gray-900" : isTod ? "text-blue-600 dark:text-blue-400" : "text-gray-900 dark:text-white"}`}
                     >
                       {date.getDate()}
                     </span>
@@ -421,9 +588,9 @@ export const CalendarPage = () => {
             </div>
             <button
               onClick={() => {
-                const next = new Date(selectedDate);
-                next.setDate(next.getDate() + 1);
-                handleDayChange(next);
+                const n = new Date(selectedDate);
+                n.setDate(n.getDate() + 1);
+                handleDayChange(n);
               }}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
@@ -434,19 +601,7 @@ export const CalendarPage = () => {
             </button>
           </div>
 
-          {/* RIEPILOGO */}
-          {confirmedCount > 0 && (
-            <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                {confirmedCount} prenotazioni confermate
-              </p>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                €{totalRevenue.toFixed(2)}
-              </p>
-            </div>
-          )}
-
-          {/* TIMELINE */}
+          {/* TIMELINE DUE COLONNE */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
@@ -459,143 +614,107 @@ export const CalendarPage = () => {
                 className="text-gray-300 dark:text-gray-700 mb-3"
               />
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                Nessuno slot disponibile per questo giorno
+                Nessuno slot disponibile
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">
+              <p className="text-xs text-gray-400 mt-1">
                 Configura gli orari nelle impostazioni
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-1.5">
-              {timeline.map((slot) => {
-                const past = isSlotPast(slot.time);
-                const isConfirming = noShowConfirmId === slot.booking?.id;
-                const isNoShowLoading = noShowLoadingId === slot.booking?.id;
-                const isUndoLoading = undoLoadingId === slot.booking?.id;
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* COLONNA SINISTRA */}
+              <div className="flex flex-col gap-1.5">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  {leftSlots[0]?.time ?? ""} -{" "}
+                  {leftSlots[leftSlots.length - 1]?.endTime ?? ""}
+                </p>
+                {leftSlots.map((slot) => (
+                  <SlotCard
+                    key={`left-${slot.time}-${slot.status}`}
+                    slot={slot}
+                    date={selectedDate}
+                    noShowConfirmId={noShowConfirmId}
+                    noShowLoadingId={noShowLoadingId}
+                    undoLoadingId={undoLoadingId}
+                    onBook={handleOpenBookingModal}
+                    onNoShow={handleNoShow}
+                    onUndoNoShow={handleUndoNoShow}
+                  />
+                ))}
+              </div>
 
-                return (
-                  <div
-                    key={`${slot.time}-${slot.status}`}
-                    className={`
-                      flex items-center gap-3 px-4 py-3 rounded-xl border transition-all
-                      ${past && slot.status === "free" ? "opacity-40 pointer-events-none" : ""}
-                      ${getSlotBg(slot.status)}
-                    `}
-                  >
-                    {/* ORARIO */}
-                    <div className="w-20 shrink-0">
-                      <p
-                        className={`text-sm font-semibold ${getTimeColor(slot.status)}`}
-                      >
-                        {slot.time}
-                      </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-600">
-                        {slot.endTime}
-                      </p>
-                    </div>
-
-                    {/* BARRA */}
-                    <div
-                      className={`w-0.5 h-10 rounded-full shrink-0 ${getBarColor(slot.status)}`}
-                    />
-
-                    {/* CONTENUTO */}
-                    {slot.status === "free" ? (
-                      <div className="flex items-center justify-between flex-1">
-                        <span className="text-sm text-gray-400 dark:text-gray-600">
-                          Disponibile
-                        </span>
-                        <button
-                          onClick={() => handleOpenBookingModal(slot)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                        >
-                          <PlusIcon size={12} weight="bold" />
-                          Prenota
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between flex-1 min-w-0">
-                        <div className="min-w-0">
-                          <p
-                            className={`text-sm font-semibold truncate ${getNameColor(slot.status)}`}
-                          >
-                            {slot.booking?.customerName}
-                          </p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span
-                              className={`text-xs flex items-center gap-1 ${getServiceColor(slot.status)}`}
-                            >
-                              <ScissorsIcon size={10} weight="duotone" />
-                              {slot.booking?.serviceName}
-                            </span>
-                            <span className="text-xs text-gray-400 flex items-center gap-1">
-                              <ClockIcon size={10} weight="duotone" />
-                              {slot.booking
-                                ? formatDuration(slot.booking.duration)
-                                : ""}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          {slot.booking?.price != null && (
-                            <p
-                              className={`text-sm font-semibold ${slot.status === "noshow" ? "text-orange-500 line-through" : "text-gray-900 dark:text-white"}`}
-                            >
-                              €{slot.booking.price.toFixed(2)}
-                            </p>
-                          )}
-
-                          {slot.status === "pending" && (
-                            <span className="text-xs bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 px-2 py-0.5 rounded-full">
-                              OTP atteso
-                            </span>
-                          )}
-
-                          {/* NO-SHOW BUTTON */}
-                          {slot.status === "confirmed" && slot.booking && (
-                            <button
-                              onClick={() => handleNoShow(slot.booking!.id)}
-                              disabled={isNoShowLoading}
-                              className={`text-xs px-2 py-0.5 rounded-full font-medium transition-all disabled:opacity-50 ${
-                                isConfirming
-                                  ? "bg-red-500 text-white animate-pulse"
-                                  : "bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50"
-                              }`}
-                            >
-                              {isNoShowLoading
-                                ? "..."
-                                : isConfirming
-                                  ? "Conferma?"
-                                  : "No-show"}
-                            </button>
-                          )}
-
-                          {/* UNDO NO-SHOW */}
-                          {slot.status === "noshow" && slot.booking && (
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 font-medium">
-                                No-show
-                              </span>
-                              <button
-                                onClick={() =>
-                                  handleUndoNoShow(slot.booking!.id)
-                                }
-                                disabled={isUndoLoading}
-                                className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
-                              >
-                                {isUndoLoading ? "..." : "Annulla"}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {/* COLONNA DESTRA */}
+              <div className="flex flex-col gap-1.5">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  {rightSlots[0]?.time ?? ""} -{" "}
+                  {rightSlots[rightSlots.length - 1]?.endTime ?? ""}
+                </p>
+                {rightSlots.map((slot) => (
+                  <SlotCard
+                    key={`right-${slot.time}-${slot.status}`}
+                    slot={slot}
+                    date={selectedDate}
+                    noShowConfirmId={noShowConfirmId}
+                    noShowLoadingId={noShowLoadingId}
+                    undoLoadingId={undoLoadingId}
+                    onBook={handleOpenBookingModal}
+                    onNoShow={handleNoShow}
+                    onUndoNoShow={handleUndoNoShow}
+                  />
+                ))}
+              </div>
             </div>
           )}
+
+          {/* RIEPILOGO GIORNATA */}
+          {
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+              <div className="flex flex-col gap-1 px-4 py-3 bg-white dark:bg-gray-900 rounded-xl border-2 border-green-500 dark:border-green-600">
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  Completate
+                </p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  {completedSlots.length}
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-500">
+                  €{completedRevenue.toFixed(0)}
+                </p>
+              </div>
+              <div className="flex flex-col gap-1 px-4 py-3 bg-white dark:bg-gray-900 rounded-xl border-2 border-blue-500 dark:border-blue-600">
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  Da fare
+                </p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  {upcomingSlots.length}
+                </p>
+                <p className="text-xs text-blue-600 dark:text-blue-500">
+                  €{upcomingRevenue.toFixed(0)}
+                </p>
+              </div>
+              <div className="flex flex-col gap-1 px-4 py-3 bg-white dark:bg-gray-900 rounded-xl border-2 border-gray-400 dark:border-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  Totale giorno
+                </p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  {confirmed.length}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  €{(completedRevenue + upcomingRevenue).toFixed(0)}
+                </p>
+              </div>
+              <div className="flex flex-col gap-1 px-4 py-3 bg-white dark:bg-gray-900 rounded-xl border-2 border-orange-500 dark:border-orange-600">
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  No-show
+                </p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  {noShowSlots.length}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  clienti assenti
+                </p>
+              </div>
+            </div>
+          }
         </div>
       )}
 
@@ -633,7 +752,6 @@ export const CalendarPage = () => {
               />
             </button>
           </div>
-
           <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
             {DAYS_IT.map((d) => (
               <div
@@ -644,8 +762,7 @@ export const CalendarPage = () => {
               </div>
             ))}
           </div>
-
-          <div className="grid grid-cols-7 gap-[2px] bg-gray-300 dark:bg-gray-600">
+          <div className="grid grid-cols-7 gap-0.5 bg-gray-300 dark:bg-gray-600">
             {getCalendarCells().map((day, i) => {
               if (!day)
                 return (
@@ -669,18 +786,10 @@ export const CalendarPage = () => {
                     setView("day");
                     loadTimeline(date);
                   }}
-                  className={`bg-white dark:bg-gray-900 h-20 p-2 flex flex-col hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left ${
-                    isSelected(day)
-                      ? "ring-2 ring-inset ring-gray-900 dark:ring-white"
-                      : ""
-                  }`}
+                  className={`bg-white dark:bg-gray-900 h-20 p-2 flex flex-col hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left ${isSelected(day) ? "ring-2 ring-inset ring-gray-900 dark:ring-white" : ""}`}
                 >
                   <span
-                    className={`text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center ${
-                      isToday(day)
-                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                        : "text-gray-900 dark:text-white"
-                    }`}
+                    className={`text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center ${isToday(day) ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900" : "text-gray-900 dark:text-white"}`}
                   >
                     {day}
                   </span>
@@ -723,17 +832,14 @@ export const CalendarPage = () => {
                 <XIcon size={18} />
               </button>
             </div>
-
             <div className="px-6 py-4 flex flex-col gap-4">
               {bookingSuccess ? (
                 <div className="text-center py-6">
-                  <div className="text-4xl mb-3">
-                    <CheckCircleIcon
-                      size={16}
-                      weight="duotone"
-                      className="inline mr-1.5 text-green-600 dark:text-green-400"
-                    />
-                  </div>
+                  <CheckCircleIcon
+                    size={40}
+                    weight="duotone"
+                    className="text-green-500 mx-auto mb-3"
+                  />
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     Prenotazione confermata!
                   </p>
@@ -761,90 +867,79 @@ export const CalendarPage = () => {
                       ))}
                     </select>
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Nome *
-                    </label>
-                    <input
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
-                      placeholder="es. Mario"
-                      value={bookingForm.firstName}
-                      onChange={(e) =>
-                        setBookingForm({
-                          ...bookingForm,
-                          firstName: e.target.value,
-                        })
-                      }
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Nome *
+                      </label>
+                      <input
+                        className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                        placeholder="Mario"
+                        value={bookingForm.firstName}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            firstName: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Cognome
+                      </label>
+                      <input
+                        className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                        placeholder="Rossi"
+                        value={bookingForm.lastName}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            lastName: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Cognome{" "}
-                      <span className="text-gray-400 font-normal">
-                        (opzionale)
-                      </span>
-                    </label>
-                    <input
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
-                      placeholder="es. Rossi"
-                      value={bookingForm.lastName}
-                      onChange={(e) =>
-                        setBookingForm({
-                          ...bookingForm,
-                          lastName: e.target.value,
-                        })
-                      }
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                        placeholder="mario@example.com"
+                        value={bookingForm.email}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            email: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Telefono
+                      </label>
+                      <input
+                        type="tel"
+                        className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                        placeholder="+39 333 1234567"
+                        value={bookingForm.phone}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            phone: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Email{" "}
-                      <span className="text-gray-400 font-normal">
-                        (opzionale)
-                      </span>
-                    </label>
-                    <input
-                      type="email"
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
-                      placeholder="mario@example.com"
-                      value={bookingForm.email}
-                      onChange={(e) =>
-                        setBookingForm({
-                          ...bookingForm,
-                          email: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Telefono{" "}
-                      <span className="text-gray-400 font-normal">
-                        (opzionale)
-                      </span>
-                    </label>
-                    <input
-                      type="tel"
-                      className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
-                      placeholder="+39 333 1234567"
-                      value={bookingForm.phone}
-                      onChange={(e) =>
-                        setBookingForm({
-                          ...bookingForm,
-                          phone: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-
                   {bookingError && (
                     <p className="text-sm text-red-500">{bookingError}</p>
                   )}
-
                   <div className="flex gap-3 pt-1">
                     <button
                       onClick={() => setBookingModal(false)}
@@ -871,4 +966,11 @@ export const CalendarPage = () => {
       )}
     </div>
   );
+};
+
+// TYPE GUARD AXIOS
+const isAxiosError = (
+  error: unknown,
+): error is { response: { status: number; data: { message: string } } } => {
+  return typeof error === "object" && error !== null && "response" in error;
 };

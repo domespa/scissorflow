@@ -68,6 +68,11 @@ export type Booking = $Result.DefaultSelection<Prisma.$BookingPayload>
  * 
  */
 export type DateException = $Result.DefaultSelection<Prisma.$DateExceptionPayload>
+/**
+ * Model Blacklist
+ * 
+ */
+export type Blacklist = $Result.DefaultSelection<Prisma.$BlacklistPayload>
 
 /**
  * Enums
@@ -358,6 +363,16 @@ export class PrismaClient<
     * ```
     */
   get dateException(): Prisma.DateExceptionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.blacklist`: Exposes CRUD operations for the **Blacklist** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Blacklists
+    * const blacklists = await prisma.blacklist.findMany()
+    * ```
+    */
+  get blacklist(): Prisma.BlacklistDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -802,7 +817,8 @@ export namespace Prisma {
     Customer: 'Customer',
     RecurrenceGroup: 'RecurrenceGroup',
     Booking: 'Booking',
-    DateException: 'DateException'
+    DateException: 'DateException',
+    Blacklist: 'Blacklist'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -818,7 +834,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "shop" | "shopConfig" | "user" | "shopUser" | "service" | "availability" | "blockedSlot" | "customer" | "recurrenceGroup" | "booking" | "dateException"
+      modelProps: "shop" | "shopConfig" | "user" | "shopUser" | "service" | "availability" | "blockedSlot" | "customer" | "recurrenceGroup" | "booking" | "dateException" | "blacklist"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1636,6 +1652,80 @@ export namespace Prisma {
           }
         }
       }
+      Blacklist: {
+        payload: Prisma.$BlacklistPayload<ExtArgs>
+        fields: Prisma.BlacklistFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BlacklistFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BlacklistFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>
+          }
+          findFirst: {
+            args: Prisma.BlacklistFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BlacklistFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>
+          }
+          findMany: {
+            args: Prisma.BlacklistFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>[]
+          }
+          create: {
+            args: Prisma.BlacklistCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>
+          }
+          createMany: {
+            args: Prisma.BlacklistCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BlacklistCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>[]
+          }
+          delete: {
+            args: Prisma.BlacklistDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>
+          }
+          update: {
+            args: Prisma.BlacklistUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>
+          }
+          deleteMany: {
+            args: Prisma.BlacklistDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BlacklistUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BlacklistUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>[]
+          }
+          upsert: {
+            args: Prisma.BlacklistUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlacklistPayload>
+          }
+          aggregate: {
+            args: Prisma.BlacklistAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBlacklist>
+          }
+          groupBy: {
+            args: Prisma.BlacklistGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BlacklistGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BlacklistCountArgs<ExtArgs>
+            result: $Utils.Optional<BlacklistCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1755,6 +1845,7 @@ export namespace Prisma {
     recurrenceGroup?: RecurrenceGroupOmit
     booking?: BookingOmit
     dateException?: DateExceptionOmit
+    blacklist?: BlacklistOmit
   }
 
   /* Types for Logging */
@@ -1841,6 +1932,7 @@ export namespace Prisma {
     bookings: number
     blockedSlots: number
     dateExceptions: number
+    blacklist: number
   }
 
   export type ShopCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1850,6 +1942,7 @@ export namespace Prisma {
     bookings?: boolean | ShopCountOutputTypeCountBookingsArgs
     blockedSlots?: boolean | ShopCountOutputTypeCountBlockedSlotsArgs
     dateExceptions?: boolean | ShopCountOutputTypeCountDateExceptionsArgs
+    blacklist?: boolean | ShopCountOutputTypeCountBlacklistArgs
   }
 
   // Custom InputTypes
@@ -1903,6 +1996,13 @@ export namespace Prisma {
    */
   export type ShopCountOutputTypeCountDateExceptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DateExceptionWhereInput
+  }
+
+  /**
+   * ShopCountOutputType without action
+   */
+  export type ShopCountOutputTypeCountBlacklistArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlacklistWhereInput
   }
 
 
@@ -2213,6 +2313,7 @@ export namespace Prisma {
     blockedSlots?: boolean | Shop$blockedSlotsArgs<ExtArgs>
     config?: boolean | Shop$configArgs<ExtArgs>
     dateExceptions?: boolean | Shop$dateExceptionsArgs<ExtArgs>
+    blacklist?: boolean | Shop$blacklistArgs<ExtArgs>
     _count?: boolean | ShopCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shop"]>
 
@@ -2252,6 +2353,7 @@ export namespace Prisma {
     blockedSlots?: boolean | Shop$blockedSlotsArgs<ExtArgs>
     config?: boolean | Shop$configArgs<ExtArgs>
     dateExceptions?: boolean | Shop$dateExceptionsArgs<ExtArgs>
+    blacklist?: boolean | Shop$blacklistArgs<ExtArgs>
     _count?: boolean | ShopCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ShopIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2267,6 +2369,7 @@ export namespace Prisma {
       blockedSlots: Prisma.$BlockedSlotPayload<ExtArgs>[]
       config: Prisma.$ShopConfigPayload<ExtArgs> | null
       dateExceptions: Prisma.$DateExceptionPayload<ExtArgs>[]
+      blacklist: Prisma.$BlacklistPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2676,6 +2779,7 @@ export namespace Prisma {
     blockedSlots<T extends Shop$blockedSlotsArgs<ExtArgs> = {}>(args?: Subset<T, Shop$blockedSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockedSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     config<T extends Shop$configArgs<ExtArgs> = {}>(args?: Subset<T, Shop$configArgs<ExtArgs>>): Prisma__ShopConfigClient<$Result.GetResult<Prisma.$ShopConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     dateExceptions<T extends Shop$dateExceptionsArgs<ExtArgs> = {}>(args?: Subset<T, Shop$dateExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DateExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    blacklist<T extends Shop$blacklistArgs<ExtArgs> = {}>(args?: Subset<T, Shop$blacklistArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3267,6 +3371,30 @@ export namespace Prisma {
   }
 
   /**
+   * Shop.blacklist
+   */
+  export type Shop$blacklistArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    where?: BlacklistWhereInput
+    orderBy?: BlacklistOrderByWithRelationInput | BlacklistOrderByWithRelationInput[]
+    cursor?: BlacklistWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BlacklistScalarFieldEnum | BlacklistScalarFieldEnum[]
+  }
+
+  /**
    * Shop without action
    */
   export type ShopDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3315,6 +3443,11 @@ export namespace Prisma {
     showPrices: boolean | null
     slotMode: $Enums.SlotMode | null
     slotInterval: number | null
+    logoStyle: string | null
+    logoUrl: string | null
+    legalMode: string | null
+    legalUrl: string | null
+    legalText: string | null
   }
 
   export type ShopConfigMaxAggregateOutputType = {
@@ -3327,6 +3460,11 @@ export namespace Prisma {
     showPrices: boolean | null
     slotMode: $Enums.SlotMode | null
     slotInterval: number | null
+    logoStyle: string | null
+    logoUrl: string | null
+    legalMode: string | null
+    legalUrl: string | null
+    legalText: string | null
   }
 
   export type ShopConfigCountAggregateOutputType = {
@@ -3339,6 +3477,11 @@ export namespace Prisma {
     showPrices: number
     slotMode: number
     slotInterval: number
+    logoStyle: number
+    logoUrl: number
+    legalMode: number
+    legalUrl: number
+    legalText: number
     _all: number
   }
 
@@ -3361,6 +3504,11 @@ export namespace Prisma {
     showPrices?: true
     slotMode?: true
     slotInterval?: true
+    logoStyle?: true
+    logoUrl?: true
+    legalMode?: true
+    legalUrl?: true
+    legalText?: true
   }
 
   export type ShopConfigMaxAggregateInputType = {
@@ -3373,6 +3521,11 @@ export namespace Prisma {
     showPrices?: true
     slotMode?: true
     slotInterval?: true
+    logoStyle?: true
+    logoUrl?: true
+    legalMode?: true
+    legalUrl?: true
+    legalText?: true
   }
 
   export type ShopConfigCountAggregateInputType = {
@@ -3385,6 +3538,11 @@ export namespace Prisma {
     showPrices?: true
     slotMode?: true
     slotInterval?: true
+    logoStyle?: true
+    logoUrl?: true
+    legalMode?: true
+    legalUrl?: true
+    legalText?: true
     _all?: true
   }
 
@@ -3484,6 +3642,11 @@ export namespace Prisma {
     showPrices: boolean
     slotMode: $Enums.SlotMode
     slotInterval: number
+    logoStyle: string
+    logoUrl: string | null
+    legalMode: string
+    legalUrl: string | null
+    legalText: string | null
     _count: ShopConfigCountAggregateOutputType | null
     _avg: ShopConfigAvgAggregateOutputType | null
     _sum: ShopConfigSumAggregateOutputType | null
@@ -3515,6 +3678,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: boolean
     slotInterval?: boolean
+    logoStyle?: boolean
+    logoUrl?: boolean
+    legalMode?: boolean
+    legalUrl?: boolean
+    legalText?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopConfig"]>
 
@@ -3528,6 +3696,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: boolean
     slotInterval?: boolean
+    logoStyle?: boolean
+    logoUrl?: boolean
+    legalMode?: boolean
+    legalUrl?: boolean
+    legalText?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopConfig"]>
 
@@ -3541,6 +3714,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: boolean
     slotInterval?: boolean
+    logoStyle?: boolean
+    logoUrl?: boolean
+    legalMode?: boolean
+    legalUrl?: boolean
+    legalText?: boolean
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shopConfig"]>
 
@@ -3554,9 +3732,14 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: boolean
     slotInterval?: boolean
+    logoStyle?: boolean
+    logoUrl?: boolean
+    legalMode?: boolean
+    legalUrl?: boolean
+    legalText?: boolean
   }
 
-  export type ShopConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "primaryColor" | "coverImage" | "logo" | "tagline" | "showPrices" | "slotMode" | "slotInterval", ExtArgs["result"]["shopConfig"]>
+  export type ShopConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "primaryColor" | "coverImage" | "logo" | "tagline" | "showPrices" | "slotMode" | "slotInterval" | "logoStyle" | "logoUrl" | "legalMode" | "legalUrl" | "legalText", ExtArgs["result"]["shopConfig"]>
   export type ShopConfigInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     shop?: boolean | ShopDefaultArgs<ExtArgs>
   }
@@ -3582,6 +3765,11 @@ export namespace Prisma {
       showPrices: boolean
       slotMode: $Enums.SlotMode
       slotInterval: number
+      logoStyle: string
+      logoUrl: string | null
+      legalMode: string
+      legalUrl: string | null
+      legalText: string | null
     }, ExtArgs["result"]["shopConfig"]>
     composites: {}
   }
@@ -4015,6 +4203,11 @@ export namespace Prisma {
     readonly showPrices: FieldRef<"ShopConfig", 'Boolean'>
     readonly slotMode: FieldRef<"ShopConfig", 'SlotMode'>
     readonly slotInterval: FieldRef<"ShopConfig", 'Int'>
+    readonly logoStyle: FieldRef<"ShopConfig", 'String'>
+    readonly logoUrl: FieldRef<"ShopConfig", 'String'>
+    readonly legalMode: FieldRef<"ShopConfig", 'String'>
+    readonly legalUrl: FieldRef<"ShopConfig", 'String'>
+    readonly legalText: FieldRef<"ShopConfig", 'String'>
   }
     
 
@@ -9950,6 +10143,7 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     noShows: number | null
+    isBlocked: boolean | null
   }
 
   export type CustomerMaxAggregateOutputType = {
@@ -9959,6 +10153,7 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     noShows: number | null
+    isBlocked: boolean | null
   }
 
   export type CustomerCountAggregateOutputType = {
@@ -9968,6 +10163,7 @@ export namespace Prisma {
     email: number
     phone: number
     noShows: number
+    isBlocked: number
     _all: number
   }
 
@@ -9987,6 +10183,7 @@ export namespace Prisma {
     email?: true
     phone?: true
     noShows?: true
+    isBlocked?: true
   }
 
   export type CustomerMaxAggregateInputType = {
@@ -9996,6 +10193,7 @@ export namespace Prisma {
     email?: true
     phone?: true
     noShows?: true
+    isBlocked?: true
   }
 
   export type CustomerCountAggregateInputType = {
@@ -10005,6 +10203,7 @@ export namespace Prisma {
     email?: true
     phone?: true
     noShows?: true
+    isBlocked?: true
     _all?: true
   }
 
@@ -10101,6 +10300,7 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     noShows: number
+    isBlocked: boolean
     _count: CustomerCountAggregateOutputType | null
     _avg: CustomerAvgAggregateOutputType | null
     _sum: CustomerSumAggregateOutputType | null
@@ -10129,6 +10329,7 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     noShows?: boolean
+    isBlocked?: boolean
     bookings?: boolean | Customer$bookingsArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
@@ -10140,6 +10341,7 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     noShows?: boolean
+    isBlocked?: boolean
   }, ExtArgs["result"]["customer"]>
 
   export type CustomerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10149,6 +10351,7 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     noShows?: boolean
+    isBlocked?: boolean
   }, ExtArgs["result"]["customer"]>
 
   export type CustomerSelectScalar = {
@@ -10158,9 +10361,10 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     noShows?: boolean
+    isBlocked?: boolean
   }
 
-  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "noShows", ExtArgs["result"]["customer"]>
+  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "noShows" | "isBlocked", ExtArgs["result"]["customer"]>
   export type CustomerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bookings?: boolean | Customer$bookingsArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
@@ -10180,6 +10384,7 @@ export namespace Prisma {
       email: string | null
       phone: string | null
       noShows: number
+      isBlocked: boolean
     }, ExtArgs["result"]["customer"]>
     composites: {}
   }
@@ -10610,6 +10815,7 @@ export namespace Prisma {
     readonly email: FieldRef<"Customer", 'String'>
     readonly phone: FieldRef<"Customer", 'String'>
     readonly noShows: FieldRef<"Customer", 'Int'>
+    readonly isBlocked: FieldRef<"Customer", 'Boolean'>
   }
     
 
@@ -14446,6 +14652,1082 @@ export namespace Prisma {
 
 
   /**
+   * Model Blacklist
+   */
+
+  export type AggregateBlacklist = {
+    _count: BlacklistCountAggregateOutputType | null
+    _min: BlacklistMinAggregateOutputType | null
+    _max: BlacklistMaxAggregateOutputType | null
+  }
+
+  export type BlacklistMinAggregateOutputType = {
+    id: string | null
+    shopId: string | null
+    email: string | null
+    phone: string | null
+    reason: string | null
+    createdAt: Date | null
+  }
+
+  export type BlacklistMaxAggregateOutputType = {
+    id: string | null
+    shopId: string | null
+    email: string | null
+    phone: string | null
+    reason: string | null
+    createdAt: Date | null
+  }
+
+  export type BlacklistCountAggregateOutputType = {
+    id: number
+    shopId: number
+    email: number
+    phone: number
+    reason: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type BlacklistMinAggregateInputType = {
+    id?: true
+    shopId?: true
+    email?: true
+    phone?: true
+    reason?: true
+    createdAt?: true
+  }
+
+  export type BlacklistMaxAggregateInputType = {
+    id?: true
+    shopId?: true
+    email?: true
+    phone?: true
+    reason?: true
+    createdAt?: true
+  }
+
+  export type BlacklistCountAggregateInputType = {
+    id?: true
+    shopId?: true
+    email?: true
+    phone?: true
+    reason?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type BlacklistAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Blacklist to aggregate.
+     */
+    where?: BlacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blacklists to fetch.
+     */
+    orderBy?: BlacklistOrderByWithRelationInput | BlacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BlacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blacklists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Blacklists
+    **/
+    _count?: true | BlacklistCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BlacklistMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BlacklistMaxAggregateInputType
+  }
+
+  export type GetBlacklistAggregateType<T extends BlacklistAggregateArgs> = {
+        [P in keyof T & keyof AggregateBlacklist]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBlacklist[P]>
+      : GetScalarType<T[P], AggregateBlacklist[P]>
+  }
+
+
+
+
+  export type BlacklistGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlacklistWhereInput
+    orderBy?: BlacklistOrderByWithAggregationInput | BlacklistOrderByWithAggregationInput[]
+    by: BlacklistScalarFieldEnum[] | BlacklistScalarFieldEnum
+    having?: BlacklistScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BlacklistCountAggregateInputType | true
+    _min?: BlacklistMinAggregateInputType
+    _max?: BlacklistMaxAggregateInputType
+  }
+
+  export type BlacklistGroupByOutputType = {
+    id: string
+    shopId: string
+    email: string | null
+    phone: string | null
+    reason: string | null
+    createdAt: Date
+    _count: BlacklistCountAggregateOutputType | null
+    _min: BlacklistMinAggregateOutputType | null
+    _max: BlacklistMaxAggregateOutputType | null
+  }
+
+  type GetBlacklistGroupByPayload<T extends BlacklistGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BlacklistGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BlacklistGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BlacklistGroupByOutputType[P]>
+            : GetScalarType<T[P], BlacklistGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BlacklistSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    shopId?: boolean
+    email?: boolean
+    phone?: boolean
+    reason?: boolean
+    createdAt?: boolean
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["blacklist"]>
+
+  export type BlacklistSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    shopId?: boolean
+    email?: boolean
+    phone?: boolean
+    reason?: boolean
+    createdAt?: boolean
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["blacklist"]>
+
+  export type BlacklistSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    shopId?: boolean
+    email?: boolean
+    phone?: boolean
+    reason?: boolean
+    createdAt?: boolean
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["blacklist"]>
+
+  export type BlacklistSelectScalar = {
+    id?: boolean
+    shopId?: boolean
+    email?: boolean
+    phone?: boolean
+    reason?: boolean
+    createdAt?: boolean
+  }
+
+  export type BlacklistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "shopId" | "email" | "phone" | "reason" | "createdAt", ExtArgs["result"]["blacklist"]>
+  export type BlacklistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }
+  export type BlacklistIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }
+  export type BlacklistIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    shop?: boolean | ShopDefaultArgs<ExtArgs>
+  }
+
+  export type $BlacklistPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Blacklist"
+    objects: {
+      shop: Prisma.$ShopPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      shopId: string
+      email: string | null
+      phone: string | null
+      reason: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["blacklist"]>
+    composites: {}
+  }
+
+  type BlacklistGetPayload<S extends boolean | null | undefined | BlacklistDefaultArgs> = $Result.GetResult<Prisma.$BlacklistPayload, S>
+
+  type BlacklistCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BlacklistFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BlacklistCountAggregateInputType | true
+    }
+
+  export interface BlacklistDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Blacklist'], meta: { name: 'Blacklist' } }
+    /**
+     * Find zero or one Blacklist that matches the filter.
+     * @param {BlacklistFindUniqueArgs} args - Arguments to find a Blacklist
+     * @example
+     * // Get one Blacklist
+     * const blacklist = await prisma.blacklist.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BlacklistFindUniqueArgs>(args: SelectSubset<T, BlacklistFindUniqueArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Blacklist that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BlacklistFindUniqueOrThrowArgs} args - Arguments to find a Blacklist
+     * @example
+     * // Get one Blacklist
+     * const blacklist = await prisma.blacklist.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BlacklistFindUniqueOrThrowArgs>(args: SelectSubset<T, BlacklistFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Blacklist that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlacklistFindFirstArgs} args - Arguments to find a Blacklist
+     * @example
+     * // Get one Blacklist
+     * const blacklist = await prisma.blacklist.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BlacklistFindFirstArgs>(args?: SelectSubset<T, BlacklistFindFirstArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Blacklist that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlacklistFindFirstOrThrowArgs} args - Arguments to find a Blacklist
+     * @example
+     * // Get one Blacklist
+     * const blacklist = await prisma.blacklist.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BlacklistFindFirstOrThrowArgs>(args?: SelectSubset<T, BlacklistFindFirstOrThrowArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Blacklists that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlacklistFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Blacklists
+     * const blacklists = await prisma.blacklist.findMany()
+     * 
+     * // Get first 10 Blacklists
+     * const blacklists = await prisma.blacklist.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const blacklistWithIdOnly = await prisma.blacklist.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BlacklistFindManyArgs>(args?: SelectSubset<T, BlacklistFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Blacklist.
+     * @param {BlacklistCreateArgs} args - Arguments to create a Blacklist.
+     * @example
+     * // Create one Blacklist
+     * const Blacklist = await prisma.blacklist.create({
+     *   data: {
+     *     // ... data to create a Blacklist
+     *   }
+     * })
+     * 
+     */
+    create<T extends BlacklistCreateArgs>(args: SelectSubset<T, BlacklistCreateArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Blacklists.
+     * @param {BlacklistCreateManyArgs} args - Arguments to create many Blacklists.
+     * @example
+     * // Create many Blacklists
+     * const blacklist = await prisma.blacklist.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BlacklistCreateManyArgs>(args?: SelectSubset<T, BlacklistCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Blacklists and returns the data saved in the database.
+     * @param {BlacklistCreateManyAndReturnArgs} args - Arguments to create many Blacklists.
+     * @example
+     * // Create many Blacklists
+     * const blacklist = await prisma.blacklist.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Blacklists and only return the `id`
+     * const blacklistWithIdOnly = await prisma.blacklist.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BlacklistCreateManyAndReturnArgs>(args?: SelectSubset<T, BlacklistCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Blacklist.
+     * @param {BlacklistDeleteArgs} args - Arguments to delete one Blacklist.
+     * @example
+     * // Delete one Blacklist
+     * const Blacklist = await prisma.blacklist.delete({
+     *   where: {
+     *     // ... filter to delete one Blacklist
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BlacklistDeleteArgs>(args: SelectSubset<T, BlacklistDeleteArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Blacklist.
+     * @param {BlacklistUpdateArgs} args - Arguments to update one Blacklist.
+     * @example
+     * // Update one Blacklist
+     * const blacklist = await prisma.blacklist.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BlacklistUpdateArgs>(args: SelectSubset<T, BlacklistUpdateArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Blacklists.
+     * @param {BlacklistDeleteManyArgs} args - Arguments to filter Blacklists to delete.
+     * @example
+     * // Delete a few Blacklists
+     * const { count } = await prisma.blacklist.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BlacklistDeleteManyArgs>(args?: SelectSubset<T, BlacklistDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Blacklists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlacklistUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Blacklists
+     * const blacklist = await prisma.blacklist.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BlacklistUpdateManyArgs>(args: SelectSubset<T, BlacklistUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Blacklists and returns the data updated in the database.
+     * @param {BlacklistUpdateManyAndReturnArgs} args - Arguments to update many Blacklists.
+     * @example
+     * // Update many Blacklists
+     * const blacklist = await prisma.blacklist.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Blacklists and only return the `id`
+     * const blacklistWithIdOnly = await prisma.blacklist.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BlacklistUpdateManyAndReturnArgs>(args: SelectSubset<T, BlacklistUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Blacklist.
+     * @param {BlacklistUpsertArgs} args - Arguments to update or create a Blacklist.
+     * @example
+     * // Update or create a Blacklist
+     * const blacklist = await prisma.blacklist.upsert({
+     *   create: {
+     *     // ... data to create a Blacklist
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Blacklist we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BlacklistUpsertArgs>(args: SelectSubset<T, BlacklistUpsertArgs<ExtArgs>>): Prisma__BlacklistClient<$Result.GetResult<Prisma.$BlacklistPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Blacklists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlacklistCountArgs} args - Arguments to filter Blacklists to count.
+     * @example
+     * // Count the number of Blacklists
+     * const count = await prisma.blacklist.count({
+     *   where: {
+     *     // ... the filter for the Blacklists we want to count
+     *   }
+     * })
+    **/
+    count<T extends BlacklistCountArgs>(
+      args?: Subset<T, BlacklistCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BlacklistCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Blacklist.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlacklistAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BlacklistAggregateArgs>(args: Subset<T, BlacklistAggregateArgs>): Prisma.PrismaPromise<GetBlacklistAggregateType<T>>
+
+    /**
+     * Group by Blacklist.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlacklistGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BlacklistGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BlacklistGroupByArgs['orderBy'] }
+        : { orderBy?: BlacklistGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BlacklistGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBlacklistGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Blacklist model
+   */
+  readonly fields: BlacklistFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Blacklist.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BlacklistClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    shop<T extends ShopDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShopDefaultArgs<ExtArgs>>): Prisma__ShopClient<$Result.GetResult<Prisma.$ShopPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Blacklist model
+   */
+  interface BlacklistFieldRefs {
+    readonly id: FieldRef<"Blacklist", 'String'>
+    readonly shopId: FieldRef<"Blacklist", 'String'>
+    readonly email: FieldRef<"Blacklist", 'String'>
+    readonly phone: FieldRef<"Blacklist", 'String'>
+    readonly reason: FieldRef<"Blacklist", 'String'>
+    readonly createdAt: FieldRef<"Blacklist", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Blacklist findUnique
+   */
+  export type BlacklistFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * Filter, which Blacklist to fetch.
+     */
+    where: BlacklistWhereUniqueInput
+  }
+
+  /**
+   * Blacklist findUniqueOrThrow
+   */
+  export type BlacklistFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * Filter, which Blacklist to fetch.
+     */
+    where: BlacklistWhereUniqueInput
+  }
+
+  /**
+   * Blacklist findFirst
+   */
+  export type BlacklistFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * Filter, which Blacklist to fetch.
+     */
+    where?: BlacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blacklists to fetch.
+     */
+    orderBy?: BlacklistOrderByWithRelationInput | BlacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Blacklists.
+     */
+    cursor?: BlacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blacklists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Blacklists.
+     */
+    distinct?: BlacklistScalarFieldEnum | BlacklistScalarFieldEnum[]
+  }
+
+  /**
+   * Blacklist findFirstOrThrow
+   */
+  export type BlacklistFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * Filter, which Blacklist to fetch.
+     */
+    where?: BlacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blacklists to fetch.
+     */
+    orderBy?: BlacklistOrderByWithRelationInput | BlacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Blacklists.
+     */
+    cursor?: BlacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blacklists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Blacklists.
+     */
+    distinct?: BlacklistScalarFieldEnum | BlacklistScalarFieldEnum[]
+  }
+
+  /**
+   * Blacklist findMany
+   */
+  export type BlacklistFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * Filter, which Blacklists to fetch.
+     */
+    where?: BlacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blacklists to fetch.
+     */
+    orderBy?: BlacklistOrderByWithRelationInput | BlacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Blacklists.
+     */
+    cursor?: BlacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blacklists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Blacklists.
+     */
+    distinct?: BlacklistScalarFieldEnum | BlacklistScalarFieldEnum[]
+  }
+
+  /**
+   * Blacklist create
+   */
+  export type BlacklistCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Blacklist.
+     */
+    data: XOR<BlacklistCreateInput, BlacklistUncheckedCreateInput>
+  }
+
+  /**
+   * Blacklist createMany
+   */
+  export type BlacklistCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Blacklists.
+     */
+    data: BlacklistCreateManyInput | BlacklistCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Blacklist createManyAndReturn
+   */
+  export type BlacklistCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * The data used to create many Blacklists.
+     */
+    data: BlacklistCreateManyInput | BlacklistCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Blacklist update
+   */
+  export type BlacklistUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Blacklist.
+     */
+    data: XOR<BlacklistUpdateInput, BlacklistUncheckedUpdateInput>
+    /**
+     * Choose, which Blacklist to update.
+     */
+    where: BlacklistWhereUniqueInput
+  }
+
+  /**
+   * Blacklist updateMany
+   */
+  export type BlacklistUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Blacklists.
+     */
+    data: XOR<BlacklistUpdateManyMutationInput, BlacklistUncheckedUpdateManyInput>
+    /**
+     * Filter which Blacklists to update
+     */
+    where?: BlacklistWhereInput
+    /**
+     * Limit how many Blacklists to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Blacklist updateManyAndReturn
+   */
+  export type BlacklistUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * The data used to update Blacklists.
+     */
+    data: XOR<BlacklistUpdateManyMutationInput, BlacklistUncheckedUpdateManyInput>
+    /**
+     * Filter which Blacklists to update
+     */
+    where?: BlacklistWhereInput
+    /**
+     * Limit how many Blacklists to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Blacklist upsert
+   */
+  export type BlacklistUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Blacklist to update in case it exists.
+     */
+    where: BlacklistWhereUniqueInput
+    /**
+     * In case the Blacklist found by the `where` argument doesn't exist, create a new Blacklist with this data.
+     */
+    create: XOR<BlacklistCreateInput, BlacklistUncheckedCreateInput>
+    /**
+     * In case the Blacklist was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BlacklistUpdateInput, BlacklistUncheckedUpdateInput>
+  }
+
+  /**
+   * Blacklist delete
+   */
+  export type BlacklistDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+    /**
+     * Filter which Blacklist to delete.
+     */
+    where: BlacklistWhereUniqueInput
+  }
+
+  /**
+   * Blacklist deleteMany
+   */
+  export type BlacklistDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Blacklists to delete
+     */
+    where?: BlacklistWhereInput
+    /**
+     * Limit how many Blacklists to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Blacklist without action
+   */
+  export type BlacklistDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Blacklist
+     */
+    select?: BlacklistSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Blacklist
+     */
+    omit?: BlacklistOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlacklistInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -14480,7 +15762,12 @@ export namespace Prisma {
     tagline: 'tagline',
     showPrices: 'showPrices',
     slotMode: 'slotMode',
-    slotInterval: 'slotInterval'
+    slotInterval: 'slotInterval',
+    logoStyle: 'logoStyle',
+    logoUrl: 'logoUrl',
+    legalMode: 'legalMode',
+    legalUrl: 'legalUrl',
+    legalText: 'legalText'
   };
 
   export type ShopConfigScalarFieldEnum = (typeof ShopConfigScalarFieldEnum)[keyof typeof ShopConfigScalarFieldEnum]
@@ -14551,7 +15838,8 @@ export namespace Prisma {
     lastName: 'lastName',
     email: 'email',
     phone: 'phone',
-    noShows: 'noShows'
+    noShows: 'noShows',
+    isBlocked: 'isBlocked'
   };
 
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
@@ -14600,6 +15888,18 @@ export namespace Prisma {
   };
 
   export type DateExceptionScalarFieldEnum = (typeof DateExceptionScalarFieldEnum)[keyof typeof DateExceptionScalarFieldEnum]
+
+
+  export const BlacklistScalarFieldEnum: {
+    id: 'id',
+    shopId: 'shopId',
+    email: 'email',
+    phone: 'phone',
+    reason: 'reason',
+    createdAt: 'createdAt'
+  };
+
+  export type BlacklistScalarFieldEnum = (typeof BlacklistScalarFieldEnum)[keyof typeof BlacklistScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -14770,6 +16070,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotListRelationFilter
     config?: XOR<ShopConfigNullableScalarRelationFilter, ShopConfigWhereInput> | null
     dateExceptions?: DateExceptionListRelationFilter
+    blacklist?: BlacklistListRelationFilter
   }
 
   export type ShopOrderByWithRelationInput = {
@@ -14786,6 +16087,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotOrderByRelationAggregateInput
     config?: ShopConfigOrderByWithRelationInput
     dateExceptions?: DateExceptionOrderByRelationAggregateInput
+    blacklist?: BlacklistOrderByRelationAggregateInput
   }
 
   export type ShopWhereUniqueInput = Prisma.AtLeast<{
@@ -14805,6 +16107,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotListRelationFilter
     config?: XOR<ShopConfigNullableScalarRelationFilter, ShopConfigWhereInput> | null
     dateExceptions?: DateExceptionListRelationFilter
+    blacklist?: BlacklistListRelationFilter
   }, "id" | "slug">
 
   export type ShopOrderByWithAggregationInput = {
@@ -14844,6 +16147,11 @@ export namespace Prisma {
     showPrices?: BoolFilter<"ShopConfig"> | boolean
     slotMode?: EnumSlotModeFilter<"ShopConfig"> | $Enums.SlotMode
     slotInterval?: IntFilter<"ShopConfig"> | number
+    logoStyle?: StringFilter<"ShopConfig"> | string
+    logoUrl?: StringNullableFilter<"ShopConfig"> | string | null
+    legalMode?: StringFilter<"ShopConfig"> | string
+    legalUrl?: StringNullableFilter<"ShopConfig"> | string | null
+    legalText?: StringNullableFilter<"ShopConfig"> | string | null
     shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
   }
 
@@ -14857,6 +16165,11 @@ export namespace Prisma {
     showPrices?: SortOrder
     slotMode?: SortOrder
     slotInterval?: SortOrder
+    logoStyle?: SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    legalMode?: SortOrder
+    legalUrl?: SortOrderInput | SortOrder
+    legalText?: SortOrderInput | SortOrder
     shop?: ShopOrderByWithRelationInput
   }
 
@@ -14873,6 +16186,11 @@ export namespace Prisma {
     showPrices?: BoolFilter<"ShopConfig"> | boolean
     slotMode?: EnumSlotModeFilter<"ShopConfig"> | $Enums.SlotMode
     slotInterval?: IntFilter<"ShopConfig"> | number
+    logoStyle?: StringFilter<"ShopConfig"> | string
+    logoUrl?: StringNullableFilter<"ShopConfig"> | string | null
+    legalMode?: StringFilter<"ShopConfig"> | string
+    legalUrl?: StringNullableFilter<"ShopConfig"> | string | null
+    legalText?: StringNullableFilter<"ShopConfig"> | string | null
     shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
   }, "id" | "shopId">
 
@@ -14886,6 +16204,11 @@ export namespace Prisma {
     showPrices?: SortOrder
     slotMode?: SortOrder
     slotInterval?: SortOrder
+    logoStyle?: SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    legalMode?: SortOrder
+    legalUrl?: SortOrderInput | SortOrder
+    legalText?: SortOrderInput | SortOrder
     _count?: ShopConfigCountOrderByAggregateInput
     _avg?: ShopConfigAvgOrderByAggregateInput
     _max?: ShopConfigMaxOrderByAggregateInput
@@ -14906,6 +16229,11 @@ export namespace Prisma {
     showPrices?: BoolWithAggregatesFilter<"ShopConfig"> | boolean
     slotMode?: EnumSlotModeWithAggregatesFilter<"ShopConfig"> | $Enums.SlotMode
     slotInterval?: IntWithAggregatesFilter<"ShopConfig"> | number
+    logoStyle?: StringWithAggregatesFilter<"ShopConfig"> | string
+    logoUrl?: StringNullableWithAggregatesFilter<"ShopConfig"> | string | null
+    legalMode?: StringWithAggregatesFilter<"ShopConfig"> | string
+    legalUrl?: StringNullableWithAggregatesFilter<"ShopConfig"> | string | null
+    legalText?: StringNullableWithAggregatesFilter<"ShopConfig"> | string | null
   }
 
   export type UserWhereInput = {
@@ -15225,6 +16553,7 @@ export namespace Prisma {
     email?: StringNullableFilter<"Customer"> | string | null
     phone?: StringNullableFilter<"Customer"> | string | null
     noShows?: IntFilter<"Customer"> | number
+    isBlocked?: BoolFilter<"Customer"> | boolean
     bookings?: BookingListRelationFilter
   }
 
@@ -15235,6 +16564,7 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     noShows?: SortOrder
+    isBlocked?: SortOrder
     bookings?: BookingOrderByRelationAggregateInput
   }
 
@@ -15248,6 +16578,7 @@ export namespace Prisma {
     email?: StringNullableFilter<"Customer"> | string | null
     phone?: StringNullableFilter<"Customer"> | string | null
     noShows?: IntFilter<"Customer"> | number
+    isBlocked?: BoolFilter<"Customer"> | boolean
     bookings?: BookingListRelationFilter
   }, "id">
 
@@ -15258,6 +16589,7 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     noShows?: SortOrder
+    isBlocked?: SortOrder
     _count?: CustomerCountOrderByAggregateInput
     _avg?: CustomerAvgOrderByAggregateInput
     _max?: CustomerMaxOrderByAggregateInput
@@ -15275,6 +16607,7 @@ export namespace Prisma {
     email?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     noShows?: IntWithAggregatesFilter<"Customer"> | number
+    isBlocked?: BoolWithAggregatesFilter<"Customer"> | boolean
   }
 
   export type RecurrenceGroupWhereInput = {
@@ -15512,6 +16845,68 @@ export namespace Prisma {
     reason?: StringNullableWithAggregatesFilter<"DateException"> | string | null
   }
 
+  export type BlacklistWhereInput = {
+    AND?: BlacklistWhereInput | BlacklistWhereInput[]
+    OR?: BlacklistWhereInput[]
+    NOT?: BlacklistWhereInput | BlacklistWhereInput[]
+    id?: StringFilter<"Blacklist"> | string
+    shopId?: StringFilter<"Blacklist"> | string
+    email?: StringNullableFilter<"Blacklist"> | string | null
+    phone?: StringNullableFilter<"Blacklist"> | string | null
+    reason?: StringNullableFilter<"Blacklist"> | string | null
+    createdAt?: DateTimeFilter<"Blacklist"> | Date | string
+    shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
+  }
+
+  export type BlacklistOrderByWithRelationInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    shop?: ShopOrderByWithRelationInput
+  }
+
+  export type BlacklistWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    shopId_email?: BlacklistShopIdEmailCompoundUniqueInput
+    shopId_phone?: BlacklistShopIdPhoneCompoundUniqueInput
+    AND?: BlacklistWhereInput | BlacklistWhereInput[]
+    OR?: BlacklistWhereInput[]
+    NOT?: BlacklistWhereInput | BlacklistWhereInput[]
+    shopId?: StringFilter<"Blacklist"> | string
+    email?: StringNullableFilter<"Blacklist"> | string | null
+    phone?: StringNullableFilter<"Blacklist"> | string | null
+    reason?: StringNullableFilter<"Blacklist"> | string | null
+    createdAt?: DateTimeFilter<"Blacklist"> | Date | string
+    shop?: XOR<ShopScalarRelationFilter, ShopWhereInput>
+  }, "id" | "shopId_email" | "shopId_phone">
+
+  export type BlacklistOrderByWithAggregationInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: BlacklistCountOrderByAggregateInput
+    _max?: BlacklistMaxOrderByAggregateInput
+    _min?: BlacklistMinOrderByAggregateInput
+  }
+
+  export type BlacklistScalarWhereWithAggregatesInput = {
+    AND?: BlacklistScalarWhereWithAggregatesInput | BlacklistScalarWhereWithAggregatesInput[]
+    OR?: BlacklistScalarWhereWithAggregatesInput[]
+    NOT?: BlacklistScalarWhereWithAggregatesInput | BlacklistScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Blacklist"> | string
+    shopId?: StringWithAggregatesFilter<"Blacklist"> | string
+    email?: StringNullableWithAggregatesFilter<"Blacklist"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Blacklist"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"Blacklist"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Blacklist"> | Date | string
+  }
+
   export type ShopCreateInput = {
     id?: string
     name: string
@@ -15526,6 +16921,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateInput = {
@@ -15542,6 +16938,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopUpdateInput = {
@@ -15558,6 +16955,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateInput = {
@@ -15574,6 +16972,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopCreateManyInput = {
@@ -15612,6 +17011,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: $Enums.SlotMode
     slotInterval?: number
+    logoStyle?: string
+    logoUrl?: string | null
+    legalMode?: string
+    legalUrl?: string | null
+    legalText?: string | null
     shop: ShopCreateNestedOneWithoutConfigInput
   }
 
@@ -15625,6 +17029,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: $Enums.SlotMode
     slotInterval?: number
+    logoStyle?: string
+    logoUrl?: string | null
+    legalMode?: string
+    legalUrl?: string | null
+    legalText?: string | null
   }
 
   export type ShopConfigUpdateInput = {
@@ -15636,6 +17045,11 @@ export namespace Prisma {
     showPrices?: BoolFieldUpdateOperationsInput | boolean
     slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
     slotInterval?: IntFieldUpdateOperationsInput | number
+    logoStyle?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalMode?: StringFieldUpdateOperationsInput | string
+    legalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalText?: NullableStringFieldUpdateOperationsInput | string | null
     shop?: ShopUpdateOneRequiredWithoutConfigNestedInput
   }
 
@@ -15649,6 +17063,11 @@ export namespace Prisma {
     showPrices?: BoolFieldUpdateOperationsInput | boolean
     slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
     slotInterval?: IntFieldUpdateOperationsInput | number
+    logoStyle?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalMode?: StringFieldUpdateOperationsInput | string
+    legalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalText?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ShopConfigCreateManyInput = {
@@ -15661,6 +17080,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: $Enums.SlotMode
     slotInterval?: number
+    logoStyle?: string
+    logoUrl?: string | null
+    legalMode?: string
+    legalUrl?: string | null
+    legalText?: string | null
   }
 
   export type ShopConfigUpdateManyMutationInput = {
@@ -15672,6 +17096,11 @@ export namespace Prisma {
     showPrices?: BoolFieldUpdateOperationsInput | boolean
     slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
     slotInterval?: IntFieldUpdateOperationsInput | number
+    logoStyle?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalMode?: StringFieldUpdateOperationsInput | string
+    legalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalText?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ShopConfigUncheckedUpdateManyInput = {
@@ -15684,6 +17113,11 @@ export namespace Prisma {
     showPrices?: BoolFieldUpdateOperationsInput | boolean
     slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
     slotInterval?: IntFieldUpdateOperationsInput | number
+    logoStyle?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalMode?: StringFieldUpdateOperationsInput | string
+    legalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalText?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserCreateInput = {
@@ -16004,6 +17438,7 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     noShows?: number
+    isBlocked?: boolean
     bookings?: BookingCreateNestedManyWithoutCustomerInput
   }
 
@@ -16014,6 +17449,7 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     noShows?: number
+    isBlocked?: boolean
     bookings?: BookingUncheckedCreateNestedManyWithoutCustomerInput
   }
 
@@ -16024,6 +17460,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     noShows?: IntFieldUpdateOperationsInput | number
+    isBlocked?: BoolFieldUpdateOperationsInput | boolean
     bookings?: BookingUpdateManyWithoutCustomerNestedInput
   }
 
@@ -16034,6 +17471,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     noShows?: IntFieldUpdateOperationsInput | number
+    isBlocked?: BoolFieldUpdateOperationsInput | boolean
     bookings?: BookingUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
@@ -16044,6 +17482,7 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     noShows?: number
+    isBlocked?: boolean
   }
 
   export type CustomerUpdateManyMutationInput = {
@@ -16053,6 +17492,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     noShows?: IntFieldUpdateOperationsInput | number
+    isBlocked?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CustomerUncheckedUpdateManyInput = {
@@ -16062,6 +17502,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     noShows?: IntFieldUpdateOperationsInput | number
+    isBlocked?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type RecurrenceGroupCreateInput = {
@@ -16315,6 +17756,68 @@ export namespace Prisma {
     reason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type BlacklistCreateInput = {
+    id?: string
+    email?: string | null
+    phone?: string | null
+    reason?: string | null
+    createdAt?: Date | string
+    shop: ShopCreateNestedOneWithoutBlacklistInput
+  }
+
+  export type BlacklistUncheckedCreateInput = {
+    id?: string
+    shopId: string
+    email?: string | null
+    phone?: string | null
+    reason?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BlacklistUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    shop?: ShopUpdateOneRequiredWithoutBlacklistNestedInput
+  }
+
+  export type BlacklistUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlacklistCreateManyInput = {
+    id?: string
+    shopId: string
+    email?: string | null
+    phone?: string | null
+    reason?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BlacklistUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlacklistUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16389,6 +17892,12 @@ export namespace Prisma {
     none?: DateExceptionWhereInput
   }
 
+  export type BlacklistListRelationFilter = {
+    every?: BlacklistWhereInput
+    some?: BlacklistWhereInput
+    none?: BlacklistWhereInput
+  }
+
   export type ShopUserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -16410,6 +17919,10 @@ export namespace Prisma {
   }
 
   export type DateExceptionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BlacklistOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -16540,6 +18053,11 @@ export namespace Prisma {
     showPrices?: SortOrder
     slotMode?: SortOrder
     slotInterval?: SortOrder
+    logoStyle?: SortOrder
+    logoUrl?: SortOrder
+    legalMode?: SortOrder
+    legalUrl?: SortOrder
+    legalText?: SortOrder
   }
 
   export type ShopConfigAvgOrderByAggregateInput = {
@@ -16556,6 +18074,11 @@ export namespace Prisma {
     showPrices?: SortOrder
     slotMode?: SortOrder
     slotInterval?: SortOrder
+    logoStyle?: SortOrder
+    logoUrl?: SortOrder
+    legalMode?: SortOrder
+    legalUrl?: SortOrder
+    legalText?: SortOrder
   }
 
   export type ShopConfigMinOrderByAggregateInput = {
@@ -16568,6 +18091,11 @@ export namespace Prisma {
     showPrices?: SortOrder
     slotMode?: SortOrder
     slotInterval?: SortOrder
+    logoStyle?: SortOrder
+    logoUrl?: SortOrder
+    legalMode?: SortOrder
+    legalUrl?: SortOrder
+    legalText?: SortOrder
   }
 
   export type ShopConfigSumOrderByAggregateInput = {
@@ -16842,6 +18370,7 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     noShows?: SortOrder
+    isBlocked?: SortOrder
   }
 
   export type CustomerAvgOrderByAggregateInput = {
@@ -16855,6 +18384,7 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     noShows?: SortOrder
+    isBlocked?: SortOrder
   }
 
   export type CustomerMinOrderByAggregateInput = {
@@ -16864,6 +18394,7 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     noShows?: SortOrder
+    isBlocked?: SortOrder
   }
 
   export type CustomerSumOrderByAggregateInput = {
@@ -17040,6 +18571,43 @@ export namespace Prisma {
     reason?: SortOrder
   }
 
+  export type BlacklistShopIdEmailCompoundUniqueInput = {
+    shopId: string
+    email: string
+  }
+
+  export type BlacklistShopIdPhoneCompoundUniqueInput = {
+    shopId: string
+    phone: string
+  }
+
+  export type BlacklistCountOrderByAggregateInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BlacklistMaxOrderByAggregateInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BlacklistMinOrderByAggregateInput = {
+    id?: SortOrder
+    shopId?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type ShopUserCreateNestedManyWithoutShopInput = {
     create?: XOR<ShopUserCreateWithoutShopInput, ShopUserUncheckedCreateWithoutShopInput> | ShopUserCreateWithoutShopInput[] | ShopUserUncheckedCreateWithoutShopInput[]
     connectOrCreate?: ShopUserCreateOrConnectWithoutShopInput | ShopUserCreateOrConnectWithoutShopInput[]
@@ -17088,6 +18656,13 @@ export namespace Prisma {
     connect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
   }
 
+  export type BlacklistCreateNestedManyWithoutShopInput = {
+    create?: XOR<BlacklistCreateWithoutShopInput, BlacklistUncheckedCreateWithoutShopInput> | BlacklistCreateWithoutShopInput[] | BlacklistUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: BlacklistCreateOrConnectWithoutShopInput | BlacklistCreateOrConnectWithoutShopInput[]
+    createMany?: BlacklistCreateManyShopInputEnvelope
+    connect?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+  }
+
   export type ShopUserUncheckedCreateNestedManyWithoutShopInput = {
     create?: XOR<ShopUserCreateWithoutShopInput, ShopUserUncheckedCreateWithoutShopInput> | ShopUserCreateWithoutShopInput[] | ShopUserUncheckedCreateWithoutShopInput[]
     connectOrCreate?: ShopUserCreateOrConnectWithoutShopInput | ShopUserCreateOrConnectWithoutShopInput[]
@@ -17134,6 +18709,13 @@ export namespace Prisma {
     connectOrCreate?: DateExceptionCreateOrConnectWithoutShopInput | DateExceptionCreateOrConnectWithoutShopInput[]
     createMany?: DateExceptionCreateManyShopInputEnvelope
     connect?: DateExceptionWhereUniqueInput | DateExceptionWhereUniqueInput[]
+  }
+
+  export type BlacklistUncheckedCreateNestedManyWithoutShopInput = {
+    create?: XOR<BlacklistCreateWithoutShopInput, BlacklistUncheckedCreateWithoutShopInput> | BlacklistCreateWithoutShopInput[] | BlacklistUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: BlacklistCreateOrConnectWithoutShopInput | BlacklistCreateOrConnectWithoutShopInput[]
+    createMany?: BlacklistCreateManyShopInputEnvelope
+    connect?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -17242,6 +18824,20 @@ export namespace Prisma {
     deleteMany?: DateExceptionScalarWhereInput | DateExceptionScalarWhereInput[]
   }
 
+  export type BlacklistUpdateManyWithoutShopNestedInput = {
+    create?: XOR<BlacklistCreateWithoutShopInput, BlacklistUncheckedCreateWithoutShopInput> | BlacklistCreateWithoutShopInput[] | BlacklistUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: BlacklistCreateOrConnectWithoutShopInput | BlacklistCreateOrConnectWithoutShopInput[]
+    upsert?: BlacklistUpsertWithWhereUniqueWithoutShopInput | BlacklistUpsertWithWhereUniqueWithoutShopInput[]
+    createMany?: BlacklistCreateManyShopInputEnvelope
+    set?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    disconnect?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    delete?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    connect?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    update?: BlacklistUpdateWithWhereUniqueWithoutShopInput | BlacklistUpdateWithWhereUniqueWithoutShopInput[]
+    updateMany?: BlacklistUpdateManyWithWhereWithoutShopInput | BlacklistUpdateManyWithWhereWithoutShopInput[]
+    deleteMany?: BlacklistScalarWhereInput | BlacklistScalarWhereInput[]
+  }
+
   export type ShopUserUncheckedUpdateManyWithoutShopNestedInput = {
     create?: XOR<ShopUserCreateWithoutShopInput, ShopUserUncheckedCreateWithoutShopInput> | ShopUserCreateWithoutShopInput[] | ShopUserUncheckedCreateWithoutShopInput[]
     connectOrCreate?: ShopUserCreateOrConnectWithoutShopInput | ShopUserCreateOrConnectWithoutShopInput[]
@@ -17334,6 +18930,20 @@ export namespace Prisma {
     update?: DateExceptionUpdateWithWhereUniqueWithoutShopInput | DateExceptionUpdateWithWhereUniqueWithoutShopInput[]
     updateMany?: DateExceptionUpdateManyWithWhereWithoutShopInput | DateExceptionUpdateManyWithWhereWithoutShopInput[]
     deleteMany?: DateExceptionScalarWhereInput | DateExceptionScalarWhereInput[]
+  }
+
+  export type BlacklistUncheckedUpdateManyWithoutShopNestedInput = {
+    create?: XOR<BlacklistCreateWithoutShopInput, BlacklistUncheckedCreateWithoutShopInput> | BlacklistCreateWithoutShopInput[] | BlacklistUncheckedCreateWithoutShopInput[]
+    connectOrCreate?: BlacklistCreateOrConnectWithoutShopInput | BlacklistCreateOrConnectWithoutShopInput[]
+    upsert?: BlacklistUpsertWithWhereUniqueWithoutShopInput | BlacklistUpsertWithWhereUniqueWithoutShopInput[]
+    createMany?: BlacklistCreateManyShopInputEnvelope
+    set?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    disconnect?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    delete?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    connect?: BlacklistWhereUniqueInput | BlacklistWhereUniqueInput[]
+    update?: BlacklistUpdateWithWhereUniqueWithoutShopInput | BlacklistUpdateWithWhereUniqueWithoutShopInput[]
+    updateMany?: BlacklistUpdateManyWithWhereWithoutShopInput | BlacklistUpdateManyWithWhereWithoutShopInput[]
+    deleteMany?: BlacklistScalarWhereInput | BlacklistScalarWhereInput[]
   }
 
   export type ShopCreateNestedOneWithoutConfigInput = {
@@ -17698,6 +19308,20 @@ export namespace Prisma {
     upsert?: ShopUpsertWithoutDateExceptionsInput
     connect?: ShopWhereUniqueInput
     update?: XOR<XOR<ShopUpdateToOneWithWhereWithoutDateExceptionsInput, ShopUpdateWithoutDateExceptionsInput>, ShopUncheckedUpdateWithoutDateExceptionsInput>
+  }
+
+  export type ShopCreateNestedOneWithoutBlacklistInput = {
+    create?: XOR<ShopCreateWithoutBlacklistInput, ShopUncheckedCreateWithoutBlacklistInput>
+    connectOrCreate?: ShopCreateOrConnectWithoutBlacklistInput
+    connect?: ShopWhereUniqueInput
+  }
+
+  export type ShopUpdateOneRequiredWithoutBlacklistNestedInput = {
+    create?: XOR<ShopCreateWithoutBlacklistInput, ShopUncheckedCreateWithoutBlacklistInput>
+    connectOrCreate?: ShopCreateOrConnectWithoutBlacklistInput
+    upsert?: ShopUpsertWithoutBlacklistInput
+    connect?: ShopWhereUniqueInput
+    update?: XOR<XOR<ShopUpdateToOneWithWhereWithoutBlacklistInput, ShopUpdateWithoutBlacklistInput>, ShopUncheckedUpdateWithoutBlacklistInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -18128,6 +19752,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: $Enums.SlotMode
     slotInterval?: number
+    logoStyle?: string
+    logoUrl?: string | null
+    legalMode?: string
+    legalUrl?: string | null
+    legalText?: string | null
   }
 
   export type ShopConfigUncheckedCreateWithoutShopInput = {
@@ -18139,6 +19768,11 @@ export namespace Prisma {
     showPrices?: boolean
     slotMode?: $Enums.SlotMode
     slotInterval?: number
+    logoStyle?: string
+    logoUrl?: string | null
+    legalMode?: string
+    legalUrl?: string | null
+    legalText?: string | null
   }
 
   export type ShopConfigCreateOrConnectWithoutShopInput = {
@@ -18175,6 +19809,32 @@ export namespace Prisma {
 
   export type DateExceptionCreateManyShopInputEnvelope = {
     data: DateExceptionCreateManyShopInput | DateExceptionCreateManyShopInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BlacklistCreateWithoutShopInput = {
+    id?: string
+    email?: string | null
+    phone?: string | null
+    reason?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BlacklistUncheckedCreateWithoutShopInput = {
+    id?: string
+    email?: string | null
+    phone?: string | null
+    reason?: string | null
+    createdAt?: Date | string
+  }
+
+  export type BlacklistCreateOrConnectWithoutShopInput = {
+    where: BlacklistWhereUniqueInput
+    create: XOR<BlacklistCreateWithoutShopInput, BlacklistUncheckedCreateWithoutShopInput>
+  }
+
+  export type BlacklistCreateManyShopInputEnvelope = {
+    data: BlacklistCreateManyShopInput | BlacklistCreateManyShopInput[]
     skipDuplicates?: boolean
   }
 
@@ -18347,6 +20007,11 @@ export namespace Prisma {
     showPrices?: BoolFieldUpdateOperationsInput | boolean
     slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
     slotInterval?: IntFieldUpdateOperationsInput | number
+    logoStyle?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalMode?: StringFieldUpdateOperationsInput | string
+    legalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalText?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ShopConfigUncheckedUpdateWithoutShopInput = {
@@ -18358,6 +20023,11 @@ export namespace Prisma {
     showPrices?: BoolFieldUpdateOperationsInput | boolean
     slotMode?: EnumSlotModeFieldUpdateOperationsInput | $Enums.SlotMode
     slotInterval?: IntFieldUpdateOperationsInput | number
+    logoStyle?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalMode?: StringFieldUpdateOperationsInput | string
+    legalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalText?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DateExceptionUpsertWithWhereUniqueWithoutShopInput = {
@@ -18391,6 +20061,34 @@ export namespace Prisma {
     reason?: StringNullableFilter<"DateException"> | string | null
   }
 
+  export type BlacklistUpsertWithWhereUniqueWithoutShopInput = {
+    where: BlacklistWhereUniqueInput
+    update: XOR<BlacklistUpdateWithoutShopInput, BlacklistUncheckedUpdateWithoutShopInput>
+    create: XOR<BlacklistCreateWithoutShopInput, BlacklistUncheckedCreateWithoutShopInput>
+  }
+
+  export type BlacklistUpdateWithWhereUniqueWithoutShopInput = {
+    where: BlacklistWhereUniqueInput
+    data: XOR<BlacklistUpdateWithoutShopInput, BlacklistUncheckedUpdateWithoutShopInput>
+  }
+
+  export type BlacklistUpdateManyWithWhereWithoutShopInput = {
+    where: BlacklistScalarWhereInput
+    data: XOR<BlacklistUpdateManyMutationInput, BlacklistUncheckedUpdateManyWithoutShopInput>
+  }
+
+  export type BlacklistScalarWhereInput = {
+    AND?: BlacklistScalarWhereInput | BlacklistScalarWhereInput[]
+    OR?: BlacklistScalarWhereInput[]
+    NOT?: BlacklistScalarWhereInput | BlacklistScalarWhereInput[]
+    id?: StringFilter<"Blacklist"> | string
+    shopId?: StringFilter<"Blacklist"> | string
+    email?: StringNullableFilter<"Blacklist"> | string | null
+    phone?: StringNullableFilter<"Blacklist"> | string | null
+    reason?: StringNullableFilter<"Blacklist"> | string | null
+    createdAt?: DateTimeFilter<"Blacklist"> | Date | string
+  }
+
   export type ShopCreateWithoutConfigInput = {
     id?: string
     name: string
@@ -18404,6 +20102,7 @@ export namespace Prisma {
     bookings?: BookingCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutConfigInput = {
@@ -18419,6 +20118,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutConfigInput = {
@@ -18450,6 +20150,7 @@ export namespace Prisma {
     bookings?: BookingUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutConfigInput = {
@@ -18465,6 +20166,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUserCreateWithoutUserInput = {
@@ -18541,6 +20243,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutUsersInput = {
@@ -18556,6 +20259,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutUsersInput = {
@@ -18616,6 +20320,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutUsersInput = {
@@ -18631,6 +20336,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopCreateWithoutServicesInput = {
@@ -18646,6 +20352,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutServicesInput = {
@@ -18661,6 +20368,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutServicesInput = {
@@ -18738,6 +20446,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutServicesInput = {
@@ -18753,6 +20462,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type BookingUpsertWithWhereUniqueWithoutServiceInput = {
@@ -18784,6 +20494,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutAvailabilityInput = {
@@ -18799,6 +20510,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutAvailabilityInput = {
@@ -18830,6 +20542,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutAvailabilityInput = {
@@ -18845,6 +20558,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopCreateWithoutBlockedSlotsInput = {
@@ -18860,6 +20574,7 @@ export namespace Prisma {
     bookings?: BookingCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutBlockedSlotsInput = {
@@ -18875,6 +20590,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutBlockedSlotsInput = {
@@ -18906,6 +20622,7 @@ export namespace Prisma {
     bookings?: BookingUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutBlockedSlotsInput = {
@@ -18921,6 +20638,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type BookingCreateWithoutCustomerInput = {
@@ -19060,6 +20778,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutBookingsInput = {
@@ -19075,6 +20794,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
     dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutBookingsInput = {
@@ -19089,6 +20809,7 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     noShows?: number
+    isBlocked?: boolean
   }
 
   export type CustomerUncheckedCreateWithoutBookingsInput = {
@@ -19098,6 +20819,7 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     noShows?: number
+    isBlocked?: boolean
   }
 
   export type CustomerCreateOrConnectWithoutBookingsInput = {
@@ -19167,6 +20889,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutBookingsInput = {
@@ -19182,6 +20905,7 @@ export namespace Prisma {
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
     dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type CustomerUpsertWithoutBookingsInput = {
@@ -19202,6 +20926,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     noShows?: IntFieldUpdateOperationsInput | number
+    isBlocked?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CustomerUncheckedUpdateWithoutBookingsInput = {
@@ -19211,6 +20936,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     noShows?: IntFieldUpdateOperationsInput | number
+    isBlocked?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ServiceUpsertWithoutBookingsInput = {
@@ -19276,6 +21002,7 @@ export namespace Prisma {
     bookings?: BookingCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
     config?: ShopConfigCreateNestedOneWithoutShopInput
+    blacklist?: BlacklistCreateNestedManyWithoutShopInput
   }
 
   export type ShopUncheckedCreateWithoutDateExceptionsInput = {
@@ -19291,6 +21018,7 @@ export namespace Prisma {
     bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
     blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
     config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    blacklist?: BlacklistUncheckedCreateNestedManyWithoutShopInput
   }
 
   export type ShopCreateOrConnectWithoutDateExceptionsInput = {
@@ -19322,6 +21050,7 @@ export namespace Prisma {
     bookings?: BookingUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
     config?: ShopConfigUpdateOneWithoutShopNestedInput
+    blacklist?: BlacklistUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUncheckedUpdateWithoutDateExceptionsInput = {
@@ -19337,6 +21066,87 @@ export namespace Prisma {
     bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
     blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
     config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    blacklist?: BlacklistUncheckedUpdateManyWithoutShopNestedInput
+  }
+
+  export type ShopCreateWithoutBlacklistInput = {
+    id?: string
+    name: string
+    slug: string
+    plan?: $Enums.ShopPlan
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: ShopUserCreateNestedManyWithoutShopInput
+    services?: ServiceCreateNestedManyWithoutShopInput
+    availability?: AvailabilityCreateNestedManyWithoutShopInput
+    bookings?: BookingCreateNestedManyWithoutShopInput
+    blockedSlots?: BlockedSlotCreateNestedManyWithoutShopInput
+    config?: ShopConfigCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionCreateNestedManyWithoutShopInput
+  }
+
+  export type ShopUncheckedCreateWithoutBlacklistInput = {
+    id?: string
+    name: string
+    slug: string
+    plan?: $Enums.ShopPlan
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: ShopUserUncheckedCreateNestedManyWithoutShopInput
+    services?: ServiceUncheckedCreateNestedManyWithoutShopInput
+    availability?: AvailabilityUncheckedCreateNestedManyWithoutShopInput
+    bookings?: BookingUncheckedCreateNestedManyWithoutShopInput
+    blockedSlots?: BlockedSlotUncheckedCreateNestedManyWithoutShopInput
+    config?: ShopConfigUncheckedCreateNestedOneWithoutShopInput
+    dateExceptions?: DateExceptionUncheckedCreateNestedManyWithoutShopInput
+  }
+
+  export type ShopCreateOrConnectWithoutBlacklistInput = {
+    where: ShopWhereUniqueInput
+    create: XOR<ShopCreateWithoutBlacklistInput, ShopUncheckedCreateWithoutBlacklistInput>
+  }
+
+  export type ShopUpsertWithoutBlacklistInput = {
+    update: XOR<ShopUpdateWithoutBlacklistInput, ShopUncheckedUpdateWithoutBlacklistInput>
+    create: XOR<ShopCreateWithoutBlacklistInput, ShopUncheckedCreateWithoutBlacklistInput>
+    where?: ShopWhereInput
+  }
+
+  export type ShopUpdateToOneWithWhereWithoutBlacklistInput = {
+    where?: ShopWhereInput
+    data: XOR<ShopUpdateWithoutBlacklistInput, ShopUncheckedUpdateWithoutBlacklistInput>
+  }
+
+  export type ShopUpdateWithoutBlacklistInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: ShopUserUpdateManyWithoutShopNestedInput
+    services?: ServiceUpdateManyWithoutShopNestedInput
+    availability?: AvailabilityUpdateManyWithoutShopNestedInput
+    bookings?: BookingUpdateManyWithoutShopNestedInput
+    blockedSlots?: BlockedSlotUpdateManyWithoutShopNestedInput
+    config?: ShopConfigUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUpdateManyWithoutShopNestedInput
+  }
+
+  export type ShopUncheckedUpdateWithoutBlacklistInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    plan?: EnumShopPlanFieldUpdateOperationsInput | $Enums.ShopPlan
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: ShopUserUncheckedUpdateManyWithoutShopNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutShopNestedInput
+    availability?: AvailabilityUncheckedUpdateManyWithoutShopNestedInput
+    bookings?: BookingUncheckedUpdateManyWithoutShopNestedInput
+    blockedSlots?: BlockedSlotUncheckedUpdateManyWithoutShopNestedInput
+    config?: ShopConfigUncheckedUpdateOneWithoutShopNestedInput
+    dateExceptions?: DateExceptionUncheckedUpdateManyWithoutShopNestedInput
   }
 
   export type ShopUserCreateManyShopInput = {
@@ -19397,6 +21207,14 @@ export namespace Prisma {
     breakStart?: string | null
     breakEnd?: string | null
     reason?: string | null
+  }
+
+  export type BlacklistCreateManyShopInput = {
+    id?: string
+    email?: string | null
+    phone?: string | null
+    reason?: string | null
+    createdAt?: Date | string
   }
 
   export type ShopUserUpdateWithoutShopInput = {
@@ -19579,6 +21397,30 @@ export namespace Prisma {
     breakStart?: NullableStringFieldUpdateOperationsInput | string | null
     breakEnd?: NullableStringFieldUpdateOperationsInput | string | null
     reason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type BlacklistUpdateWithoutShopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlacklistUncheckedUpdateWithoutShopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlacklistUncheckedUpdateManyWithoutShopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShopUserCreateManyUserInput = {

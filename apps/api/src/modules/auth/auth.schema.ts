@@ -32,9 +32,10 @@ export const onboardingSchema = z.object({
       .string()
       .regex(/^#[0-9A-Fa-f]{6}$/, "Colore hex non valido"),
     coverImage: z.url().optional(),
-    logo: z.url().optional(),
     tagline: z.string().max(100).optional(),
     showPrices: z.boolean(),
+    logoStyle: z.string().optional(),
+    legalMode: z.string().optional(),
   }),
   // ORARI
   availability: z

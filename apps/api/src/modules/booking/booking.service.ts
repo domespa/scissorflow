@@ -9,6 +9,8 @@ import type {
 import { io } from "@/server";
 import { notificationService } from "../notification/notification.service";
 import { env } from "@/config/env";
+import { prisma } from "@/config/database";
+import { customerRepository } from "../customer/customer.repository";
 
 const generateOTP = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -475,6 +477,29 @@ export const bookingService = {
   async lockSlot(input: LockSlotInput) {
     const startAt = new Date(input.startAt);
 
+    // CONTROLLA SE CLIENTE BLOCCATO
+    if (input.customer.email || input.customer.phone) {
+      const blocked = await prisma.customer.findFirst({
+        where: {
+          isBlocked: true,
+          OR: [
+            input.customer.email ? { email: input.customer.email } : {},
+            input.customer.phone ? { phone: input.customer.phone } : {},
+          ],
+        },
+      });
+      if (blocked) throw new Error("CUSTOMER_BLOCKED");
+    }
+
+    // CONTROLLA BLACKLIST
+    if (input.customer.email || input.customer.phone) {
+      const blacklisted = await customerRepository.isBlacklisted(
+        input.customer.email,
+        input.customer.phone,
+      );
+      if (blacklisted) throw new Error("CUSTOMER_BLOCKED");
+    }
+
     if (input.customer.email) {
       const existing = await bookingRepository.findActiveBookingByEmail(
         input.customer.email,
@@ -686,6 +711,15 @@ export const bookingService = {
     const booking = await bookingRepository.findById(bookingId);
     if (!booking) throw new Error("BOOKING_NOT_FOUND");
     await bookingRepository.updateStatus(bookingId, "NO_SHOW");
+
+    // BLOCCA IL CLIENTE
+    await prisma.customer.update({
+      where: { id: booking.customerId },
+      data: {
+        noShows: { increment: 1 },
+        isBlocked: true,
+      },
+    });
 
     io.to(booking.shopId).emit("slot:cancelled", {
       shopId: booking.shopId,

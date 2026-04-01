@@ -5,5 +5,6 @@ export const useShop = () => {
 
   return {
     shopId: user?.shopId ?? null,
+    slug: user?.slug ?? null,
   };
 };

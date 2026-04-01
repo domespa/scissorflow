@@ -62,6 +62,10 @@ export const bookingController = {
       res.status(201).json(data);
     } catch (error) {
       if (error instanceof Error) {
+        if (error.message === "CUSTOMER_BLOCKED") {
+          res.status(403).json({ message: "Cliente bloccato" });
+          return;
+        }
         if (error.message === "CUSTOMER_ALREADY_HAS_BOOKING") {
           res.status(409).json({ message: "Hai già una prenotazione attiva" });
           return;

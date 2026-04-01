@@ -62,7 +62,7 @@ export const authService = {
       include: {
         shops: {
           where: { role: "OWNER" },
-          select: { shopId: true },
+          select: { shopId: true, shop: { select: { slug: true } } },
           take: 1,
         },
       },
@@ -82,6 +82,7 @@ export const authService = {
         lastName: user.lastName,
         createdAt: user.createdAt.toISOString(),
         shopId: user.shops[0]?.shopId ?? null,
+        slug: user.shops[0]?.shop?.slug ?? null,
       },
       token,
     };
@@ -113,11 +114,12 @@ export const authService = {
             create: {
               primaryColor: input.config.primaryColor,
               coverImage: input.config.coverImage ?? null,
-              logo: input.config.logo ?? null,
               tagline: input.config.tagline ?? null,
               showPrices: input.config.showPrices,
               slotMode: "FIXED",
               slotInterval,
+              logoStyle: input.config.logoStyle ?? "badge-vintage",
+              legalMode: input.config.legalMode ?? "generated",
             },
           },
         },

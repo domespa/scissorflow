@@ -11,6 +11,8 @@ import {
 import { shopService } from "@/services/shop.service";
 import { bookingService } from "@/services/booking.service";
 import { Modal } from "@/components/ui/Modal";
+import { ShopLogo } from "@/components/ui/ShopLogo";
+import { CookieBanner } from "@/components/ui/CookieBanner";
 import type { ServiceDTO } from "@scissorflow/shared";
 
 const DAYS_IT = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
@@ -44,6 +46,12 @@ type ServiceSlots = {
   loadedAt: number;
   loading: boolean;
   loadedMonths: Set<string>;
+};
+
+const isAxiosError = (
+  error: unknown,
+): error is { response: { status: number; data: { message: string } } } => {
+  return typeof error === "object" && error !== null && "response" in error;
 };
 
 export const ShopPage = () => {
@@ -324,8 +332,14 @@ export const ShopPage = () => {
       });
       setBookingId(result.bookingId);
       setModalStep("otp");
-    } catch {
-      setLockError("Slot non più disponibile. Scegline un altro.");
+    } catch (error) {
+      if (isAxiosError(error) && error.response.status === 403) {
+        setLockError(
+          "Non è possibile prenotare con questi recapiti. Contatta direttamente il barbiere.",
+        );
+      } else {
+        setLockError("Slot non più disponibile. Scegine un altro.");
+      }
     } finally {
       setLocking(false);
     }
@@ -342,8 +356,8 @@ export const ShopPage = () => {
       if (selectedService) {
         loadServiceSlots(shop.id, selectedService.id, true);
       }
-    } catch (err: any) {
-      if (err?.response?.status === 422) {
+    } catch (error) {
+      if (isAxiosError(error) && error.response.status === 422) {
         setOtpError("Codice OTP non valido");
       } else {
         setOtpError("Errore durante la conferma. Riprova.");
@@ -406,12 +420,14 @@ export const ShopPage = () => {
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative w-full px-4 pb-8 max-w-5xl mx-auto">
           <div className="flex items-end gap-4">
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border-2 border-white/30"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <ScissorsIcon size={28} weight="duotone" className="text-white" />
-            </div>
+            <ShopLogo
+              shopName={shop.name}
+              primaryColor={primaryColor}
+              logoStyle={shop.config?.logoStyle ?? "badge-vintage"}
+              logoUrl={shop.config?.logoUrl}
+              size={64}
+              radius={16}
+            />
             <div>
               <h1 className="text-2xl font-bold text-white">{shop.name}</h1>
               {shop.config?.tagline && (
@@ -610,6 +626,53 @@ export const ShopPage = () => {
           </div>
         </div>
       </div>
+
+      {/* FOOTER */}
+      <footer className="mt-12 border-t border-gray-200 py-6">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-gray-400">
+            © {new Date().getFullYear()} {shop.name} — Powered by{" "}
+            <a
+              href="https://scissorflow.it"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-600 transition-colors"
+            >
+              ScissorFlow
+            </a>
+          </p>
+          <div className="flex items-center gap-4">
+            {shop.config?.legalMode === "url" && shop.config?.legalUrl ? (
+              <a
+                href={shop.config.legalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Privacy & Cookie Policy
+              </a>
+            ) : (
+              <a
+                href={`/b/${slug}/legal`}
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Privacy & Cookie Policy
+              </a>
+            )}
+          </div>
+        </div>
+      </footer>
+
+      {/* COOKIE BANNER */}
+      {!localStorage.getItem(`cookie_consent_${slug}`) && (
+        <CookieBanner
+          slug={slug!}
+          primaryColor={primaryColor}
+          shopName={shop.name}
+          legalMode={shop.config?.legalMode}
+          legalUrl={shop.config?.legalUrl}
+        />
+      )}
 
       {/* MODAL PRENOTAZIONE */}
       <Modal

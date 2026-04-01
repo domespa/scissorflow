@@ -33,11 +33,15 @@ export interface ShopConfigDTO {
   shopId: string;
   primaryColor: string;
   coverImage?: string;
-  logo?: string;
   tagline?: string;
   showPrices: boolean;
   slotMode: SlotMode;
   slotInterval: number;
+  logoStyle: string;
+  logoUrl?: string;
+  legalMode: string;
+  legalUrl?: string;
+  legalText?: string;
 }
 
 // DATI REGISTRAZIONE NUOVO SHOP

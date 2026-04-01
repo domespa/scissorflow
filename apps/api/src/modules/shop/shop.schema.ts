@@ -7,11 +7,15 @@ export const updateConfigSchema = z.object({
     .regex(/^#[0-9A-Fa-f]{6}$/, "Il colore deve essere un hex valido")
     .optional(),
   coverImage: z.url().optional().nullable(),
-  logo: z.url().optional().nullable(),
   tagline: z.string().max(100).optional().nullable(),
   showPrices: z.boolean().optional(),
   slotMode: z.enum(["FIXED", "DYNAMIC"]).optional(),
   slotInterval: z.number().min(5).max(120).optional(),
+  logoStyle: z.string().optional(),
+  logoUrl: z.string().optional().nullable(),
+  legalMode: z.enum(["generated", "url", "custom"]).optional(),
+  legalUrl: z.string().url().optional().nullable(),
+  legalText: z.string().optional().nullable(),
 });
 
 // SCHEMA CREAZIONE/MODIFICA SERVIZIO

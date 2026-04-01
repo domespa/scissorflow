@@ -8,6 +8,7 @@ import { ShopPage } from "@/pages/public/ShopPage/ShopPage";
 import { LoginPage } from "@/pages/public/LoginPage/LoginPage";
 import { RegisterPage } from "@/pages/public/RegisterPage/RegisterPage";
 import { CancelPage } from "@/pages/public/CancelPage/CancelPage";
+import { LegalPage } from "@/pages/public/LegalPage/LegalPage";
 
 // PAGINE PRIVATE
 import { CalendarPage } from "@/pages/dashboard/CalendarPage/CalendarPage";
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
   {
     path: "/b/:slug",
     element: <ShopPage />,
+  },
+  {
+    path: "/b/:slug/legal",
+    element: <LegalPage />,
   },
 
   // CANCELLAZIONE PRENOTAZIONE

@@ -17,6 +17,7 @@ import {
   CoffeeIcon,
   CheckCircleIcon,
   ProhibitIcon,
+  ShieldCheckIcon,
 } from "@phosphor-icons/react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -30,6 +31,7 @@ import { useShop } from "@/hooks/useShop";
 import { SlotMode } from "@scissorflow/shared";
 import type { ShopConfigDTO, BlockedSlotDTO } from "@scissorflow/shared";
 import type { Area } from "react-easy-crop";
+import { ShopLogo } from "@/components/ui/ShopLogo";
 
 const DAYS_SHORT = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 const MONTHS_IT = [
@@ -518,7 +520,7 @@ const FerieCalendar = ({
 };
 
 export const SettingsPage = () => {
-  const { shopId } = useShop();
+  const { shopId, slug: shopSlug } = useShop();
   const [loading, setLoading] = useState(true);
   const [savingConfig, setSavingConfig] = useState(false);
   const [savingDay, setSavingDay] = useState(false);
@@ -534,6 +536,9 @@ export const SettingsPage = () => {
   const [defaultBreakStart, setDefaultBreakStart] = useState("");
   const [defaultBreakEnd, setDefaultBreakEnd] = useState("");
   const [defaultHasBreak, setDefaultHasBreak] = useState(false);
+  const [activeTab, setActiveTab] = useState<
+    "orari" | "legale" | "personalizzazione"
+  >("orari");
 
   const [availability, setAvailability] = useState<
     Record<number, DayAvailability>
@@ -563,6 +568,11 @@ export const SettingsPage = () => {
     showPrices: true,
     slotMode: SlotMode.FIXED,
     slotInterval: 30,
+    logoStyle: "badge-vintage",
+    logoUrl: undefined,
+    legalMode: "generated",
+    legalUrl: undefined,
+    legalText: undefined,
   });
 
   const settingsFileInputRef = useRef<HTMLInputElement>(null);
@@ -592,6 +602,25 @@ export const SettingsPage = () => {
     if (!shopId) return;
     loadData(false);
   }, [shopId]);
+
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoFileSelect = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Logo troppo grande. Max 2MB.");
+      return;
+    }
+    try {
+      const url = await cloudinaryService.uploadImage(file);
+      setConfig((prev) => ({ ...prev, logoUrl: url, logoStyle: "custom" }));
+    } catch {
+      setError("Errore upload logo");
+    }
+  };
 
   const loadData = async (silent = false) => {
     const scrollY = window.scrollY;
@@ -1012,78 +1041,238 @@ export const SettingsPage = () => {
         </div>
       )}
 
-      {/* ORARI SETTIMANALI */}
-      <Card className="shadow-md border border-gray-300 dark:border-gray-600">
-        <div className="flex flex-col gap-5">
-          {/* RIGA ORARI: APERTURA/CHIUSURA | SEPARATORE | PAUSA PRANZO */}
-          <div className="flex flex-col md:flex-row items-start gap-0">
-            {/* APERTURA / CHIUSURA */}
-            <div className="flex flex-col gap-3 flex-1">
-              <p className="flex items-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide gap-3">
-                <ClockIcon size={20} weight="duotone" />
-                Orari settimanali
-              </p>
-              <div className="flex items-end gap-20">
-                <TimePicker
-                  label="Apertura"
-                  value={defaultStart}
-                  onChange={setDefaultStart}
-                />
-                <TimePicker
-                  label="Chiusura"
-                  value={defaultEnd}
-                  onChange={setDefaultEnd}
-                />
-              </div>
-            </div>
+      {/* TAB NAVIGATION */}
+      <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700">
+        {[
+          {
+            id: "orari",
+            label: "Orari",
+            icon: <ClockIcon size={16} weight="duotone" />,
+          },
+          {
+            id: "legale",
+            label: "Documenti legali",
+            icon: <ShieldCheckIcon size={16} weight="duotone" />,
+          },
+          {
+            id: "personalizzazione",
+            label: "Personalizzazione",
+            icon: <PaletteIcon size={16} weight="duotone" />,
+          },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id as typeof activeTab)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all -mb-px ${
+              activeTab === tab.id
+                ? "border-gray-900 dark:border-white text-gray-900 dark:text-white"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-            {/* SEPARATORE VERTICALE */}
-            <div className="hidden md:block self-stretch w-px bg-gray-300 dark:bg-gray-600 mx-5 mt-6" />
-
-            {/* SEPARATORE ORIZZONTALE DA MOBILE */}
-            <div className="block md:hidden w-full h-px bg-gray-300 dark:bg-gray-600 my-3" />
-
-            {/* PAUSA PRANZO */}
-            <div className="flex flex-col gap-3 flex-1">
-              <div className="flex items-center justify-between">
-                <p className="flex items-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide gap-3">
-                  <CoffeeIcon size={20} weight="duotone" />
-                  Pausa pranzo
+      {/* TAB 1 ORARI */}
+      {activeTab === "orari" && (
+        <div className="flex flex-col gap-6">
+          {/* RIGA 1: ORARI + PAUSA PRANZO */}
+          <Card className="shadow-md border border-gray-300 dark:border-gray-600">
+            <div className="flex flex-col md:flex-row items-start gap-0">
+              <div className="flex flex-col gap-3 flex-1">
+                <p className="flex items-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide gap-2">
+                  <ClockIcon size={16} weight="duotone" />
+                  Orari settimanali
                 </p>
-                <Toggle
-                  value={defaultHasBreak}
-                  onChange={() => {
-                    setDefaultHasBreak(!defaultHasBreak);
-                    if (!defaultHasBreak) {
-                      setDefaultBreakStart("13:00");
-                      setDefaultBreakEnd("15:00");
-                    }
-                  }}
-                />
-              </div>
-              {defaultHasBreak ? (
-                <div className="flex items-end gap-20">
+                <div className="flex items-end gap-6">
                   <TimePicker
-                    label="Inizio"
-                    value={defaultBreakStart}
-                    onChange={setDefaultBreakStart}
+                    label="Apertura"
+                    value={defaultStart}
+                    onChange={setDefaultStart}
                   />
                   <TimePicker
-                    label="Fine"
-                    value={defaultBreakEnd}
-                    onChange={setDefaultBreakEnd}
+                    label="Chiusura"
+                    value={defaultEnd}
+                    onChange={setDefaultEnd}
                   />
                 </div>
-              ) : (
-                <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                  Nessuna pausa impostata
-                </p>
-              )}
+              </div>
+
+              <div className="hidden md:block self-stretch w-px bg-gray-300 dark:bg-gray-600 mx-6 mt-6" />
+              <div className="block md:hidden w-full h-px bg-gray-300 dark:bg-gray-600 my-3" />
+
+              <div className="flex flex-col gap-3 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="flex items-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide gap-2">
+                    <CoffeeIcon size={16} weight="duotone" />
+                    Pausa pranzo
+                  </p>
+                  <Toggle
+                    value={defaultHasBreak}
+                    onChange={() => {
+                      setDefaultHasBreak(!defaultHasBreak);
+                      if (!defaultHasBreak) {
+                        setDefaultBreakStart("13:00");
+                        setDefaultBreakEnd("15:00");
+                      }
+                    }}
+                  />
+                </div>
+                {defaultHasBreak ? (
+                  <div className="flex items-end gap-6">
+                    <TimePicker
+                      label="Inizio"
+                      value={defaultBreakStart}
+                      onChange={setDefaultBreakStart}
+                    />
+                    <TimePicker
+                      label="Fine"
+                      value={defaultBreakEnd}
+                      onChange={setDefaultBreakEnd}
+                    />
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    Nessuna pausa impostata
+                  </p>
+                )}
+              </div>
             </div>
+          </Card>
+
+          {/* RIGA 2: FERIE + IMPOSTAZIONI SHOP */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="shadow-md border border-gray-300 dark:border-gray-600">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <CalendarXIcon
+                    size={20}
+                    weight="duotone"
+                    className="text-gray-600 dark:text-gray-300"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      Ferie e chiusure
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      Blocca periodi interi
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setFerieError("");
+                    setFerieModalOpen(true);
+                  }}
+                >
+                  <PlusIcon size={14} weight="bold" className="mr-1.5" />
+                  Aggiungi
+                </Button>
+              </div>
+              {blockedSlots.length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Nessuna chiusura pianificata
+                  </p>
+                </div>
+              ) : (
+                <div className="max-h-48 overflow-y-auto flex flex-col gap-2">
+                  {blockedSlots.map((slot) => (
+                    <div
+                      key={slot.id}
+                      className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {slot.reason ?? "Chiusura straordinaria"}
+                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                          {formatDate(slot.startAt)} → {formatDate(slot.endAt)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteFerie(slot.id)}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors shrink-0 ml-2"
+                      >
+                        <TrashIcon size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            <Card className="shadow-md border border-gray-300 dark:border-gray-600">
+              <div className="flex items-center gap-3 mb-5">
+                <GearIcon
+                  size={20}
+                  weight="duotone"
+                  className="text-gray-600 dark:text-gray-300"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Impostazioni shop
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
+                    Configura le opzioni del tuo shop
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between py-3 border border-gray-300 dark:border-gray-600 rounded-xl px-4 bg-gray-50 dark:bg-gray-800/40">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Mostra prezzi
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      I clienti vedono i prezzi dei servizi
+                    </p>
+                  </div>
+                  <Toggle
+                    value={!!config.showPrices}
+                    onChange={() =>
+                      setConfig({ ...config, showPrices: !config.showPrices })
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                    Intervallo slot calendario
+                  </label>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-1">
+                    Ogni quanto tempo può iniziare un appuntamento
+                  </p>
+                  <select
+                    value={config.slotInterval}
+                    onChange={(e) =>
+                      setConfig({
+                        ...config,
+                        slotInterval: Number(e.target.value),
+                      })
+                    }
+                    className="text-sm px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
+                  >
+                    {[10, 15, 20, 25, 30, 45, 60].map((v) => (
+                      <option key={v} value={v}>
+                        {v} minuti
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button loading={savingConfig} onClick={handleSaveConfig}>
+                  <FloppyDiskIcon size={16} weight="bold" className="mr-2" />
+                  Salva impostazioni
+                </Button>
+              </div>
+            </Card>
           </div>
 
-          {/* GIORNI APERTI */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+          {/* RIGA 3: GIORNI APERTI */}
+          <Card className="shadow-md border border-gray-300 dark:border-gray-600">
             <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-3">
               Giorni aperti - clicca per aprire/chiudere
             </p>
@@ -1115,634 +1304,703 @@ export const SettingsPage = () => {
                 );
               })}
             </div>
-          </div>
-
-          <Button onClick={handleApplyDefault}>Aggiorna calendario</Button>
-        </div>
-      </Card>
-
-      {/* CALENDARIO MENSILE */}
-      <Card
-        padding="none"
-        className="shadow-md border border-gray-300 dark:border-gray-600"
-      >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
-          <div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              Calendario
-            </p>
-            <p className="text-xs text-gray-600 dark:text-gray-300">
-              Clicca su un giorno per modificare
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                const d = new Date(calYear, calMonth - 1);
-                setCalMonth(d.getMonth());
-                setCalYear(d.getFullYear());
-              }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
-            >
-              <CaretLeftIcon size={16} />
-            </button>
-            <span className="text-sm font-medium text-gray-900 dark:text-white w-36 text-center">
-              {MONTHS_IT[calMonth]} {calYear}
-            </span>
-            <button
-              onClick={() => {
-                const d = new Date(calYear, calMonth + 1);
-                setCalMonth(d.getMonth());
-                setCalYear(d.getFullYear());
-              }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
-            >
-              <CaretRightIcon size={16} />
-            </button>
-          </div>
-        </div>
-
-        {/* INTESTAZIONE GIORNI */}
-        <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
-          {DAYS_SHORT.map((d) => (
-            <div
-              key={d}
-              className="text-center py-2.5 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider"
-            >
-              {d}
+            <div className="mt-4">
+              <Button onClick={handleApplyDefault}>Aggiorna calendario</Button>
             </div>
-          ))}
-        </div>
+          </Card>
 
-        {/* GRIGLIA CELLE */}
-        <div className="grid grid-cols-7 gap-0.5 bg-gray-300 dark:bg-gray-600">
-          {cells.map((day, i) => {
-            if (!day)
-              return (
-                <div
-                  key={`empty-${i}`}
-                  className="bg-gray-50 dark:bg-gray-800/40 h-24 md:h-28"
-                />
-              );
-            const dayOfWeek = new Date(calYear, calMonth, day).getDay();
-            const avail = availability[dayOfWeek];
-            const blocked = getBlockedSlot(day);
-            const exception = getDateException(day);
-            const past = isPast(day);
-            const todayCell = isToday(day);
-            const hasException = !!exception;
-            const isOpen = exception ? exception.isOpen : avail.isActive;
-            const startTime = exception?.startTime ?? avail.startTime;
-            const endTime = exception?.endTime ?? avail.endTime;
-
-            return (
-              <div
-                key={day}
-                onClick={() => !past && !blocked && handleCellClick(day)}
-                className={`relative h-24 md:h-28 p-2 md:p-2.5 flex flex-col transition-colors
-                  ${past ? "bg-gray-50 dark:bg-gray-800/40 cursor-default" : "bg-white dark:bg-gray-900"}
-                  ${!past && !blocked ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/60" : ""}
-                `}
-              >
-                <div className="flex items-start justify-between mb-1">
-                  {/* NUMERO GIORNO */}
-                  <span
-                    className={`text-sm font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0
-                      ${
-                        todayCell
-                          ? "text-white bg-gray-900 dark:bg-white dark:text-gray-900"
-                          : past
-                            ? "text-gray-300 dark:text-gray-600"
-                            : "text-gray-800 dark:text-gray-100"
-                      }`}
-                  >
-                    {day}
-                  </span>
-                  {!past && !blocked && (
-                    <div className="flex items-center gap-0.5">
-                      {hasException && (
-                        <button
-                          onClick={(e) => handleRemoveException(day, e)}
-                          className="p-0.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                          title="Ripristina"
-                        >
-                          <ArrowCounterClockwiseIcon size={10} weight="bold" />
-                        </button>
-                      )}
-                      <button
-                        onClick={(e) => handleQuickToggle(day, e)}
-                        className={`relative w-7 h-3.5 rounded-full transition-colors shrink-0 ${isOpen ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}
-                      >
-                        <span
-                          className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${isOpen ? "translate-x-3.5" : "translate-x-0"}`}
-                        />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {blocked ? (
-                  <div className="flex-1 flex items-center justify-center">
-                    <span className="text-red-600 dark:text-red-500 font-medium bg-red-100 dark:bg-red-950 px-2.5 py-1.5 rounded-3xl text-center leading-tight text-[13px] ">
-                      {blocked.reason ?? "Ferie"}
-                    </span>
-                  </div>
-                ) : past ? (
-                  <div className="flex-1" />
-                ) : isOpen ? (
-                  <div className="flex-1 flex flex-col justify-end">
-                    <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded px-1.5 py-0.5">
-                      <p className="text-green-700 dark:text-green-400 font-semibold leading-tight text-[13px]">
-                        {startTime} - {endTime}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex-1 flex items-end">
-                    <span className="text-gray-400 dark:text-gray-500 text-xs font-medium">
-                      Chiuso
-                    </span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* LEGENDA */}
-        <div className="flex items-center gap-4 px-5 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-green-200 dark:bg-green-800" />
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              Aperto
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900" />
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              Ferie
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-gray-200 dark:bg-gray-600" />
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              Chiuso
-            </span>
-          </div>
-        </div>
-      </Card>
-
-      {/* DUE CARD AFFIANCATE */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-md border border-gray-300 dark:border-gray-600">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <CalendarXIcon
-                size={20}
-                weight="duotone"
-                className="text-gray-600 dark:text-gray-300"
-              />
+          {/* RIGA 4: CALENDARIO MENSILE */}
+          <Card
+            padding="none"
+            className="shadow-md border border-gray-300 dark:border-gray-600"
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
               <div>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Ferie e chiusure
+                  Calendario
                 </p>
                 <p className="text-xs text-gray-600 dark:text-gray-300">
-                  Blocca periodi interi
+                  Clicca su un giorno per modificare
                 </p>
               </div>
-            </div>
-            <Button
-              size="sm"
-              onClick={() => {
-                setFerieError("");
-                setFerieModalOpen(true);
-              }}
-            >
-              <PlusIcon size={14} weight="bold" className="mr-1.5" />
-              Aggiungi
-            </Button>
-          </div>
-          {blockedSlots.length === 0 ? (
-            <div className="text-center py-6">
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Nessuna chiusura pianificata
-              </p>
-            </div>
-          ) : (
-            <div className="max-h-48 overflow-y-auto flex flex-col gap-2">
-              {blockedSlots.map((slot) => (
-                <div
-                  key={slot.id}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const d = new Date(calYear, calMonth - 1);
+                    setCalMonth(d.getMonth());
+                    setCalYear(d.getFullYear());
+                  }}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
                 >
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {slot.reason ?? "Chiusura straordinaria"}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
-                      {formatDate(slot.startAt)} → {formatDate(slot.endAt)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleDeleteFerie(slot.id)}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors shrink-0 ml-2"
-                  >
-                    <TrashIcon size={16} />
-                  </button>
+                  <CaretLeftIcon size={16} />
+                </button>
+                <span className="text-sm font-medium text-gray-900 dark:text-white w-36 text-center">
+                  {MONTHS_IT[calMonth]} {calYear}
+                </span>
+                <button
+                  onClick={() => {
+                    const d = new Date(calYear, calMonth + 1);
+                    setCalMonth(d.getMonth());
+                    setCalYear(d.getFullYear());
+                  }}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
+                >
+                  <CaretRightIcon size={16} />
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
+              {DAYS_SHORT.map((d) => (
+                <div
+                  key={d}
+                  className="text-center py-2.5 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  {d}
                 </div>
               ))}
             </div>
-          )}
-        </Card>
+            <div className="grid grid-cols-7 gap-0.5 bg-gray-300 dark:bg-gray-600">
+              {cells.map((day, i) => {
+                if (!day)
+                  return (
+                    <div
+                      key={`empty-${i}`}
+                      className="bg-gray-50 dark:bg-gray-800/40 h-24 md:h-28"
+                    />
+                  );
+                const dayOfWeek = new Date(calYear, calMonth, day).getDay();
+                const avail = availability[dayOfWeek];
+                const blocked = getBlockedSlot(day);
+                const exception = getDateException(day);
+                const past = isPast(day);
+                const todayCell = isToday(day);
+                const hasException = !!exception;
+                const isOpen = exception ? exception.isOpen : avail.isActive;
+                const startTime = exception?.startTime ?? avail.startTime;
+                const endTime = exception?.endTime ?? avail.endTime;
+                return (
+                  <div
+                    key={day}
+                    onClick={() => !past && !blocked && handleCellClick(day)}
+                    className={`relative h-24 md:h-28 p-2 md:p-2.5 flex flex-col transition-colors
+                      ${past ? "bg-gray-50 dark:bg-gray-800/40 cursor-default" : "bg-white dark:bg-gray-900"}
+                      ${!past && !blocked ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/60" : ""}
+                    `}
+                  >
+                    <div className="flex items-start justify-between mb-1">
+                      <span
+                        className={`text-sm font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${todayCell ? "text-white bg-gray-900 dark:bg-white dark:text-gray-900" : past ? "text-gray-300 dark:text-gray-600" : "text-gray-800 dark:text-gray-100"}`}
+                      >
+                        {day}
+                      </span>
+                      {!past && !blocked && (
+                        <div className="flex items-center gap-0.5">
+                          {hasException && (
+                            <button
+                              onClick={(e) => handleRemoveException(day, e)}
+                              className="p-0.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                              title="Ripristina"
+                            >
+                              <ArrowCounterClockwiseIcon
+                                size={10}
+                                weight="bold"
+                              />
+                            </button>
+                          )}
+                          <button
+                            onClick={(e) => handleQuickToggle(day, e)}
+                            className={`relative w-7 h-3.5 rounded-full transition-colors shrink-0 ${isOpen ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}
+                          >
+                            <span
+                              className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white transition-transform ${isOpen ? "translate-x-3.5" : "translate-x-0"}`}
+                            />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {blocked ? (
+                      <div className="flex-1 flex items-center justify-center">
+                        <span className="text-red-600 dark:text-red-500 font-medium bg-red-100 dark:bg-red-950 px-2.5 py-1.5 rounded-3xl text-center leading-tight text-[13px]">
+                          {blocked.reason ?? "Ferie"}
+                        </span>
+                      </div>
+                    ) : past ? (
+                      <div className="flex-1" />
+                    ) : isOpen ? (
+                      <div className="flex-1 flex flex-col justify-end">
+                        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded px-1.5 py-0.5">
+                          <p className="text-green-700 dark:text-green-400 font-semibold leading-tight text-[13px]">
+                            {startTime} - {endTime}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex-1 flex items-end">
+                        <span className="text-gray-400 dark:text-gray-500 text-xs font-medium">
+                          Chiuso
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-4 px-5 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded bg-green-200 dark:bg-green-800" />
+                <span className="text-xs text-gray-600 dark:text-gray-300">
+                  Aperto
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900" />
+                <span className="text-xs text-gray-600 dark:text-gray-300">
+                  Ferie
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded bg-gray-200 dark:bg-gray-600" />
+                <span className="text-xs text-gray-600 dark:text-gray-300">
+                  Chiuso
+                </span>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
 
+      {/* TAB 2 DOCUMENTI LEGALI */}
+      {activeTab === "legale" && (
         <Card className="shadow-md border border-gray-300 dark:border-gray-600">
           <div className="flex items-center gap-3 mb-5">
-            <GearIcon
+            <ShieldCheckIcon
+              size={20}
+              weight="duotone"
+              className="text-gray-500"
+            />
+            <div>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                Documenti legali
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Privacy & Cookie Policy per i tuoi clienti
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                {
+                  id: "generated",
+                  label: "Generata",
+                  desc: "Auto da ScissorFlow",
+                },
+                { id: "url", label: "URL esterno", desc: "Link al tuo sito" },
+                {
+                  id: "custom",
+                  label: "Personalizzata",
+                  desc: "Scrivi il tuo testo",
+                },
+              ].map((mode) => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => setConfig({ ...config, legalMode: mode.id })}
+                  className={`flex flex-col items-center text-center p-3 rounded-xl border-2 transition-all ${config.legalMode === mode.id ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-800" : "border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600"}`}
+                >
+                  <p
+                    className={`text-xs font-semibold ${config.legalMode === mode.id ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}
+                  >
+                    {mode.label}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">{mode.desc}</p>
+                </button>
+              ))}
+            </div>
+            {config.legalMode === "generated" && (
+              <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  ScissorFlow genera automaticamente la Privacy & Cookie Policy
+                  usando i dati del tuo shop.
+                </p>
+                <a
+                  href={`/b/${shopSlug ?? "anteprima"}/legal`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-900 dark:hover:text-white underline mt-2 transition-colors"
+                >
+                  Visualizza anteprima
+                </a>
+              </div>
+            )}
+            {config.legalMode === "url" && (
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  URL della tua policy
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://tuosito.it/privacy"
+                  value={config.legalUrl ?? ""}
+                  onChange={(e) =>
+                    setConfig({ ...config, legalUrl: e.target.value })
+                  }
+                  className="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
+                />
+              </div>
+            )}
+            {config.legalMode === "custom" && (
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Testo della policy
+                </label>
+                <p className="text-xs text-gray-400 mb-1">
+                  Puoi usare HTML semplice (grassetto, liste, titoli)
+                </p>
+                <textarea
+                  rows={10}
+                  placeholder="<h2>Privacy Policy</h2><p>Il titolare del trattamento è...</p>"
+                  value={config.legalText ?? ""}
+                  onChange={(e) =>
+                    setConfig({ ...config, legalText: e.target.value })
+                  }
+                  className="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 font-mono resize-y"
+                />
+              </div>
+            )}
+            <Button loading={savingConfig} onClick={handleSaveConfig}>
+              <FloppyDiskIcon size={16} weight="bold" className="mr-2" />
+              Salva documenti legali
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* TAB 3 PERSONALIZZAZIONE */}
+      {activeTab === "personalizzazione" && (
+        <Card className="shadow-md border border-gray-300 dark:border-gray-600">
+          <div className="flex items-center gap-3 mb-5">
+            <PaletteIcon
               size={20}
               weight="duotone"
               className="text-gray-600 dark:text-gray-300"
             />
             <div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                Impostazioni shop
+                Personalizzazione
               </p>
               <p className="text-xs text-gray-600 dark:text-gray-300">
-                Configura le opzioni del tuo shop
+                Aspetto del tuo shop pubblico
               </p>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between py-3 border border-gray-300 dark:border-gray-600 rounded-xl px-4 bg-gray-50 dark:bg-gray-800/40">
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  Mostra prezzi
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  I clienti vedono i prezzi dei servizi
-                </p>
-              </div>
-              <Toggle
-                value={!!config.showPrices}
-                onChange={() =>
-                  setConfig({ ...config, showPrices: !config.showPrices })
+          <div className="flex flex-col lg:flex-row gap-12">
+            <div className="flex-1 flex flex-col gap-5">
+              <Input
+                label="Tagline"
+                placeholder="Il tuo barbiere di fiducia"
+                value={config.tagline ?? ""}
+                onChange={(e) =>
+                  setConfig({ ...config, tagline: e.target.value })
                 }
               />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                Intervallo slot calendario
-              </label>
-              <p className="text-xs text-gray-600 dark:text-gray-300 mb-1">
-                Ogni quanto tempo può iniziare un appuntamento
-              </p>
-              <select
-                value={config.slotInterval}
-                onChange={(e) =>
-                  setConfig({ ...config, slotInterval: Number(e.target.value) })
-                }
-                className="text-sm px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white"
-              >
-                {[10, 15, 20, 25, 30, 45, 60].map((v) => (
-                  <option key={v} value={v}>
-                    {v} minuti
-                  </option>
-                ))}
-              </select>
-            </div>
-            <Button loading={savingConfig} onClick={handleSaveConfig}>
-              <FloppyDiskIcon size={16} weight="bold" className="mr-2" />
-              Salva impostazioni
-            </Button>
-          </div>
-        </Card>
-      </div>
-
-      {/* PERSONALIZZAZIONE */}
-      <Card className="shadow-md border border-gray-300 dark:border-gray-600">
-        <div className="flex items-center gap-3 mb-5">
-          <PaletteIcon
-            size={20}
-            weight="duotone"
-            className="text-gray-600 dark:text-gray-300"
-          />
-          <div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              Personalizzazione
-            </p>
-            <p className="text-xs text-gray-600 dark:text-gray-300">
-              Aspetto del tuo shop pubblico
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row gap-12">
-          <div className="flex-1 flex flex-col gap-5">
-            <Input
-              label="Tagline"
-              placeholder="Il tuo barbiere di fiducia"
-              value={config.tagline ?? ""}
-              onChange={(e) =>
-                setConfig({ ...config, tagline: e.target.value })
-              }
-            />
-            <div>
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
-                Colore principale
-              </p>
-              <div className="flex gap-2 flex-wrap">
-                {PRESET_COLORS.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() =>
-                      setConfig({ ...config, primaryColor: color })
-                    }
-                    className="relative w-8 h-8 rounded-lg transition-transform hover:scale-110 shadow-sm"
-                    style={{ backgroundColor: color }}
-                  >
-                    {config.primaryColor === color && (
-                      <CheckIcon
-                        size={14}
-                        weight="bold"
-                        className="absolute inset-0 m-auto text-white"
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
-                Immagine hero
-              </p>
-              <div className="flex gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSettingsImageSource("preset");
-                    setSettingsUploadedSrc(null);
-                    setSettingsCroppedUrl(null);
-                    setSettingsIsCropping(false);
-                  }}
-                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${settingsImageSource === "preset" || settingsImageSource === "none" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"}`}
-                >
-                  Scegli preset
-                </button>
-                <button
-                  type="button"
-                  onClick={() => settingsFileInputRef.current?.click()}
-                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all flex items-center justify-center gap-1.5 ${settingsImageSource === "upload" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"}`}
-                >
-                  <UploadIcon size={12} />
-                  Carica la tua
-                </button>
-                <input
-                  ref={settingsFileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={handleSettingsFileSelect}
-                />
-              </div>
-              {(settingsImageSource === "preset" ||
-                settingsImageSource === "none") && (
-                <div className="grid grid-cols-3 gap-2">
-                  {PRESET_IMAGES.map((img) => (
+              <div>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                  Colore principale
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {PRESET_COLORS.map((color) => (
                     <button
-                      key={img.id}
-                      type="button"
-                      onClick={() => handleSettingsSelectPreset(img.url)}
-                      className={`relative rounded-lg overflow-hidden aspect-video transition-all shadow-sm ${settingsSelectedPreset === img.url ? "ring-2 ring-gray-900 dark:ring-white" : "opacity-70 hover:opacity-100"}`}
+                      key={color}
+                      onClick={() =>
+                        setConfig({ ...config, primaryColor: color })
+                      }
+                      className="relative w-8 h-8 rounded-lg transition-transform hover:scale-110 shadow-sm"
+                      style={{ backgroundColor: color }}
                     >
-                      <img
-                        src={img.thumb}
-                        alt={img.label}
-                        className="w-full h-full object-cover"
-                      />
-                      {settingsSelectedPreset === img.url && (
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                          <CheckIcon
-                            size={20}
-                            weight="bold"
-                            className="text-white"
-                          />
-                        </div>
+                      {config.primaryColor === color && (
+                        <CheckIcon
+                          size={14}
+                          weight="bold"
+                          className="absolute inset-0 m-auto text-white"
+                        />
                       )}
                     </button>
                   ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Logo shop
+                </p>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {[
+                    { id: "badge-vintage", label: "Badge" },
+                    { id: "hex-scissors", label: "Forbici" },
+                    { id: "shield-razor", label: "Rasoio" },
+                    { id: "circle-comb", label: "Pettine" },
+                    { id: "square-scissors", label: "Forbici 2" },
+                    { id: "hex-razor", label: "Rasoio 2" },
+                  ].map((style) => (
+                    <button
+                      key={style.id}
+                      type="button"
+                      onClick={() =>
+                        setConfig({
+                          ...config,
+                          logoStyle: style.id,
+                          logoUrl: undefined,
+                        })
+                      }
+                      className={`flex flex-col items-center gap-2 p-2 rounded-xl border-2 transition-all ${config.logoStyle === style.id && config.logoUrl === undefined ? "border-gray-900 dark:border-white" : "border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600"}`}
+                    >
+                      <ShopLogo
+                        shopName={config.tagline ? config.tagline : "Shop"}
+                        primaryColor={config.primaryColor ?? "#1a1a1a"}
+                        logoStyle={style.id}
+                        size={40}
+                        radius={8}
+                      />
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {style.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
+                  <span className="text-xs text-gray-400">oppure</span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => logoFileInputRef.current?.click()}
+                  className={`mt-2 w-full py-2 rounded-lg text-xs font-medium border transition-all flex items-center justify-center gap-1.5 ${config.logoUrl ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"}`}
+                >
+                  <UploadIcon size={12} />
+                  {config.logoUrl
+                    ? "Logo custom caricato"
+                    : "Carica logo custom"}
+                </button>
+                <input
+                  ref={logoFileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={handleLogoFileSelect}
+                />
+                {config.logoUrl && (
+                  <div className="mt-2 flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <ShopLogo
+                      shopName={config.tagline ?? "Shop"}
+                      primaryColor={config.primaryColor ?? "#1a1a1a"}
+                      logoStyle="custom"
+                      logoUrl={config.logoUrl}
+                      size={36}
+                      radius={6}
+                    />
+                    <span className="text-xs text-gray-500 dark:text-gray-400 flex-1">
+                      Logo personalizzato
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setConfig({
+                          ...config,
+                          logoUrl: undefined,
+                          logoStyle: "badge-vintage",
+                        })
+                      }
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <TrashIcon size={14} />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                  Immagine hero
+                </p>
+                <div className="flex gap-2 mb-3">
                   <button
                     type="button"
                     onClick={() => {
-                      setSettingsImageSource("none");
-                      setSettingsSelectedPreset(null);
-                      setConfig({ ...config, coverImage: undefined });
+                      setSettingsImageSource("preset");
+                      setSettingsUploadedSrc(null);
+                      setSettingsCroppedUrl(null);
+                      setSettingsIsCropping(false);
                     }}
-                    className={`relative rounded-lg overflow-hidden aspect-video border-2 border-dashed transition-all flex items-center justify-center ${settingsImageSource === "none" ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-800" : "border-gray-300 dark:border-gray-600 opacity-70 hover:opacity-100"}`}
+                    className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${settingsImageSource === "preset" || settingsImageSource === "none" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"}`}
                   >
-                    <div className="text-center">
-                      <ImageIcon
-                        size={16}
-                        className="text-gray-400 mx-auto mb-0.5"
-                      />
-                      <p className="text-xs text-gray-600 dark:text-gray-300">
-                        Rimuovi immagine
-                      </p>
-                    </div>
+                    Scegli preset
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => settingsFileInputRef.current?.click()}
+                    className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all flex items-center justify-center gap-1.5 ${settingsImageSource === "upload" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"}`}
+                  >
+                    <UploadIcon size={12} />
+                    Carica la tua
+                  </button>
+                  <input
+                    ref={settingsFileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handleSettingsFileSelect}
+                  />
                 </div>
-              )}
-              {settingsImageSource === "upload" &&
-                settingsUploadedSrc &&
-                settingsIsCropping && (
-                  <div className="flex flex-col gap-2 mt-2">
-                    <ImageCropper
-                      imageSrc={settingsUploadedSrc}
-                      onCropComplete={handleSettingsCropComplete}
-                    />
-                    <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
-                      Trascina per posizionare · Scorri per zoomare
-                    </p>
+                {(settingsImageSource === "preset" ||
+                  settingsImageSource === "none") && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {PRESET_IMAGES.map((img) => (
+                      <button
+                        key={img.id}
+                        type="button"
+                        onClick={() => handleSettingsSelectPreset(img.url)}
+                        className={`relative rounded-lg overflow-hidden aspect-video transition-all shadow-sm ${settingsSelectedPreset === img.url ? "ring-2 ring-gray-900 dark:ring-white" : "opacity-70 hover:opacity-100"}`}
+                      >
+                        <img
+                          src={img.thumb}
+                          alt={img.label}
+                          className="w-full h-full object-cover"
+                        />
+                        {settingsSelectedPreset === img.url && (
+                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <CheckIcon
+                              size={20}
+                              weight="bold"
+                              className="text-white"
+                            />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSettingsImageSource("none");
+                        setSettingsSelectedPreset(null);
+                        setConfig({ ...config, coverImage: undefined });
+                      }}
+                      className={`relative rounded-lg overflow-hidden aspect-video border-2 border-dashed transition-all flex items-center justify-center ${settingsImageSource === "none" ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-800" : "border-gray-300 dark:border-gray-600 opacity-70 hover:opacity-100"}`}
+                    >
+                      <div className="text-center">
+                        <ImageIcon
+                          size={16}
+                          className="text-gray-400 mx-auto mb-0.5"
+                        />
+                        <p className="text-xs text-gray-600 dark:text-gray-300">
+                          Rimuovi immagine
+                        </p>
+                      </div>
+                    </button>
                   </div>
                 )}
-            </div>
-            <Button loading={savingConfig} onClick={handleSaveConfig}>
-              <FloppyDiskIcon size={16} weight="bold" className="mr-2" />
-              Salva personalizzazione
-            </Button>
-          </div>
-
-          <div className="lg:w-96 lg:shrink-0 lg:sticky lg:top-6 flex flex-col gap-4">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              Anteprima live
-            </p>
-            <div className="flex flex-col gap-1">
-              <div className="rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 shadow-md">
-                <div className="bg-gray-100 dark:bg-gray-800 px-2 py-1 flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                  <div className="flex-1 mx-1.5 h-2 bg-gray-300 dark:bg-gray-600 rounded-full" />
-                </div>
-                <div
-                  className="relative h-36 flex items-end"
-                  style={{
-                    background: settingsMockupUrl
-                      ? `url(${settingsMockupUrl}) center/cover`
-                      : `linear-gradient(135deg, ${config.primaryColor ?? "#1a1a1a"} 0%, ${config.primaryColor ?? "#1a1a1a"}cc 100%)`,
-                  }}
-                >
-                  <div className="absolute inset-0 bg-black/40" />
-                  <div className="relative px-2 pb-1.5 flex items-end gap-1.5">
-                    <div
-                      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-                      style={{
-                        backgroundColor: config.primaryColor ?? "#1a1a1a",
-                      }}
-                    >
-                      <ScissorsIcon
-                        size={12}
-                        weight="duotone"
-                        className="text-white"
+                {settingsImageSource === "upload" &&
+                  settingsUploadedSrc &&
+                  settingsIsCropping && (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <ImageCropper
+                        imageSrc={settingsUploadedSrc}
+                        onCropComplete={handleSettingsCropComplete}
                       />
-                    </div>
-                    <div>
-                      <p className="text-white text-xs font-semibold leading-tight truncate max-w-25">
-                        Il tuo shop
+                      <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
+                        Trascina per posizionare · Scorri per zoomare
                       </p>
-                      {config.tagline && (
-                        <p
-                          className="text-white/70 truncate max-w-25"
-                          style={{ fontSize: "9px" }}
-                        >
-                          {config.tagline}
-                        </p>
-                      )}
                     </div>
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-900 p-2">
-                  <div className="flex gap-1 mb-1.5 overflow-hidden">
-                    {["Taglio", "Barba", "Colore"].map((s) => (
-                      <div
-                        key={s}
-                        className="px-1.5 py-0.5 rounded-full text-white shrink-0"
-                        style={{
-                          backgroundColor: config.primaryColor ?? "#1a1a1a",
-                          fontSize: "8px",
-                        }}
-                      >
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-5 gap-0.5">
-                    {["L", "M", "M", "G", "V"].map((d, i) => (
-                      <div
-                        key={i}
-                        className="flex flex-col items-center gap-0.5"
-                      >
-                        <p
-                          className="text-gray-500"
-                          style={{ fontSize: "7px" }}
-                        >
-                          {d}
-                        </p>
-                        <div className="w-full h-2.5 bg-green-100 rounded" />
-                        <div className="w-full h-2.5 bg-green-100 rounded" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  )}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
-                Desktop
-              </p>
+              <Button loading={savingConfig} onClick={handleSaveConfig}>
+                <FloppyDiskIcon size={16} weight="bold" className="mr-2" />
+                Salva personalizzazione
+              </Button>
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className="rounded-2xl overflow-hidden border-2 border-gray-400 dark:border-gray-600 shadow-md bg-white dark:bg-gray-900"
-                style={{ width: "90px" }}
-              >
-                <div className="bg-gray-900 h-3 flex items-center justify-center">
-                  <div className="w-6 h-1 bg-gray-700 rounded-full" />
-                </div>
-                <div
-                  className="relative flex items-end"
-                  style={{
-                    height: "90px",
-                    background: settingsMockupUrl
-                      ? `url(${settingsMockupUrl}) center/cover`
-                      : `linear-gradient(135deg, ${config.primaryColor ?? "#1a1a1a"} 0%, ${config.primaryColor ?? "#1a1a1a"}cc 100%)`,
-                  }}
-                >
-                  <div className="absolute inset-0 bg-black/40" />
-                  <div className="relative px-1.5 pb-1 flex items-end gap-1">
-                    <div
-                      className="w-4 h-4 rounded flex items-center justify-center shrink-0"
-                      style={{
-                        backgroundColor: config.primaryColor ?? "#1a1a1a",
-                      }}
-                    >
-                      <ScissorsIcon
-                        size={9}
-                        weight="duotone"
-                        className="text-white"
+
+            <div className="lg:w-96 lg:shrink-0 lg:sticky lg:top-6 flex flex-col gap-4">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                Anteprima live
+              </p>
+              <div className="flex flex-col gap-1">
+                <div className="rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 shadow-md">
+                  <div className="bg-gray-100 dark:bg-gray-800 px-2 py-1 flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                    <div className="flex-1 mx-1.5 h-2 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                  </div>
+                  <div
+                    className="relative h-36 flex items-end"
+                    style={{
+                      background: settingsMockupUrl
+                        ? `url(${settingsMockupUrl}) center/cover`
+                        : `linear-gradient(135deg, ${config.primaryColor ?? "#1a1a1a"} 0%, ${config.primaryColor ?? "#1a1a1a"}cc 100%)`,
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-black/40" />
+                    <div className="relative px-2 pb-1.5 flex items-end gap-1.5">
+                      <ShopLogo
+                        shopName={config.tagline ?? "Shop"}
+                        primaryColor={config.primaryColor ?? "#1a1a1a"}
+                        logoStyle={config.logoStyle ?? "badge-vintage"}
+                        logoUrl={config.logoUrl}
+                        size={24}
+                        radius={4}
                       />
-                    </div>
-                    <p
-                      className="text-white font-semibold leading-tight truncate"
-                      style={{ fontSize: "7px", maxWidth: "40px" }}
-                    >
-                      Shop
-                    </p>
-                  </div>
-                </div>
-                <div className="p-1.5">
-                  <div className="flex gap-0.5 mb-1 overflow-hidden">
-                    {["Taglio", "Barba"].map((s) => (
-                      <div
-                        key={s}
-                        className="px-1 py-0.5 rounded-full text-white shrink-0"
-                        style={{
-                          backgroundColor: config.primaryColor ?? "#1a1a1a",
-                          fontSize: "6px",
-                        }}
-                      >
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-5 gap-0.5">
-                    {["L", "M", "M", "G", "V"].map((d, i) => (
-                      <div
-                        key={i}
-                        className="flex flex-col items-center gap-0.5"
-                      >
-                        <p
-                          className="text-gray-500"
-                          style={{ fontSize: "5px" }}
-                        >
-                          {d}
+                      <div>
+                        <p className="text-white text-xs font-semibold leading-tight truncate max-w-25">
+                          Il tuo shop
                         </p>
-                        <div
-                          className="w-full bg-green-100 rounded"
-                          style={{ height: "5px" }}
-                        />
-                        <div
-                          className="w-full bg-green-100 rounded"
-                          style={{ height: "5px" }}
-                        />
+                        {config.tagline && (
+                          <p
+                            className="text-white/70 truncate max-w-25"
+                            style={{ fontSize: "9px" }}
+                          >
+                            {config.tagline}
+                          </p>
+                        )}
                       </div>
-                    ))}
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-gray-900 p-2">
+                    <div className="flex gap-1 mb-1.5 overflow-hidden">
+                      {["Taglio", "Barba", "Colore"].map((s) => (
+                        <div
+                          key={s}
+                          className="px-1.5 py-0.5 rounded-full text-white shrink-0"
+                          style={{
+                            backgroundColor: config.primaryColor ?? "#1a1a1a",
+                            fontSize: "8px",
+                          }}
+                        >
+                          {s}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-5 gap-0.5">
+                      {["L", "M", "M", "G", "V"].map((d, i) => (
+                        <div
+                          key={i}
+                          className="flex flex-col items-center gap-0.5"
+                        >
+                          <p
+                            className="text-gray-500"
+                            style={{ fontSize: "7px" }}
+                          >
+                            {d}
+                          </p>
+                          <div className="w-full h-2.5 bg-green-100 rounded" />
+                          <div className="w-full h-2.5 bg-green-100 rounded" />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="pb-1.5 flex justify-center">
-                  <div className="w-8 h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
-                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-300 text-center">
+                  Desktop
+                </p>
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-300">Mobile</p>
+              <div className="flex flex-col items-center gap-1">
+                <div
+                  className="rounded-2xl overflow-hidden border-2 border-gray-400 dark:border-gray-600 shadow-md bg-white dark:bg-gray-900"
+                  style={{ width: "90px" }}
+                >
+                  <div className="bg-gray-900 h-3 flex items-center justify-center">
+                    <div className="w-6 h-1 bg-gray-700 rounded-full" />
+                  </div>
+                  <div
+                    className="relative flex items-end"
+                    style={{
+                      height: "90px",
+                      background: settingsMockupUrl
+                        ? `url(${settingsMockupUrl}) center/cover`
+                        : `linear-gradient(135deg, ${config.primaryColor ?? "#1a1a1a"} 0%, ${config.primaryColor ?? "#1a1a1a"}cc 100%)`,
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-black/40" />
+                    <div className="relative px-1.5 pb-1 flex items-end gap-1">
+                      <ShopLogo
+                        shopName={config.tagline ?? "Shop"}
+                        primaryColor={config.primaryColor ?? "#1a1a1a"}
+                        logoStyle={config.logoStyle ?? "badge-vintage"}
+                        logoUrl={config.logoUrl}
+                        size={16}
+                        radius={3}
+                      />
+                      <p
+                        className="text-white font-semibold leading-tight truncate"
+                        style={{ fontSize: "7px", maxWidth: "40px" }}
+                      >
+                        Shop
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-1.5">
+                    <div className="flex gap-0.5 mb-1 overflow-hidden">
+                      {["Taglio", "Barba"].map((s) => (
+                        <div
+                          key={s}
+                          className="px-1 py-0.5 rounded-full text-white shrink-0"
+                          style={{
+                            backgroundColor: config.primaryColor ?? "#1a1a1a",
+                            fontSize: "6px",
+                          }}
+                        >
+                          {s}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-5 gap-0.5">
+                      {["L", "M", "M", "G", "V"].map((d, i) => (
+                        <div
+                          key={i}
+                          className="flex flex-col items-center gap-0.5"
+                        >
+                          <p
+                            className="text-gray-500"
+                            style={{ fontSize: "5px" }}
+                          >
+                            {d}
+                          </p>
+                          <div
+                            className="w-full bg-green-100 rounded"
+                            style={{ height: "5px" }}
+                          />
+                          <div
+                            className="w-full bg-green-100 rounded"
+                            style={{ height: "5px" }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="pb-1.5 flex justify-center">
+                    <div className="w-8 h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  Mobile
+                </p>
+              </div>
             </div>
           </div>
+        </Card>
+      )}
+
+      {/* TOAST */}
+      {successConfig && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-gray-900 dark:bg-white shadow-xl border border-gray-800 dark:border-gray-200 animate-fade-in">
+          <CheckCircleIcon
+            size={18}
+            weight="duotone"
+            className="text-green-400 dark:text-green-600 shrink-0"
+          />
+          <p className="text-sm font-medium text-white dark:text-gray-900 whitespace-nowrap">
+            Impostazioni salvate
+          </p>
         </div>
-      </Card>
+      )}
 
       {/* MODAL GIORNO SPECIFICO */}
       <Modal
@@ -1778,20 +2036,6 @@ export const SettingsPage = () => {
         </div>
       </Modal>
 
-      {/* TOAST FISSO */}
-      {successConfig && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-gray-900 dark:bg-white shadow-xl border border-gray-800 dark:border-gray-200 animate-fade-in">
-          <CheckCircleIcon
-            size={18}
-            weight="duotone"
-            className="text-green-400 dark:text-green-600 shrink-0"
-          />
-          <p className="text-sm font-medium text-white dark:text-gray-900 whitespace-nowrap">
-            Impostazioni salvate
-          </p>
-        </div>
-      )}
-
       {/* MODAL ORARIO SETTIMANALE */}
       <Modal
         isOpen={editingWeekDay !== null}
@@ -1807,7 +2051,7 @@ export const SettingsPage = () => {
                 (editingWeekDay ?? 0) === 0 ? 6 : (editingWeekDay ?? 0) - 1
               ]
             }{" "}
-            del calendario{" "}
+            del calendario
           </p>
           <div className="flex gap-3 pt-2">
             <Button

@@ -138,7 +138,12 @@ exports.Prisma.ShopConfigScalarFieldEnum = {
   tagline: 'tagline',
   showPrices: 'showPrices',
   slotMode: 'slotMode',
-  slotInterval: 'slotInterval'
+  slotInterval: 'slotInterval',
+  logoStyle: 'logoStyle',
+  logoUrl: 'logoUrl',
+  legalMode: 'legalMode',
+  legalUrl: 'legalUrl',
+  legalText: 'legalText'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -191,7 +196,8 @@ exports.Prisma.CustomerScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   phone: 'phone',
-  noShows: 'noShows'
+  noShows: 'noShows',
+  isBlocked: 'isBlocked'
 };
 
 exports.Prisma.RecurrenceGroupScalarFieldEnum = {
@@ -228,6 +234,15 @@ exports.Prisma.DateExceptionScalarFieldEnum = {
   breakStart: 'breakStart',
   breakEnd: 'breakEnd',
   reason: 'reason'
+};
+
+exports.Prisma.BlacklistScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  email: 'email',
+  phone: 'phone',
+  reason: 'reason',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -281,7 +296,8 @@ exports.Prisma.ModelName = {
   Customer: 'Customer',
   RecurrenceGroup: 'RecurrenceGroup',
   Booking: 'Booking',
-  DateException: 'DateException'
+  DateException: 'DateException',
+  Blacklist: 'Blacklist'
 };
 
 /**

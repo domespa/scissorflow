@@ -11,11 +11,13 @@ import {
   PlusIcon,
   TrashIcon,
   CalendarIcon,
+  ShieldCheckIcon,
 } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ImageCropper } from "@/components/ui/ImageCropper";
 import { authService } from "@/services/auth.service";
+import { ShopLogo } from "@/components/ui/ShopLogo";
 import { cloudinaryService } from "@/services/cloudinary.service";
 import { getCroppedImg } from "@/lib/cropImage";
 import { SlotMode } from "@scissorflow/shared";
@@ -119,6 +121,7 @@ export const OnboardingPage = () => {
     null,
   );
   const [isCropping, setIsCropping] = useState(false);
+  const [logoStyle, setLogoStyle] = useState("badge-vintage");
 
   // STEP 3 - ORARI
   const [days, setDays] = useState<Record<number, DayForm>>(
@@ -249,6 +252,8 @@ export const OnboardingPage = () => {
           slotMode: SlotMode.FIXED,
           slotInterval,
           coverImage: coverImageUrl,
+          logoStyle,
+          legalMode: "generated",
         },
         availability: [0, 1, 2, 3, 4, 5, 6].map((d) => ({
           dayOfWeek: d,
@@ -610,6 +615,59 @@ export const OnboardingPage = () => {
                       )}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* LOGO */}
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Logo shop
+                </p>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {[
+                    { id: "badge-vintage", label: "Badge" },
+                    { id: "hex-scissors", label: "Forbici" },
+                    { id: "shield-razor", label: "Rasoio" },
+                    { id: "circle-comb", label: "Pettine" },
+                    { id: "square-scissors", label: "Forbici 2" },
+                    { id: "hex-razor", label: "Rasoio 2" },
+                  ].map((style) => (
+                    <button
+                      key={style.id}
+                      type="button"
+                      onClick={() => setLogoStyle(style.id)}
+                      className={`flex flex-col items-center gap-2 p-2 rounded-xl border-2 transition-all ${
+                        logoStyle === style.id
+                          ? "border-gray-900 dark:border-white"
+                          : "border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600"
+                      }`}
+                    >
+                      <ShopLogo
+                        shopName={form.shopName || "Shop"}
+                        primaryColor={form.primaryColor}
+                        logoStyle={style.id}
+                        size={40}
+                        radius={8}
+                      />
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {style.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* ALERT POLICY */}
+                <div className="flex items-start gap-2.5 px-3 py-2.5 bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900 rounded-xl">
+                  <ShieldCheckIcon
+                    size={16}
+                    className="text-blue-500 shrink-0 mt-0.5"
+                  />
+                  <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                    La <strong>Privacy & Cookie Policy</strong> verrà generata
+                    automaticamente da ScissorFlow. Se desideri caricare la tua,
+                    potrai farlo dal pannello <strong>Impostazioni</strong> dopo
+                    la registrazione.
+                  </p>
                 </div>
               </div>
 

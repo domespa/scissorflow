@@ -6,6 +6,8 @@ export type CustomerSummary = {
   lastName: string;
   email: string | null;
   phone: string | null;
+  noShows: number;
+  isBlocked: boolean;
   totalBookings: number;
   totalSpent: number;
   lastBookingAt: string | null;
@@ -19,6 +21,8 @@ export type CustomerDetail = {
   lastName: string;
   email: string | null;
   phone: string | null;
+  noShows: number;
+  isBlocked: boolean;
   totalBookings: number;
   totalSpent: number;
   bookings: {
@@ -41,5 +45,43 @@ export const customerService = {
   async getCustomerDetail(customerId: string): Promise<CustomerDetail> {
     const response = await api.get(`/customers/${customerId}`);
     return response.data;
+  },
+
+  async getBlockedCustomers(): Promise<CustomerSummary[]> {
+    const response = await api.get("/customers/blocked");
+    return response.data;
+  },
+
+  async unblockCustomer(customerId: string): Promise<void> {
+    await api.post(`/customers/${customerId}/unblock`);
+  },
+
+  async blockCustomerManual(email?: string, phone?: string): Promise<void> {
+    await api.post("/customers/block-manual", { email, phone });
+  },
+
+  async getBlacklist(): Promise<
+    {
+      id: string;
+      email: string | null;
+      phone: string | null;
+      reason: string | null;
+      createdAt: string;
+    }[]
+  > {
+    const response = await api.get("/customers/blacklist");
+    return response.data;
+  },
+
+  async addToBlacklist(
+    email?: string,
+    phone?: string,
+    reason?: string,
+  ): Promise<void> {
+    await api.post("/customers/blacklist", { email, phone, reason });
+  },
+
+  async removeFromBlacklist(blacklistId: string): Promise<void> {
+    await api.delete(`/customers/blacklist/${blacklistId}`);
   },
 };

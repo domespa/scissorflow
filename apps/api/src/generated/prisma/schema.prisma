@@ -25,6 +25,8 @@ model Shop {
   blockedSlots   BlockedSlot[]
   config         ShopConfig?
   dateExceptions DateException[]
+
+  blacklist Blacklist[]
 }
 
 enum ShopPlan {
@@ -47,6 +49,11 @@ model ShopConfig {
   showPrices   Boolean  @default(true)
   slotMode     SlotMode @default(FIXED)
   slotInterval Int      @default(30)
+  logoStyle    String   @default("badge-vintage")
+  logoUrl      String?
+  legalMode    String   @default("generated")
+  legalUrl     String?
+  legalText    String?
 
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 }
@@ -146,6 +153,7 @@ model Customer {
   email     String?
   phone     String?
   noShows   Int     @default(0)
+  isBlocked Boolean @default(false)
 
   bookings Booking[]
 }
@@ -217,4 +225,22 @@ model DateException {
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
   @@unique([shopId, date])
+}
+
+// =========================================
+//            BLACKLIST
+// =========================================
+// AGGIUNGI in fondo al file
+model Blacklist {
+  id        String   @id @default(cuid())
+  shopId    String
+  email     String?
+  phone     String?
+  reason    String?
+  createdAt DateTime @default(now())
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, email])
+  @@unique([shopId, phone])
 }

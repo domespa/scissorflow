@@ -7,6 +7,8 @@ import {
   PlusIcon,
   ScissorsIcon,
   TrashIcon,
+  ClockIcon,
+  CurrencyEurIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -176,7 +178,7 @@ export const ServicesPage = () => {
           {services.map((service) => (
             <Card
               key={service.id}
-              className="shadow-md border border-gray-300 dark:border-gray-600 flex items-center gap-4"
+              className={`shadow-md flex items-center gap-4 border-2 ${service.isActive ? "border-green-500 dark:border-green-600" : "border-gray-300 dark:border-gray-500"}`}
             >
               {/* ICONA */}
               <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
@@ -190,7 +192,7 @@ export const ServicesPage = () => {
               {/* INFO */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
                     {service.name}
                   </p>
                   <Badge
@@ -199,17 +201,18 @@ export const ServicesPage = () => {
                   />
                 </div>
                 <div className="flex items-center gap-3 mt-0.5">
-                  <span className="text-xs text-gray-600 dark:text-gray-300">
-                    ⏱ {formatDuration(service.duration)}
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <ClockIcon size={11} weight="duotone" />
+                    {formatDuration(service.duration)}
                   </span>
                   {service.price != null && (
-                    <span className="text-xs text-gray-600 dark:text-gray-300">
-                      💶 €{service.price.toFixed(2)}
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <CurrencyEurIcon size={11} weight="duotone" />
+                      {service.price.toFixed(2)}
                     </span>
                   )}
                 </div>
               </div>
-
               {/* AZIONI */}
               <div className="flex items-center gap-1">
                 <button
