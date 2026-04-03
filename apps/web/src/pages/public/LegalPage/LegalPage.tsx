@@ -36,7 +36,7 @@ export const LegalPage = () => {
 
   const primaryColor = shop.config?.primaryColor ?? "#1a1a1a";
   const shopName = shop.name;
-  const shopEmail = shop.email ?? "info@example.com";
+  const shopEmail = shop.users?.[0]?.user?.email ?? "info@example.com";
   const today = new Date().toLocaleDateString("it-IT", {
     day: "numeric",
     month: "long",

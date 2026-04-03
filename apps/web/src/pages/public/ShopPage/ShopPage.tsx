@@ -211,6 +211,16 @@ export const ShopPage = () => {
     loadShop();
   }, [slug]);
 
+  // MODIFICHIAMO LA TAB CON SLUG SITO
+  useEffect(() => {
+    if (shop?.name) {
+      document.title = `ScissorFlow | ${shop.name}`;
+    }
+    return () => {
+      document.title = "ScissorFlow";
+    };
+  }, [shop?.name]);
+
   const loadShop = async () => {
     try {
       setLoading(true);
@@ -408,36 +418,61 @@ export const ShopPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* HERO */}
-      <div
-        className="relative h-72 md:h-screen flex items-end"
-        style={{
-          background: shop.config?.coverImage
-            ? `url(${shop.config.coverImage}) center/cover`
-            : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}cc 100%)`,
-        }}
-      >
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative w-full px-4 pb-8 max-w-5xl mx-auto">
-          <div className="flex items-end gap-4">
+      {/* NAVBAR STICKY */}
+      <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <ShopLogo
               shopName={shop.name}
               primaryColor={primaryColor}
               logoStyle={shop.config?.logoStyle ?? "badge-vintage"}
               logoUrl={shop.config?.logoUrl}
-              size={64}
-              radius={16}
+              size={36}
+              radius={8}
             />
             <div>
-              <h1 className="text-2xl font-bold text-white">{shop.name}</h1>
+              <p className="text-sm font-bold text-gray-900 leading-tight">
+                {shop.name}
+              </p>
               {shop.config?.tagline && (
-                <p className="text-white/70 text-sm mt-0.5">
+                <p className="text-xs text-gray-400 leading-tight">
                   {shop.config.tagline}
                 </p>
               )}
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            {shop.config?.legalMode === "url" && shop.config?.legalUrl ? (
+              <a
+                href={shop.config.legalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Privacy
+              </a>
+            ) : (
+              <a
+                href={`/b/${slug}/legal`}
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Privacy
+              </a>
+            )}
+          </div>
         </div>
+      </nav>
+
+      {/* HERO */}
+      <div
+        className="relative h-48"
+        style={{
+          background: shop.config?.coverImage
+            ? `url(${shop.config.coverImage}) center/cover`
+            : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}99 100%)`,
+        }}
+      >
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* CONTENUTO */}
@@ -492,7 +527,6 @@ export const ShopPage = () => {
                         )}
                       </div>
                     </div>
-                    {/* INDICATORE PREFETCH IN CORSO */}
                     {!isCached && selectedService?.id !== service.id && (
                       <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-gray-300 animate-pulse" />
                     )}
@@ -565,7 +599,6 @@ export const ShopPage = () => {
                       {monthName}
                     </p>
                   </div>
-
                   <div className="flex flex-col gap-1">
                     {loadingSlots ? (
                       <>
@@ -615,9 +648,7 @@ export const ShopPage = () => {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-yellow-100" />
-              <span className="text-xs text-gray-400">
-                In attesa, conferma OTP in corso
-              </span>
+              <span className="text-xs text-gray-400">In attesa OTP</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-gray-100" />
@@ -628,33 +659,43 @@ export const ShopPage = () => {
       </div>
 
       {/* FOOTER */}
-      <footer className="mt-12 border-t border-gray-200 py-6">
-        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} {shop.name} — Powered by{" "}
-            <a
-              href="https://scissorflow.it"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-gray-600 transition-colors"
-            >
-              ScissorFlow
-            </a>
-          </p>
+      <footer className="mt-12 bg-gray-900 dark:bg-gray-950">
+        <div className="max-w-5xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <ShopLogo
+              shopName={shop.name}
+              primaryColor={primaryColor}
+              logoStyle={shop.config?.logoStyle ?? "badge-vintage"}
+              logoUrl={shop.config?.logoUrl}
+              size={28}
+              radius={6}
+            />
+            <p className="text-xs text-gray-400">
+              © {new Date().getFullYear()} {shop.name} · Powered by{" "}
+              <a
+                href="https://scissorflow.it"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                ScissorFlow
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-4">
             {shop.config?.legalMode === "url" && shop.config?.legalUrl ? (
               <a
                 href={shop.config.legalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
               >
                 Privacy & Cookie Policy
               </a>
             ) : (
               <a
                 href={`/b/${slug}/legal`}
-                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
               >
                 Privacy & Cookie Policy
               </a>
@@ -699,14 +740,13 @@ export const ShopPage = () => {
                 {selectedDate} alle {selectedTime}
               </p>
             </div>
-
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nome *
                 </label>
                 <input
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                   placeholder="Mario"
                   value={form.firstName}
                   onChange={(e) =>
@@ -719,7 +759,7 @@ export const ShopPage = () => {
                   Cognome *
                 </label>
                 <input
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                   placeholder="Rossi"
                   value={form.lastName}
                   onChange={(e) =>
@@ -728,27 +768,25 @@ export const ShopPage = () => {
                 />
               </div>
             </div>
-
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Email
               </label>
               <input
                 type="email"
-                className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                 placeholder="mario@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
             </div>
-
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Telefono
               </label>
               <input
                 type="tel"
-                className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-gray-900 dark:focus:border-white placeholder:text-gray-400"
                 placeholder="+39 333 1234567"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -781,7 +819,6 @@ export const ShopPage = () => {
                   />
                 </div>
               </button>
-
               {recurrence.enabled && (
                 <div className="px-4 py-3 flex flex-col gap-3 bg-white dark:bg-gray-900">
                   <p className="text-xs text-gray-400 dark:text-gray-500">
@@ -793,11 +830,7 @@ export const ShopPage = () => {
                       onClick={() =>
                         setRecurrence((r) => ({ ...r, type: "WEEKLY" }))
                       }
-                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all border ${
-                        recurrence.type === "WEEKLY"
-                          ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
-                          : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
-                      }`}
+                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all border ${recurrence.type === "WEEKLY" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"}`}
                     >
                       Ogni settimana
                     </button>
@@ -806,11 +839,7 @@ export const ShopPage = () => {
                       onClick={() =>
                         setRecurrence((r) => ({ ...r, type: "MONTHLY" }))
                       }
-                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all border ${
-                        recurrence.type === "MONTHLY"
-                          ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
-                          : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
-                      }`}
+                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all border ${recurrence.type === "MONTHLY" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"}`}
                     >
                       Ogni mese
                     </button>
@@ -827,11 +856,7 @@ export const ShopPage = () => {
                           onClick={() =>
                             setRecurrence((r) => ({ ...r, repeat: n }))
                           }
-                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                            recurrence.repeat === n
-                              ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent"
-                              : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
-                          }`}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all border ${recurrence.repeat === n ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"}`}
                         >
                           {n}
                         </button>
@@ -852,7 +877,6 @@ export const ShopPage = () => {
               * Almeno email o telefono richiesti
             </p>
             {lockError && <p className="text-sm text-red-500">{lockError}</p>}
-
             <button
               type="button"
               onClick={handleLockSlot}
@@ -919,13 +943,11 @@ export const ShopPage = () => {
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
               style={{ backgroundColor: `${primaryColor}20` }}
             >
-              <span className="text-3xl">
-                <CheckCircleIcon
-                  size={16}
-                  weight="duotone"
-                  className="inline mr-1.5 text-green-600 dark:text-green-400"
-                />
-              </span>
+              <CheckCircleIcon
+                size={32}
+                weight="duotone"
+                className="text-green-600 dark:text-green-400"
+              />
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">

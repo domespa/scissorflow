@@ -305,16 +305,13 @@ export const OnboardingPage = () => {
           >
             <div className="absolute inset-0 bg-black/40" />
             <div className="relative px-2 pb-1.5 flex items-end gap-1.5">
-              <div
-                className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-                style={{ backgroundColor: form.primaryColor }}
-              >
-                <ScissorsIcon
-                  size={12}
-                  weight="duotone"
-                  className="text-white"
-                />
-              </div>
+              <ShopLogo
+                shopName={form.shopName || "Shop"}
+                primaryColor={form.primaryColor}
+                logoStyle={logoStyle}
+                size={24}
+                radius={4}
+              />
               <div>
                 <p className="text-white text-xs font-semibold leading-tight truncate max-w-25">
                   {form.shopName || "Il tuo shop"}
@@ -379,16 +376,13 @@ export const OnboardingPage = () => {
           >
             <div className="absolute inset-0 bg-black/40" />
             <div className="relative px-1.5 pb-1 flex items-end gap-1">
-              <div
-                className="w-4 h-4 rounded flex items-center justify-center shrink-0"
-                style={{ backgroundColor: form.primaryColor }}
-              >
-                <ScissorsIcon
-                  size={9}
-                  weight="duotone"
-                  className="text-white"
-                />
-              </div>
+              <ShopLogo
+                shopName={form.shopName || "Shop"}
+                primaryColor={form.primaryColor}
+                logoStyle={logoStyle}
+                size={16}
+                radius={3}
+              />
               <p
                 className="text-white font-semibold leading-tight truncate"
                 style={{ fontSize: "7px", maxWidth: "40px" }}

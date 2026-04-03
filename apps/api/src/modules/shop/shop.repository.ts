@@ -23,6 +23,13 @@ export const shopRepository = {
           where: { isActive: true },
           orderBy: { dayOfWeek: "asc" },
         },
+        users: {
+          where: { role: "OWNER" },
+          include: {
+            user: { select: { email: true } },
+          },
+          take: 1,
+        },
       },
     });
   },
